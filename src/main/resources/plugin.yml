@@ -1,0 +1,7 @@
+name: EpicJobs
+version: @version@
+main: de.stealwonders.epicjobs.EpicJobs
+api-version: 1.13
+authors: [StealWonders]
+description: Helps manage builder tasks and jobs.
+website: www.stealwonders.de
