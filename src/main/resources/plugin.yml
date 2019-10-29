@@ -5,3 +5,8 @@ api-version: 1.13
 authors: [StealWonders]
 description: Helps manage builder tasks and jobs.
 website: www.stealwonders.de
+
+commands:
+  job:
+    aliases: [jobs]
+    description: The main job command that handles everything.
