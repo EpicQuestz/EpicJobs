@@ -15,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,7 +65,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             case "claim":
 
                 if (args.length < 2) {
-                    Messages.SPECIFY_JOB.send(player);
+                    Messages.SPECIFY_JOB_ID.send(player);
                 } else {
 
                     try {
@@ -102,10 +101,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         epicJobsPlayer.removeJob(job);
                     } else if (epicJobsPlayer.getJobs().size() == 0) {
                         //todo send message: you have no jobs
-                        Messages.PLAYER_NO_JOBS.send(player);
+                        Messages.PLAYER_HAS_NO_JOBS.send(player);
                     } else {
-                        //todo send meesage: you have more than 1 job
-                        Messages.PLAYER_MORE_JOBS.send(player);
+                        //todo send message: you have more than 1 job
+                        Messages.PLAYER_HAS_MULITPLE_JOBS.send(player);
                     }
                 } else {
 
@@ -130,10 +129,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         player.teleport(job.getLocation());
                     } else if (epicJobsPlayer.getJobs().size() == 0) {
                         //todo send message: you have no job to teleport to
-                        Messages.PLAYER_NO_JOBS.send(player);
+                        Messages.PLAYER_HAS_NO_JOBS.send(player);
                     } else {
                         //todo send meesage: you have more than 1 job
-                        Messages.PLAYER_MORE_JOBS.send(player);
+                        Messages.PLAYER_HAS_NO_JOBS.send(player);
                     }
                 } else {
 
@@ -158,10 +157,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         //todo inform job creator
                     } else if (epicJobsPlayer.getJobs().size() == 0) {
                         //todo send message: you have no jobs
-                        Messages.PLAYER_NO_JOBS.send(player);
+                        Messages.PLAYER_HAS_NO_JOBS.send(player);
                     } else {
                         //todo send meesage: you have more than 1 job
-                        Messages.PLAYER_MORE_JOBS.send(player);
+                        Messages.PLAYER_HAS_NO_JOBS.send(player);
                     }
                 } else {
 
@@ -182,7 +181,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                 if (args.length <= 2) {
                     //todo send meesage: specify a job
-                    Messages.SPECIFY_JOB.send(player);
+                    Messages.SPECIFY_JOB_ID.send(player);
                 } else {
 
                     try {
@@ -202,7 +201,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                 if (args.length <= 2) {
                     //todo send meesage: specify a job
-                    Messages.SPECIFY_JOB.send(player);
+                    Messages.SPECIFY_JOB_ID.send(player);
                 } else {
 
                     try {
@@ -222,7 +221,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                 if (args.length <= 2) {
                     //todo send meesage: specify a job
-                    Messages.SPECIFY_JOB.send(player);
+                    Messages.SPECIFY_JOB_ID.send(player);
                 } else {
 
                     try {
@@ -255,6 +254,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                 //todo inform job claimant
                             } else {
                                 //todo send message: player is not online
+                                Messages.PLAYER_NOT_FOUND.send(player, args[2]);
                             }
                         } catch (NumberFormatException ignore) {
                             player.sendMessage("Please enter a valid number.");
@@ -279,12 +279,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                     }
 
                     if (project == null) {
-                        player.sendMessage("The project you specified does not exist.");
+                        Messages.JOB_DOESNT_EXIST.send(player);
                         return true;
                     }
 
                     if (jobCategory == null) {
-                        player.sendMessage("The job category you specified does not exist.");
+                        Messages.CATEGORY_DOESNT_EXIST.send(player);
                         return true;
                     }
 
@@ -322,7 +322,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                 }
                                 player.sendMessage("Successfully deleted job.");
                             } else {
-                                player.sendMessage("The job you specified could not be found.");
+                                Messages.JOB_DOESNT_EXIST.send(player);
                             }
 
                         } catch (NumberFormatException ignore) {
@@ -363,6 +363,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                         //todo send message: success
                                     } else {
                                         //todo send message: project dont exist
+                                        Messages.PROJECT_DOESNT_EXIST.send(player);
                                     }
 
                                     break;
@@ -374,6 +375,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                         //todo send message: success
                                     } else {
                                         //todo send message: project dont exist
+                                        Messages.PROJECT_DOESNT_EXIST.send(player);
                                     }
 
                                     break;
@@ -386,6 +388,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                             }
                         } else {
                             //todo send message: job dont exist
+                            Messages.JOB_DOESNT_EXIST.send(player);
                         }
 
                     } catch (NumberFormatException ignore) {
@@ -417,7 +420,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         plugin.getProjectManager().addProject(project);
                         player.sendMessage("Successfully created project " + args[1]);
                     } else {
-                        player.sendMessage("Player " + args[2] + " could not be found.");
+                        Messages.PLAYER_NOT_FOUND.send(player, args[2]);
                     }
                 } else {
                     //todo sendmessage: commandusage
@@ -456,6 +459,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                                     //todo send message: success
                                                 } else {
                                                     //todo send message: cant find player
+                                                    Messages.PLAYER_NOT_FOUND.send(player, args[4]);
                                                 }
                                                 break;
                                         }

@@ -6,11 +6,14 @@ import org.bukkit.entity.Player;
 
 public enum Messages {
 
-    SPECIFY_JOB("Please specify a job id to continue."),
+    SPECIFY_JOB_ID("Please specify a job id to continue."),
     JOB_DOESNT_EXIST("This job does not exist. Please check again if you entered the correct id."),
+    CATEGORY_DOESNT_EXIST("This job category does not exist. Please check again if you entered the correct category."),
+    PROJECT_DOESNT_EXIST("This project does not exist. Please check again if you entered the correct project."),
     JOB_NOT_OPEN("This job is not open to be claimed."),
-    PLAYER_NO_JOBS("You have no claimed jobs."),
-    PLAYER_MORE_JOBS("You have more than one job. Please specify a job it to continue."),
+    PLAYER_NOT_FOUND("Player %s could not be found."),
+    PLAYER_HAS_NO_JOBS("You have no claimed jobs."),
+    PLAYER_HAS_MULITPLE_JOBS("You have more than one job. Please specify a job it to continue."),
     ANNOUNCE_JOB_TAKEN("%s has claimed job #%s");
 
     private String message;
