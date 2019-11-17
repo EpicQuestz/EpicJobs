@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group = pluginGroup
@@ -14,6 +14,9 @@ targetCompatibility = '1.8'
 repositories {
     mavenCentral()
     maven {
+        url = "https://repo.aikar.co/content/groups/aikar/"
+    }
+    maven {
         name = 'destroystokyo-repo'
         url = 'https://repo.destroystokyo.com/repository/maven-public/'
     }
@@ -26,12 +29,21 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'com.destroystokyo.paper:paper-api:1.14.1-R0.1-SNAPSHOT'
+    compile 'org.mariadb.jdbc:mariadb-java-client:2.4.1'
     compile 'com.zaxxer:HikariCP:3.3.1'
     compile 'com.google.guava:guava:28.0-jre'
-    compile 'org.mariadb.jdbc:mariadb-java-client:2.4.1'
+    compile "co.aikar:acf-paper:0.5.0-SNAPSHOT"
+    compile "co.aikar:idb-core:1.0.0-SNAPSHOT"
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
+
+shadowJar {
+    relocate 'co.aikar.commands', 'de.stealwonders.epicjobs.acf'
+    relocate 'co.aikar.idb', 'de.stealwonders.epicjobs.idb'
+}
+
+build.dependsOn shadowJar
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {

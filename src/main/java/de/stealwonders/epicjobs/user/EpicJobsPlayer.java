@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class EpicJobsPlayer {
 
@@ -15,6 +13,7 @@ public class EpicJobsPlayer {
 
     public EpicJobsPlayer(UUID uuid) {
         this.uuid = uuid;
+        this.jobs = new ArrayList<>();
     }
 
     public UUID getUuid() {

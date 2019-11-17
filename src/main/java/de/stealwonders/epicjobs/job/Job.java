@@ -1,6 +1,7 @@
 package de.stealwonders.epicjobs.job;
 
 import de.stealwonders.epicjobs.project.Project;
+import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -49,8 +50,8 @@ public class Job {
         return claimant;
     }
 
-    public void setClaimant(Player claimant) {
-        this.claimant = claimant.getUniqueId();
+    public void setClaimant(UUID claimant) {
+        this.claimant = claimant;
     }
 
     public long getCreationTime() {
@@ -95,5 +96,21 @@ public class Job {
 
     public void setJobCategory(JobCategory jobCategory) {
         this.jobCategory = jobCategory;
+    }
+
+    public void claim(EpicJobsPlayer player) {
+        this.setClaimant(player.getUuid());
+        this.setJobStatus(JobStatus.TAKEN);
+        player.addJob(this);
+    }
+
+    public void abandon(EpicJobsPlayer player) {
+        this.setClaimant(null);
+        this.setJobStatus(JobStatus.OPEN);
+        player.removeJob(this);
+    }
+
+    public void teleport(Player player) {
+        player.teleport(this.getLocation());
     }
 }

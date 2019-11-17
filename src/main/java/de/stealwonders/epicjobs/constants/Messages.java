@@ -10,11 +10,18 @@ public enum Messages {
     JOB_DOESNT_EXIST("This job does not exist. Please check again if you entered the correct id."),
     CATEGORY_DOESNT_EXIST("This job category does not exist. Please check again if you entered the correct category."),
     PROJECT_DOESNT_EXIST("This project does not exist. Please check again if you entered the correct project."),
+    NO_JOBS_AVAILABLE("There are no jobs available to be claimed."),
     JOB_NOT_OPEN("This job is not open to be claimed."),
+    JOB_NOT_DONE("This job is marked as done."),
+    JOB_COMPLETED("Job %s has been marked as complete."),
     PLAYER_NOT_FOUND("Player %s could not be found."),
     PLAYER_HAS_NO_JOBS("You have no claimed jobs."),
+    PLAYER_HASNT_CLAIMED_JOB("You haven't claimed this job."),
     PLAYER_HAS_MULITPLE_JOBS("You have more than one job. Please specify a job it to continue."),
-    ANNOUNCE_JOB_TAKEN("%s has claimed job #%s");
+    ANNOUNCE_JOB_TAKEN("%s has claimed job #%s"),
+    ANNOUNCE_JOB_ABANDONMENT("%s has abandoned job #%s. It is free to be claimed again."),
+    ANNOUNCE_JOB_DONE("%s has marked job #%s as done."),
+    ANNOUNCE_JOB_REOPEN("%s has reopened job #%s.");
 
     private String message;
 

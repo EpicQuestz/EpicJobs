@@ -1,19 +1,25 @@
 package de.stealwonders.epicjobs;
 
+import co.aikar.commands.PaperCommandManager;
 import com.zaxxer.hikari.HikariDataSource;
-import de.stealwonders.epicjobs.commands.CommandManager;
+import de.stealwonders.epicjobs.commands.JobCommand;
 import de.stealwonders.epicjobs.job.JobManager;
 import de.stealwonders.epicjobs.project.ProjectManager;
 import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
-import org.bukkit.command.Command;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public final class EpicJobs extends JavaPlugin {
+public final class EpicJobs extends JavaPlugin implements Listener {
 
     private HikariDataSource hikari = new HikariDataSource();
 
@@ -23,7 +29,8 @@ public final class EpicJobs extends JavaPlugin {
 
     private ProjectManager projectManager;
     private JobManager jobManager;
-    private CommandManager commandManager;
+
+    private PaperCommandManager commandManager;
 
     @Override
     public void onEnable() {
@@ -33,22 +40,31 @@ public final class EpicJobs extends JavaPlugin {
         settingsFile.setupHikari(hikari, settingsFile.getConfiguration());
 
         epicJobsPlayers = new HashSet<>();
+        Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.add(new EpicJobsPlayer(player.getUniqueId())));
 
         projectManager = new ProjectManager(this);
         jobManager = new JobManager(this);
-        commandManager = new CommandManager(this);
+
+        commandManager = new PaperCommandManager(this);
 
         registerCommands();
+        registerListeners();
 
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+
+        Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.remove(getEpicJobsPlayer(player.getUniqueId())));
     }
 
     private void registerCommands() {
-        this.getCommand("job").setExecutor(commandManager);
+        commandManager.registerCommand(new JobCommand(this));
+    }
+
+    private void registerListeners() {
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     public HikariDataSource getHikari() {
@@ -76,8 +92,15 @@ public final class EpicJobs extends JavaPlugin {
         return jobManager;
     }
 
-    public CommandManager getCommandManager() {
-        return commandManager;
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        epicJobsPlayers.add(new EpicJobsPlayer(event.getPlayer().getUniqueId()));
     }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        epicJobsPlayers.remove(getEpicJobsPlayer(event.getPlayer().getUniqueId()));
+    }
+
 
 }
