@@ -3,6 +3,9 @@ package de.stealwonders.epicjobs.project;
 import co.aikar.idb.DbRow;
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
+import de.stealwonders.epicjobs.job.Job;
+import de.stealwonders.epicjobs.job.JobCategory;
+import de.stealwonders.epicjobs.job.JobStatus;
 import de.stealwonders.epicjobs.utils.Utils;
 import org.bukkit.Location;
 
@@ -82,45 +85,21 @@ public class ProjectManager {
 
     private void fetchProjects() {
 
-//        CompletableFuture<List<DbRow>> row = plugin.getDatabase().getResultsAsync(SELECT);
-//
-//
-//        Connection connection = null;
+        CompletableFuture<List<DbRow>> row = plugin.getDatabase().getResultsAsync(SELECT);
+        row.whenCompleteAsync((dbRows, throwable) -> dbRows.forEach(dbRow -> {
 
-//        try {
-//            connection = plugin.getHikari().getConnection();
-//
-//            PreparedStatement preparedStatement = connection.prepareStatement(SELECT);
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//
-//            while (resultSet.next()) {
-//
-//                int id = resultSet.getInt("id");
-//                String name = resultSet.getString("name");
-//                UUID uuid = UUID.fromString(resultSet.getString("leader"));
-//                Timestamp creationTime = resultSet.getTimestamp("creationtime");
-//                Location location = Utils.deserializeLocation(resultSet.getString("location"));
-//                ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
-//
-//                Project project = new Project(id, name, uuid, creationTime.getTime(), location, projectStatus);
-//                projects.add(project);
-//
-//            }
-//
-//            resultSet.close();
-//            preparedStatement.close();
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
+            int id = dbRow.getInt("id");
+            String name = dbRow.getString("name");
+            UUID uuid = UUID.fromString(dbRow.getString("leader"));
+            Timestamp creationTime = Timestamp.valueOf(dbRow.getString("creationtime"));
+            Location location = Utils.deserializeLocation(dbRow.getString("location"));
+            ProjectStatus projectStatus = ProjectStatus.valueOf(dbRow.getString("projectstatus"));
+
+            Project project = new Project(id, name, uuid, creationTime.getTime(), location, projectStatus);
+            projects.add(project);
+
+        }));
+
     }
 
     public int getFreeId() {
