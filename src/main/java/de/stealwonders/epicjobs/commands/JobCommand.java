@@ -5,7 +5,9 @@ import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
+import de.stealwonders.epicjobs.job.JobCategory;
 import de.stealwonders.epicjobs.job.JobStatus;
+import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,7 +42,6 @@ public class JobCommand extends BaseCommand {
         } else {
             NO_JOBS_AVAILABLE.send(sender);
         }
-
     }
 
     @Subcommand("claim|c")
@@ -162,13 +163,86 @@ public class JobCommand extends BaseCommand {
         if (job == null) {
             JOB_DOESNT_EXIST.send(player);
         } else {
-            if (job.getJobStatus() == JobStatus.DONE || job.getJobStatus() == JobStatus.COMPLETE) {
+            if (job.getJobStatus() == JobStatus.DONE) {
                 job.setJobStatus(JobStatus.REOPENED);
+            } else if (job.getJobStatus() == JobStatus.COMPLETE) {
+                EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
+                job.setJobStatus(JobStatus.REOPENED);
+                job.setClaimant(null);
+                if (epicJobsPlayer != null) {
+                    epicJobsPlayer.removeJob(job);
+                }
                 ANNOUNCE_JOB_REOPEN.send(player, id);
             } else {
                 JOB_NOT_DONE.send(player);
             }
         }
     }
+
+    @Subcommand("unassign")
+    @CommandPermission("epicjobs.command.unassign")
+    public void onUnassign(final Player player, final Integer id) {
+        final Job job = plugin.getJobManager().getJobById(id);
+        if (job == null) {
+            JOB_DOESNT_EXIST.send(player);
+        } else {
+            if (job.getJobStatus() == JobStatus.TAKEN || job.getJobStatus() == JobStatus.REOPENED) {
+                EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
+                job.setClaimant(null);
+                if (epicJobsPlayer != null) {
+                    epicJobsPlayer.removeJob(job);
+                }
+            } else {
+                player.sendMessage("You can only unassign uncomplete jobs taken by a player.");
+            }
+        }
+    }
+
+    @Subcommand("assign")
+    @CommandPermission("epicjobs.command.assign")
+    public void onAssign(final Player player, final Integer id, final Player target) {
+        final Job job = plugin.getJobManager().getJobById(id);
+        if (job == null) {
+            JOB_DOESNT_EXIST.send(player);
+        } else {
+            if (job.getJobStatus() == JobStatus.OPEN) {
+                EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId());
+                job.setClaimant(target.getUniqueId());
+                if (epicJobsPlayer != null) {
+                    epicJobsPlayer.addJob(job);
+                }
+            } else {
+                player.sendMessage("You can only assign untaken jobs to a player.");
+            }
+        }
+    }
+
+    @Subcommand("create")
+    @CommandPermission("epicjobs.command.job.create")
+    public void onCreate(final Player player, final Project project, final JobCategory jobCategory, String[] args) {
+        int id = plugin.getJobManager().getFreeId();
+        String description = String.valueOf(args);
+        Job job = new Job(id, player, description, jobCategory, project);
+        plugin.getJobManager().addJob(job);
+        player.sendMessage("Successfully created job with id #" + id);
+    }
+
+    @Subcommand("remove")
+    @CommandPermission("epicjobs.command.remove")
+    public void onRemove(final Player player, final Integer id) {
+        final Job job = plugin.getJobManager().getJobById(id);
+        if (job == null) {
+            JOB_DOESNT_EXIST.send(player);
+        } else {
+            plugin.getJobManager().removeJob(job);
+            job.getProject().removeJob(job);
+            EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
+            if (epicJobsPlayer != null) {
+                epicJobsPlayer.removeJob(job);
+            }
+            player.sendMessage("Successfully deleted job.");
+        }
+    }
+
 
 }

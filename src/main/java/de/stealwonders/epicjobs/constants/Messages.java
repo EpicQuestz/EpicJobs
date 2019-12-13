@@ -11,6 +11,7 @@ public enum Messages {
     CATEGORY_DOESNT_EXIST("This job category does not exist. Please check again if you entered the correct category."),
     PROJECT_DOESNT_EXIST("This project does not exist. Please check again if you entered the correct project."),
     NO_JOBS_AVAILABLE("There are no jobs available to be claimed."),
+    NO_PROJECTS_AVAILABLE("There are no active projects to participate in."),
     JOB_NOT_OPEN("This job is not open to be claimed."),
     JOB_NOT_DONE("This job is marked as done."),
     JOB_COMPLETED("Job %s has been marked as complete."),

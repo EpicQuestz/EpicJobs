@@ -1,14 +1,18 @@
 package de.stealwonders.epicjobs;
 
 import co.aikar.commands.PaperCommandManager;
-import com.zaxxer.hikari.HikariDataSource;
+import co.aikar.idb.Database;
+import co.aikar.idb.DatabaseOptions;
+import co.aikar.idb.PooledDatabaseOptions;
 import de.stealwonders.epicjobs.commands.JobCommand;
+import de.stealwonders.epicjobs.commands.ProjectCommand;
+import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobManager;
+import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectManager;
 import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -21,7 +25,8 @@ import java.util.UUID;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
-    private HikariDataSource hikari = new HikariDataSource();
+    private DatabaseOptions databaseOptions;
+    private Database database;
 
     private SettingsFile settingsFile;
 
@@ -37,7 +42,8 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         // Plugin startup logic
 
         settingsFile = new SettingsFile(this);
-        settingsFile.setupHikari(hikari, settingsFile.getConfiguration());
+        databaseOptions = settingsFile.setupHikari(settingsFile.getConfiguration());
+        database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
 
         epicJobsPlayers = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.add(new EpicJobsPlayer(player.getUniqueId())));
@@ -47,6 +53,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
         commandManager = new PaperCommandManager(this);
 
+        registerCommandContexts();
         registerCommands();
         registerListeners();
 
@@ -59,16 +66,22 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.remove(getEpicJobsPlayer(player.getUniqueId())));
     }
 
+    private void registerCommandContexts() {
+        commandManager.getCommandContexts().registerContext(Job.class, Job.getContextResolver());
+        commandManager.getCommandContexts().registerContext(Project.class, Project.getContextResolver());
+    }
+
     private void registerCommands() {
         commandManager.registerCommand(new JobCommand(this));
+        commandManager.registerCommand(new ProjectCommand(this));
     }
 
     private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    public HikariDataSource getHikari() {
-        return hikari;
+    public Database getDatabase() {
+        return database;
     }
 
     public SettingsFile getSettingsFile() {

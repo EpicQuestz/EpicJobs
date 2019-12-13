@@ -1,5 +1,7 @@
 package de.stealwonders.epicjobs.job;
 
+import co.aikar.commands.BukkitCommandExecutionContext;
+import co.aikar.commands.contexts.ContextResolver;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Location;
@@ -112,5 +114,9 @@ public class Job {
 
     public void teleport(Player player) {
         player.teleport(this.getLocation());
+    }
+
+    public static ContextResolver<Job, BukkitCommandExecutionContext> getContextResolver() {
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package de.stealwonders.epicjobs.project;
 
+import co.aikar.idb.DbRow;
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.utils.Utils;
@@ -9,6 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class ProjectManager {
 
@@ -80,42 +82,45 @@ public class ProjectManager {
 
     private void fetchProjects() {
 
-        Connection connection = null;
+//        CompletableFuture<List<DbRow>> row = plugin.getDatabase().getResultsAsync(SELECT);
+//
+//
+//        Connection connection = null;
 
-        try {
-            connection = plugin.getHikari().getConnection();
-
-            PreparedStatement preparedStatement = connection.prepareStatement(SELECT);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                UUID uuid = UUID.fromString(resultSet.getString("leader"));
-                Timestamp creationTime = resultSet.getTimestamp("creationtime");
-                Location location = Utils.deserializeLocation(resultSet.getString("location"));
-                ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
-
-                Project project = new Project(id, name, uuid, creationTime.getTime(), location, projectStatus);
-                projects.add(project);
-
-            }
-
-            resultSet.close();
-            preparedStatement.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        try {
+//            connection = plugin.getHikari().getConnection();
+//
+//            PreparedStatement preparedStatement = connection.prepareStatement(SELECT);
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//
+//            while (resultSet.next()) {
+//
+//                int id = resultSet.getInt("id");
+//                String name = resultSet.getString("name");
+//                UUID uuid = UUID.fromString(resultSet.getString("leader"));
+//                Timestamp creationTime = resultSet.getTimestamp("creationtime");
+//                Location location = Utils.deserializeLocation(resultSet.getString("location"));
+//                ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
+//
+//                Project project = new Project(id, name, uuid, creationTime.getTime(), location, projectStatus);
+//                projects.add(project);
+//
+//            }
+//
+//            resultSet.close();
+//            preparedStatement.close();
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (connection != null) {
+//                try {
+//                    connection.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 
     public int getFreeId() {

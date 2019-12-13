@@ -1,17 +1,17 @@
 package de.stealwonders.epicjobs.job;
 
+import co.aikar.idb.DbRow;
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.project.Project;
-import de.stealwonders.epicjobs.project.ProjectStatus;
 import de.stealwonders.epicjobs.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import java.sql.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class JobManager {
 
@@ -74,44 +74,24 @@ public class JobManager {
 
     private void fetchJobs() {
 
-        Connection connection = null;
+        CompletableFuture<List<DbRow>> row = plugin.getDatabase().getResultsAsync(SELECT);
+        row.whenCompleteAsync((dbRows, throwable) -> dbRows.forEach(dbRow -> {
 
-        try {
-            connection = plugin.getHikari().getConnection();
-
-            PreparedStatement preparedStatement = connection.prepareStatement(SELECT);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-
-                int id = resultSet.getInt("id");
-                UUID creator = UUID.fromString(resultSet.getString("creator"));
-                UUID claimant = resultSet.getObject("claimant") != null ? UUID.fromString(resultSet.getString("claimant")) : null;
-                Timestamp creationTime = resultSet.getTimestamp("creationtime");
-                String description = resultSet.getString("description");
-                Project project = plugin.getProjectManager().getProjectById(resultSet.getInt("project"));
-                Location location = Utils.deserializeLocation(resultSet.getString("location"));
-                JobStatus jobStatus = JobStatus.valueOf(resultSet.getString("jobstatus"));
-                JobCategory jobCategory = JobCategory.valueOf(resultSet.getString("jobcategory"));
+                int id = dbRow.getInt("id");
+                UUID creator = UUID.fromString(dbRow.getString("creator"));
+                UUID claimant = dbRow.get("claimant") != null ? UUID.fromString(dbRow.getString("claimant")) : null;
+                Timestamp creationTime = Timestamp.valueOf(dbRow.getString("creationtime"));
+                String description = dbRow.getString("description");
+                Project project = plugin.getProjectManager().getProjectById(dbRow.getInt("project"));
+                Location location = Utils.deserializeLocation(dbRow.getString("location"));
+                JobStatus jobStatus = JobStatus.valueOf(dbRow.getString("jobstatus"));
+                JobCategory jobCategory = JobCategory.valueOf(dbRow.getString("jobcategory"));
 
                 Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
                 jobs.add(job);
-            }
 
-            resultSet.close();
-            preparedStatement.close();
+        }));
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     public int getFreeId() {

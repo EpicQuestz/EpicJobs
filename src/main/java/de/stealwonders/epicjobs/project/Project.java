@@ -1,5 +1,7 @@
 package de.stealwonders.epicjobs.project;
 
+import co.aikar.commands.BukkitCommandExecutionContext;
+import co.aikar.commands.contexts.ContextResolver;
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.job.Job;
 import org.bukkit.Location;
@@ -79,5 +81,9 @@ public class Project {
 
     public void removeJob(Job job) {
         jobs.remove(job);
+    }
+
+    public static ContextResolver<Project, BukkitCommandExecutionContext> getContextResolver() {
+        return null;
     }
 }
