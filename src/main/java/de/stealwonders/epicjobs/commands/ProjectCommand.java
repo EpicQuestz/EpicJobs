@@ -44,17 +44,15 @@ public class ProjectCommand extends BaseCommand {
     @Subcommand("create")
     @Syntax("<name>")
     @CommandPermission("epicjobs.command.project.create")
-    public void onCreate(final Player player, String[] args) {
-        if (args.length == 0) {
-            throw new InvalidCommandArgument(true);
-        } else if (args.length > 1) {
-            throw new InvalidCommandArgument(Messages.PROJECT_NAME_NO_SPACES.toString(), false);
-        }
+    public void onCreate(final Player player, @Single final String name, @Optional final Player leader) {
         int id = plugin.getProjectManager().getFreeId();
-        String name = args[0];
-        Project project = new Project(id, name, player);
-        plugin.getProjectManager().addProject(project);
-        player.sendMessage("Successfully created project with id #" + id);
+        if (plugin.getProjectManager().getProjectByName(name) != null) {
+            Project project = (leader == null) ? new Project(id, name, player) : new Project(id, name, leader);
+            plugin.getProjectManager().addProject(project);
+            player.sendMessage("Successfully created project with id #" + id);
+        } else {
+            player.sendMessage("Cannot create a project with duplicate name.");
+        }
     }
 
 
