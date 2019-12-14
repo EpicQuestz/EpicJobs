@@ -48,7 +48,7 @@ public class SettingsFile {
 
         DatabaseOptions databaseOptions = DatabaseOptions.builder()
                 .mysql(username, password, database, address.split(":")[0])
-                .driverClassName("org.mariadb.jdbc.MariaDbDataSource")
+                //.driverClassName("org.mariadb.jdbc.MariaDbDataSource")
                 .poolName("EpicJobs")
                 .build();
 
