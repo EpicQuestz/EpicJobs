@@ -40,7 +40,6 @@ public class ProjectManager {
 
         }
 
-
     }
 
     public List<Project> getProjects() {

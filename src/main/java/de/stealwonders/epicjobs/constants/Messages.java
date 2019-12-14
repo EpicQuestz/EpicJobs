@@ -8,8 +8,9 @@ public enum Messages {
 
     SPECIFY_JOB_ID("Please specify a job id to continue."),
     JOB_DOESNT_EXIST("This job does not exist. Please check again if you entered the correct id."),
-    CATEGORY_DOESNT_EXIST("This job category does not exist. Please check again if you entered the correct category."),
-    PROJECT_DOESNT_EXIST("This project does not exist. Please check again if you entered the correct project."),
+    CATEGORY_DOESNT_EXIST("This job category does not exist. Please check again if you entered the correct category name."),
+    PROJECT_DOESNT_EXIST("This project does not exist. Please check again if you entered the correct project name."),
+    PROJECT_NAME_NO_SPACES("A project name cannot contain spaces."),
     NO_JOBS_AVAILABLE("There are no jobs available to be claimed."),
     NO_PROJECTS_AVAILABLE("There are no active projects to participate in."),
     JOB_NOT_OPEN("This job is not open to be claimed."),

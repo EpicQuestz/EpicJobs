@@ -1,11 +1,10 @@
 package de.stealwonders.epicjobs.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.InvalidCommandArgument;
+import co.aikar.commands.annotation.*;
 import de.stealwonders.epicjobs.EpicJobs;
+import de.stealwonders.epicjobs.constants.Messages;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
 import org.bukkit.command.CommandSender;
@@ -43,11 +42,17 @@ public class ProjectCommand extends BaseCommand {
     }
 
     @Subcommand("create")
+    @Syntax("<name>")
     @CommandPermission("epicjobs.command.project.create")
     public void onCreate(final Player player, String[] args) {
+        if (args.length == 0) {
+            throw new InvalidCommandArgument(true);
+        } else if (args.length > 1) {
+            throw new InvalidCommandArgument(Messages.PROJECT_NAME_NO_SPACES.toString(), false);
+        }
         int id = plugin.getProjectManager().getFreeId();
-        String description = String.valueOf(args);
-        Project project = new Project(id, description, player);
+        String name = args[0];
+        Project project = new Project(id, name, player);
         plugin.getProjectManager().addProject(project);
         player.sendMessage("Successfully created project with id #" + id);
     }
