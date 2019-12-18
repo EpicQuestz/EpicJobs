@@ -14,7 +14,7 @@ public class Utils {
         String[] parts = input.split(" ");
         World world = Bukkit.getWorld(parts[0]);
         if (world != null) {
-            return new Location(world, Double.valueOf(parts[1]), Double.valueOf(parts[2]), Double.valueOf(parts[3]));
+            return new Location(world, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
         } else {
             return null;
         }
