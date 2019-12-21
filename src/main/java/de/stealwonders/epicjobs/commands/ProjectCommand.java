@@ -44,7 +44,6 @@ public class ProjectCommand extends BaseCommand {
     }
 
     @Subcommand("create")
-    //@Syntax("<name>")
     @CommandPermission("epicjobs.command.project.create")
     public void onCreate(final Player player, @Single final String name, @Optional final Player leader) {
         int id = plugin.getProjectManager().getFreeId();
@@ -58,6 +57,8 @@ public class ProjectCommand extends BaseCommand {
     }
 
     @Subcommand("edit")
+    @CommandCompletion("@project *")
+    @CommandPermission("epicjobs.command.project.edit")
     public void onEdit(final Player player, final Project project, final String context, final @Optional String option) {
         switch (context.toUpperCase()) {
             case "NAME":
@@ -83,13 +84,20 @@ public class ProjectCommand extends BaseCommand {
     }
 
     @Subcommand("teleport|tp")
+    @CommandCompletion("@project")
     public void onTeleport(final Player player, final Project project) {
-          player.teleportAsync(project.getLocation());
+        project.teleport(player);
     }
 
     @Subcommand("complete")
+    @CommandCompletion("@active-project")
+    @CommandPermission("epicjobs.command.project.complete")
     public void onComplete(final Player player, final Project project) {
-        project.setProjectStatus(ProjectStatus.COMPLETE);
-        ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
+        if (project.getProjectStatus() != ProjectStatus.COMPLETE) {
+            project.setProjectStatus(ProjectStatus.COMPLETE);
+            ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
+        } else {
+            player.sendMessage("This project is already marked as complete.");
+        }
     }
 }

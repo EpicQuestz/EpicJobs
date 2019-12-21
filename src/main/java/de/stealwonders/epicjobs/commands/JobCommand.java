@@ -45,7 +45,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("claim|c")
-    @Syntax("<job>")
+    @CommandCompletion("@open-job")
     public void onClaim(final Player player, final Job job) {
         final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
         if (job == null) {
@@ -61,7 +61,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("abandon|a")
-    @Syntax("[job]")
+    @CommandCompletion("@player-job")
     public void onAbandon(final Player player, @Optional final Job job) {
         final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
         final List<Job> jobs = epicJobsPlayer.getJobs();
@@ -85,7 +85,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("teleport|tp")
-    @Syntax("[job]")
+    @CommandCompletion("@player-job")
     public void onTeleport(final Player player, @Optional final Job job) {
         if (job == null) {
             final List<Job> jobs =  plugin.getEpicJobsPlayer(player.getUniqueId()).getJobs();
@@ -102,6 +102,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("done")
+    @CommandCompletion("@player-job")
     public void onDone(final Player player, @Optional final Job job) {
         final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
         final List<Job> jobs = epicJobsPlayer.getJobs();
@@ -125,7 +126,8 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("complete")
-    @CommandPermission("epicjobs.command.complete")
+    @CommandPermission("epicjobs.command.job.complete")
+    @CommandCompletion("@player-job")
     public void onComplete(final Player player, final Job job) {
         if (job.getJobStatus() == JobStatus.DONE) {
             job.setJobStatus(JobStatus.COMPLETE);
@@ -136,7 +138,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("reopen")
-    @CommandPermission("epicjobs.command.reopen")
+    @CommandPermission("epicjobs.command.job.reopen")
     public void onReopen(final Player player, final Job job) {
         if (job.getJobStatus() == JobStatus.DONE) {
             job.setJobStatus(JobStatus.REOPENED);
@@ -154,7 +156,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("unassign")
-    @CommandPermission("epicjobs.command.unassign")
+    @CommandPermission("epicjobs.command.job.unassign")
     public void onUnassign(final Player player, final Job job) {
         if (job.getJobStatus() == JobStatus.TAKEN || job.getJobStatus() == JobStatus.REOPENED) {
             EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
@@ -165,26 +167,24 @@ public class JobCommand extends BaseCommand {
         } else {
             player.sendMessage("You can only unassign uncomplete jobs taken by a player.");
         }
-
     }
 
     @Subcommand("assign")
-    @CommandPermission("epicjobs.command.assign")
+    @CommandPermission("epicjobs.command.job.assign")
+    @CommandCompletion("@open-job")
     public void onAssign(final Player player, final Job job, final Player target) {
         if (job.getJobStatus() == JobStatus.OPEN) {
             EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId());
-            job.setClaimant(target.getUniqueId());
-            if (epicJobsPlayer != null) {
-                epicJobsPlayer.addJob(job);
-            }
+            job.claim(epicJobsPlayer);
+            player.sendMessage("You have assigned " + target.getName() + "to job #" + job.getId());
+            target.sendMessage("You have been assigned job #" + job.getId());
         } else {
             player.sendMessage("You can only assign untaken jobs to a player.");
         }
     }
 
     @Subcommand("create")
-    @Syntax("<project> <jobcategory> <description>")
-    @CommandCompletion("@projects")
+    @CommandCompletion("@project * *")
     @CommandPermission("epicjobs.command.job.create")
     public void onCreate(final Player player, final Project project, final JobCategory jobCategory, final String description) {
         int id = plugin.getJobManager().getFreeId();
@@ -194,7 +194,7 @@ public class JobCommand extends BaseCommand {
     }
 
     @Subcommand("remove")
-    @CommandPermission("epicjobs.command.remove")
+    @CommandPermission("epicjobs.command.job.remove")
     public void onRemove(final Player player, final Job job) {
         plugin.getJobManager().removeJob(job);
         job.getProject().removeJob(job);
@@ -203,6 +203,15 @@ public class JobCommand extends BaseCommand {
             epicJobsPlayer.removeJob(job);
         }
         player.sendMessage("Successfully deleted job.");
+    }
+
+    //todo edit command
+
+    @Subcommand("stats")
+    @CommandPermission("epicjobs.command.job.stats")
+    public void onStats(final Player player, @Optional final Player target) {
+        EpicJobsPlayer epicJobsPlayer = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()) : plugin.getEpicJobsPlayer(player.getUniqueId());
+        player.sendMessage("Completed jobs: " + epicJobsPlayer.getCompletedJobs().size());
     }
 
 }

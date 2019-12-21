@@ -13,20 +13,26 @@ import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobManager;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectManager;
+import de.stealwonders.epicjobs.project.ProjectStatus;
 import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
     private DatabaseOptions databaseOptions;
+    private Connection connection;
     private Database database;
 
     private SettingsFile settingsFile;
@@ -45,6 +51,11 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         settingsFile = new SettingsFile(this);
         databaseOptions = settingsFile.setupHikari(settingsFile.getConfiguration());
         database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
+        try {
+            connection = database.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         epicJobsPlayers = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.add(new EpicJobsPlayer(player.getUniqueId())));
@@ -65,7 +76,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     public void onDisable() {
         // Plugin shutdown logic
 
-        database.close();
+        if (connection != null) {
+            database.close();
+        }
 
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.remove(getEpicJobsPlayer(player.getUniqueId())));
     }
@@ -97,9 +110,32 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     }
 
     private void registerCommandCompletion() {
-        commandManager.getCommandCompletions().registerAsyncCompletion("projects", c -> {
+        commandManager.getCommandCompletions().registerAsyncCompletion("open-job", c -> {
+            List<String> jobs = new ArrayList<>();
+            jobManager.getOpenJobs().forEach(job -> jobs.add(String.valueOf(job.getId())));
+            return jobs;
+        });
+
+        commandManager.getCommandCompletions().registerAsyncCompletion("player-job", c -> {
+            List<String> jobs = new ArrayList<>();
+            Player player = c.getPlayer();
+            EpicJobsPlayer epicJobsPlayer = getEpicJobsPlayer(player.getUniqueId());
+            epicJobsPlayer.getJobs().forEach(job -> jobs.add(String.valueOf(job.getId())));
+            return jobs;
+        });
+
+        commandManager.getCommandCompletions().registerAsyncCompletion("project", c -> {
             List<String> projects = new ArrayList<>();
             projectManager.getProjects().forEach(project -> projects.add(project.getName()));
+            return projects;
+        });
+
+        commandManager.getCommandCompletions().registerAsyncCompletion("active-project", c -> {
+            List<String> projects;
+            projects = projectManager.getProjects().stream()
+                    .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
+                    .map(Project::getName)
+                    .collect(Collectors.toList());
             return projects;
         });
     }
