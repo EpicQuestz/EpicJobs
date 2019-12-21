@@ -87,6 +87,10 @@ public class Project {
         jobs.remove(job);
     }
 
+    public void teleport(Player player) {
+        player.teleportAsync(this.getLocation());
+    }
+
     public static ContextResolver<Project, BukkitCommandExecutionContext> getContextResolver() {
         return null;
     }

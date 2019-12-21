@@ -113,7 +113,7 @@ public class Job {
     }
 
     public void teleport(Player player) {
-        player.teleport(this.getLocation());
+        player.teleportAsync(this.getLocation());
     }
 
     public static ContextResolver<Job, BukkitCommandExecutionContext> getContextResolver() {
