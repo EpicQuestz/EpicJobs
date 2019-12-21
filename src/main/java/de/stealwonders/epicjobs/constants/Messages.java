@@ -23,7 +23,8 @@ public enum Messages {
     ANNOUNCE_JOB_TAKEN("%s has claimed job #%s"),
     ANNOUNCE_JOB_ABANDONMENT("%s has abandoned job #%s. It is free to be claimed again."),
     ANNOUNCE_JOB_DONE("%s has marked job #%s as done."),
-    ANNOUNCE_JOB_REOPEN("%s has reopened job #%s.");
+    ANNOUNCE_JOB_REOPEN("%s has reopened job #%s."),
+    ANNOUNCE_PROJECT_COMPLETION("Project '%s' has been completed!");
 
     private String message;
 

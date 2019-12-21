@@ -5,15 +5,17 @@ import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.constants.Messages;
+import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.stealwonders.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
+import static de.stealwonders.epicjobs.constants.Messages.*;
 
 @CommandAlias("project|projects")
 public class ProjectCommand extends BaseCommand {
@@ -42,11 +44,11 @@ public class ProjectCommand extends BaseCommand {
     }
 
     @Subcommand("create")
-    @Syntax("<name>")
+    //@Syntax("<name>")
     @CommandPermission("epicjobs.command.project.create")
     public void onCreate(final Player player, @Single final String name, @Optional final Player leader) {
         int id = plugin.getProjectManager().getFreeId();
-        if (plugin.getProjectManager().getProjectByName(name) != null) {
+        if (plugin.getProjectManager().getProjectByName(name) == null) {
             Project project = (leader == null) ? new Project(id, name, player) : new Project(id, name, leader);
             plugin.getProjectManager().addProject(project);
             player.sendMessage("Successfully created project with id #" + id);
@@ -55,7 +57,39 @@ public class ProjectCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("edit")
+    public void onEdit(final Player player, final Project project, final String context, final @Optional String option) {
+        switch (context.toUpperCase()) {
+            case "NAME":
+                project.setName(option);
+                player.sendMessage("Set name of project to " + option);
+                break;
+            case "LOCATION":
+                project.setLocation(player.getLocation());
+                player.sendMessage("The project site has been set to your position");
+                break;
+            case "LEADER":
+                Player leader = Bukkit.getPlayer(option);
+                if (leader != null) {
+                    project.setLeader(leader);
+                    player.sendMessage("Project leader has been set to " + leader.getName());
+                } else {
+                    PLAYER_NOT_FOUND.send(player, option);
+                }
+                break;
+            default:
+                throw new InvalidCommandArgument();
+        }
+    }
 
+    @Subcommand("teleport|tp")
+    public void onTeleport(final Player player, final Project project) {
+          player.teleportAsync(project.getLocation());
+    }
 
-
+    @Subcommand("complete")
+    public void onComplete(final Player player, final Project project) {
+        project.setProjectStatus(ProjectStatus.COMPLETE);
+        ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
+    }
 }
