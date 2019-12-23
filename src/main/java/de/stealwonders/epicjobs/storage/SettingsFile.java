@@ -46,12 +46,10 @@ public class SettingsFile {
         String username = settings.getString(MYSQL_INFO + "username");
         String password = settings.getString(MYSQL_INFO + "password");
 
-        DatabaseOptions databaseOptions = DatabaseOptions.builder()
-                .mysql(username, password, database, address.split(":")[0])
-                //.driverClassName("org.mariadb.jdbc.MariaDbDataSource")
-                .poolName("EpicJobs")
-                .build();
-
-        return databaseOptions;
+        return DatabaseOptions.builder()
+            .mysql(username, password, database, address.split(":")[0])
+            //.driverClassName("org.mariadb.jdbc.MariaDbDataSource")
+            .poolName("EpicJobs")
+            .build();
     }
 }
