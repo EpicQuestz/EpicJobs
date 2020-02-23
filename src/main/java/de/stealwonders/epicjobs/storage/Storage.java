@@ -2,12 +2,15 @@ package de.stealwonders.epicjobs.storage;
 
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
+import de.stealwonders.epicjobs.job.JobCategory;
+import de.stealwonders.epicjobs.job.JobStatus;
 import de.stealwonders.epicjobs.project.Project;
+import de.stealwonders.epicjobs.project.ProjectStatus;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import org.bukkit.Location;
 
 import java.util.UUID;
-import java.util.concurrent.*;
 
 public class Storage {
 
@@ -27,40 +30,40 @@ public class Storage {
         this.implementation.shutdown();
     }
 
-    public CompletableFuture<EpicJobsPlayer> loadPlayer(UUID uniqueId) {
+    public EpicJobsPlayer loadPlayer(UUID uniqueId) {
         return null;
     }
 
-    public CompletableFuture<Project> createAndLoadProject(Project project) {
-        return makeFuture(() -> this.implementation.createAndLoadProject(project));
+    public Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus) {
+        return this.implementation.createAndLoadProject(name, leader, location, projectStatus);
     }
 
     public void loadAllProjects() {
         implementation.loadAllProjects();
     }
 
-    public CompletableFuture<Void> saveProject(Project project) {
-        return makeFuture(() -> this.implementation.saveProject(project));
+    public void saveProject(Project project) {
+        this.implementation.saveProject(project);
     }
 
-    public CompletableFuture<Void> deleteProject(Project project) {
-        return makeFuture(() -> this.implementation.deleteProject(project));
+    public void deleteProject(Project project) {
+        this.implementation.deleteProject(project);
     }
 
-    public CompletableFuture<Job> createAndLoadJob(Job job) {
-        return makeFuture(() -> this.implementation.createAndLoadJob(job));
+    public Job createAndLoadJob(UUID creator, UUID claimant, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
+        return this.implementation.createAndLoadJob(creator, claimant, description, project, location, jobStatus, jobCategory);
     }
 
     public void loadAllJobs() {
         implementation.loadAllJobs();
     }
 
-    public CompletableFuture<Void> saveJob(Job job) {
-        return makeFuture(() -> this.implementation.saveJob(job));
+    public void saveJob(Job job) {
+        this.implementation.saveJob(job);
     }
 
-    public CompletableFuture<Void> deleteJob(Job job) {
-        return makeFuture(() -> this.implementation.deleteJob(job));
+    public void deleteJob(Job job) {
+        this.implementation.deleteJob(job);
     }
 
 }
