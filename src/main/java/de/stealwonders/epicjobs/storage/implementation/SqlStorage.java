@@ -24,7 +24,7 @@ public class SqlStorage implements StorageImplementation {
     private static final String GET_ID = "SELECT LAST_INSERT_ID() AS 'id';";
 
     private static final String PROJECT_DELETE = "DELETE FROM project WHERE id = ?;";
-    private static final String JOB_DELETE = "DELETE FROM project WHERE id = ?;";
+    private static final String JOB_DELETE = "DELETE FROM job WHERE id = ?;";
 
     private static final String PROJECT_TABLE_CREATE =
         "CREATE TABLE IF NOT EXISTS project (" +
