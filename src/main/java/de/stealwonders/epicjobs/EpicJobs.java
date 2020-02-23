@@ -3,9 +3,10 @@ package de.stealwonders.epicjobs;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.PaperCommandManager;
-import co.aikar.idb.Database;
-import co.aikar.idb.DatabaseOptions;
-import co.aikar.idb.PooledDatabaseOptions;
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
+import com.zaxxer.hikari.HikariDataSource;
 import de.stealwonders.epicjobs.commands.JobCommand;
 import de.stealwonders.epicjobs.commands.ProjectCommand;
 import de.stealwonders.epicjobs.constants.Messages;
@@ -15,6 +16,8 @@ import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectManager;
 import de.stealwonders.epicjobs.project.ProjectStatus;
 import de.stealwonders.epicjobs.storage.SettingsFile;
+import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
+import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,18 +27,25 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
-    private DatabaseOptions databaseOptions;
-    private Connection connection;
-    private Database database;
+    private static TaskChainFactory taskChainFactory;
+
+    public static <T> TaskChain<T> newChain() {
+        return taskChainFactory.newChain();
+    }
+
+    public static <T> TaskChain<T> newSharedChain(String name) {
+        return taskChainFactory.newSharedChain(name);
+    }
 
     private SettingsFile settingsFile;
+
+    private HikariDataSource hikariDataSource = new HikariDataSource();
+    private StorageImplementation storageImplementation;
 
     private Set<EpicJobsPlayer> epicJobsPlayers;
 
@@ -48,14 +58,12 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     public void onEnable() {
         // Plugin startup logic
 
+        taskChainFactory = BukkitTaskChainFactory.create(this);
+
         settingsFile = new SettingsFile(this);
-        databaseOptions = settingsFile.setupHikari(settingsFile.getConfiguration());
-        database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
-        try {
-            connection = database.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        storageImplementation = new SqlStorage(this, settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration()));
+        storageImplementation.init();
 
         epicJobsPlayers = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.add(new EpicJobsPlayer(player.getUniqueId())));
@@ -69,20 +77,18 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         registerCommandCompletion();
         registerCommands();
         registerListeners();
-
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
 
-        if (connection != null) {
-            database.close();
-        }
+        storageImplementation.shutdown();
 
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.remove(getEpicJobsPlayer(player.getUniqueId())));
     }
 
+    //todo put into other class
     private void registerCommandContexts() {
         commandManager.getCommandContexts().registerContext(Job.class, c -> {
             String number = c.popFirstArg();
@@ -109,6 +115,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         });
     }
 
+    //todo put into other class
     private void registerCommandCompletion() {
         commandManager.getCommandCompletions().registerAsyncCompletion("open-job", c -> {
             List<String> jobs = new ArrayList<>();
@@ -149,8 +156,8 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    public Database getDatabase() {
-        return database;
+    public StorageImplementation getStorageImplementation() {
+        return storageImplementation;
     }
 
     public SettingsFile getSettingsFile() {
@@ -183,6 +190,5 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         epicJobsPlayers.remove(getEpicJobsPlayer(event.getPlayer().getUniqueId()));
     }
-
 
 }

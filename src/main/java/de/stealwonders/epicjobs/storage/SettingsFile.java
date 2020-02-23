@@ -1,6 +1,6 @@
 package de.stealwonders.epicjobs.storage;
 
-import co.aikar.idb.DatabaseOptions;
+import com.zaxxer.hikari.HikariDataSource;
 import de.stealwonders.epicjobs.EpicJobs;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -40,16 +40,21 @@ public class SettingsFile {
         }
     }
 
-    public DatabaseOptions setupHikari(FileConfiguration settings) {
+    public HikariDataSource setupHikari(HikariDataSource hikariDataSource, FileConfiguration settings) {
         String address = settings.getString(MYSQL_INFO + "address");
         String database = settings.getString(MYSQL_INFO + "database");
         String username = settings.getString(MYSQL_INFO + "username");
         String password = settings.getString(MYSQL_INFO + "password");
 
-        return DatabaseOptions.builder()
-            .mysql(username, password, database, address.split(":")[0])
-            //.driverClassName("org.mariadb.jdbc.MariaDbDataSource")
-            .poolName("EpicJobs")
-            .build();
+        hikariDataSource.setMaximumPoolSize(10);
+        hikariDataSource.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+        hikariDataSource.addDataSourceProperty("serverName", address.split(":")[0]);
+        hikariDataSource.addDataSourceProperty("port", address.split(":")[1]);
+        hikariDataSource.addDataSourceProperty("databaseName", database);
+        hikariDataSource.addDataSourceProperty("user", username);
+        hikariDataSource.addDataSourceProperty("password", password);
+        hikariDataSource.setPoolName("EpicJobs");
+
+        return hikariDataSource;
     }
 }
