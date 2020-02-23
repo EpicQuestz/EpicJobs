@@ -19,36 +19,39 @@ public class SqlStorage implements StorageImplementation {
     private static final String PROJECT_SELECT_ALL = "SELECT * FROM project;";
     private static final String JOB_SELECT_ALL = "SELECT * FROM job;";
 
-    private static final String PROJECT_INSERT = "INSERT INTO project(name, leader, location, projectstatus) VALUES (?, ?, ?, ?); SELECT LAST_INSERT_ID() AS 'id';";
-    private static final String JOB_INSERT = "INSERT INTO job(creator, claimant, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?, ?); SELECT LAST_INSERT_ID() AS 'id';";
+    private static final String PROJECT_INSERT = "INSERT INTO project(name, leader, location, projectstatus) VALUES (?, ?, ?, ?);";
+    private static final String JOB_INSERT = "INSERT INTO job(creator, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?);";
+    private static final String GET_ID = "SELECT LAST_INSERT_ID() AS 'id';";
 
     private static final String PROJECT_DELETE = "DELETE FROM project WHERE id = ?;";
     private static final String JOB_DELETE = "DELETE FROM project WHERE id = ?;";
 
-    private static final String PROJECT_TABLE_CREATE = "CREATE TABLE IF NOT EXISTS project (" +
-            "id INT(11) COLLATE utf8_bin AUTO_INCREMENT PRIMARY KEY," +
-            "name VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-            "leader VARCHAR(36) COLLATE utf8_bin NOT NULL," +
-            "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL," +
-            "location VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-            "projectstatus enum('ACTIVE', 'COMPLETE') NOT NULL" +
-            ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-//            "CREATE INDEX IF NOT EXISTS id ON project (id);";
+    private static final String PROJECT_TABLE_CREATE =
+        "CREATE TABLE IF NOT EXISTS project (" +
+        "id INT(11) COLLATE utf8_bin AUTO_INCREMENT PRIMARY KEY," +
+        "name VARCHAR(255) COLLATE utf8_bin NOT NULL," +
+        "leader VARCHAR(36) COLLATE utf8_bin NOT NULL," +
+        "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL," +
+        "location VARCHAR(255) COLLATE utf8_bin NOT NULL," +
+        "projectstatus enum('ACTIVE', 'COMPLETE') NOT NULL" +
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+//      "CREATE INDEX IF NOT EXISTS id ON project (id);";
 
-    private static final String JOB_TABLE_CREATE = "CREATE TABLE IF NOT EXISTS job (\n" +
-            "id INT(11) AUTO_INCREMENT PRIMARY KEY,\n" +
-            "creator VARCHAR(36) COLLATE utf8_bin NOT NULL,\n" +
-            "claimant VARCHAR(36) COLLATE utf8_bin NULL,\n" +
-            "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
-            "description VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-            "project INT NOT NULL,\n" +
-            "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-            "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'REOPENED', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
-            "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
-            ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-//            "CONSTRAINT job_ibfk_1" +
-//            "FOREIGN KEY (project) REFERENCES project (id);" +
-//            "CREATE INDEX IF NOT EXISTS project ON job (project);";
+    private static final String JOB_TABLE_CREATE =
+        "CREATE TABLE IF NOT EXISTS job (\n" +
+        "id INT(11) AUTO_INCREMENT PRIMARY KEY,\n" +
+        "creator VARCHAR(36) COLLATE utf8_bin NOT NULL,\n" +
+        "claimant VARCHAR(36) COLLATE utf8_bin NULL,\n" +
+        "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
+        "description VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
+        "project INT NOT NULL,\n" +
+        "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
+        "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'REOPENED', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
+        "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+//      "CONSTRAINT job_ibfk_1" +
+//      "FOREIGN KEY (project) REFERENCES project (id);" +
+//      "CREATE INDEX IF NOT EXISTS project ON job (project);";
 
     private EpicJobs plugin;
     private HikariDataSource hikariDataSource;
@@ -103,6 +106,7 @@ public class SqlStorage implements StorageImplementation {
     @Override
     public Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus) {
 
+        Project project = null;
         Connection connection = null;
 
         try {
@@ -115,9 +119,12 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.setString(4, projectStatus.toString());
             preparedStatement.execute();
 
+            preparedStatement = connection.prepareStatement(GET_ID);
+            preparedStatement.execute();
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new Project(resultSet.getInt("id"), name, leader, System.currentTimeMillis(), location, projectStatus);
+                project = new Project(resultSet.getInt("id"), name, leader, System.currentTimeMillis(), location, projectStatus);
             }
 
             preparedStatement.close();
@@ -135,7 +142,7 @@ public class SqlStorage implements StorageImplementation {
             }
         }
 
-        return null;
+        return project;
     }
 
     @Override
@@ -156,7 +163,7 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.execute();
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
 
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -165,9 +172,10 @@ public class SqlStorage implements StorageImplementation {
                 Location location = Utils.deserializeLocation(resultSet.getString("location"));
                 ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
 
-                Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
-                getPlugin().getProjectManager().addProject(project);
-
+                if (location != null) {
+                    Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
+                    getPlugin().getProjectManager().addProject(project);
+                }
             }
 
             preparedStatement.close();
@@ -218,8 +226,9 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public Job createAndLoadJob(UUID creator, UUID claimant, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
+    public Job createAndLoadJob(UUID creator, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
 
+        Job job = null;
         Connection connection = null;
 
         try {
@@ -227,20 +236,20 @@ public class SqlStorage implements StorageImplementation {
 
             PreparedStatement preparedStatement = connection.prepareStatement(JOB_INSERT);
             preparedStatement.setString(1, creator.toString());
-            preparedStatement.setString(2, claimant.toString());
-            preparedStatement.setString(3, description);
-            preparedStatement.setInt(4, project.getId());
-            preparedStatement.setString(5, Utils.serializeLocation(location));
-            preparedStatement.setString(6, jobStatus.toString());
-            preparedStatement.setString(7, jobCategory.toString());
+            preparedStatement.setString(2, description);
+            preparedStatement.setInt(3, project.getId());
+            preparedStatement.setString(4, Utils.serializeLocation(location));
+            preparedStatement.setString(5, jobStatus.toString());
+            preparedStatement.setString(6, jobCategory.toString());
+            preparedStatement.execute();
+
+            preparedStatement = connection.prepareStatement(GET_ID);
             preparedStatement.execute();
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new Job(resultSet.getInt("id"), creator, claimant, System.currentTimeMillis(), description, project, location, jobStatus, jobCategory);
+                job = new Job(resultSet.getInt("id"), creator, null, System.currentTimeMillis(), description, project, location, jobStatus, jobCategory);
             }
-
-            //todo: ask whether or not to close statement first before returning
 
             preparedStatement.close();
             resultSet.close();
@@ -257,7 +266,7 @@ public class SqlStorage implements StorageImplementation {
             }
         }
 
-        return null;
+        return job;
     }
 
     @Override
@@ -277,7 +286,7 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.execute();
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
 
                 int id = resultSet.getInt("id");
                 UUID creator = UUID.fromString(resultSet.getString("creator"));
@@ -289,8 +298,10 @@ public class SqlStorage implements StorageImplementation {
                 JobStatus jobStatus = JobStatus.valueOf(resultSet.getString("jobstatus"));
                 JobCategory jobCategory = JobCategory.valueOf(resultSet.getString("jobcategory"));
 
-                Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
-                getPlugin().getJobManager().addJob(job);
+                if (location != null) {
+                    Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
+                    getPlugin().getJobManager().addJob(job);
+                }
 
             }
 

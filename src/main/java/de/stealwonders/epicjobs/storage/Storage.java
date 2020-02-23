@@ -50,8 +50,8 @@ public class Storage {
         this.implementation.deleteProject(project);
     }
 
-    public Job createAndLoadJob(UUID creator, UUID claimant, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
-        return this.implementation.createAndLoadJob(creator, claimant, description, project, location, jobStatus, jobCategory);
+    public Job createAndLoadJob(UUID creator, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
+        return this.implementation.createAndLoadJob(creator, description, project, location, jobStatus, jobCategory);
     }
 
     public void loadAllJobs() {

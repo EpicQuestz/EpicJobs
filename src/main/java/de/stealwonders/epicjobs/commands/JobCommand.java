@@ -3,6 +3,7 @@ package de.stealwonders.epicjobs.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
+import co.aikar.taskchain.TaskChain;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobCategory;
@@ -187,22 +188,37 @@ public class JobCommand extends BaseCommand {
     @CommandCompletion("@project * *")
     @CommandPermission("epicjobs.command.job.create")
     public void onCreate(final Player player, final Project project, final JobCategory jobCategory, final String description) {
-        int id = plugin.getJobManager().getFreeId();
-        Job job = new Job(id, player, description, jobCategory, project);
-        plugin.getJobManager().addJob(job);
-        player.sendMessage("Successfully created job with id #" + id);
+        EpicJobs.newSharedChain("EpicJobs")
+            .sync(() -> player.sendActionBar("Creating job"))
+            .asyncFirst(() -> {
+                Job job = plugin.getStorageImplementation().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
+                plugin.getJobManager().addJob(job);
+                return job;
+            })
+            .syncLast((job) -> {
+                String message = (job == null) ? "§cError while creating job. Please contact an administrator." : "§aSuccessfully created job with id #" + job.getId();
+                player.sendMessage(message);
+            })
+            .execute();
     }
 
     @Subcommand("remove")
     @CommandPermission("epicjobs.command.job.remove")
     public void onRemove(final Player player, final Job job) {
-        plugin.getJobManager().removeJob(job);
-        job.getProject().removeJob(job);
-        EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
-        if (epicJobsPlayer != null) {
-            epicJobsPlayer.removeJob(job);
-        }
-        player.sendMessage("Successfully deleted job.");
+        EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                plugin.getJobManager().removeJob(job);
+                job.getProject().removeJob(job);
+                EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
+                if (epicJobsPlayer != null) {
+                    epicJobsPlayer.removeJob(job);
+                }
+                player.sendActionBar("Removing job #" + job.getId());
+                return null;
+            })
+            .async(() -> plugin.getStorageImplementation().deleteJob(job))
+            .syncLast((i) -> player.sendMessage("§aSuccessfully deleted job.")
+        ).execute();
     }
 
     //todo edit command

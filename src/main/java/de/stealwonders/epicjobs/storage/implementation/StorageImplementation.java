@@ -31,7 +31,7 @@ public interface StorageImplementation {
 
     void deleteProject(Project project);
 
-    Job createAndLoadJob(UUID creator, UUID claimant, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory);
+    Job createAndLoadJob(UUID creator, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory);
 
     Job loadJob(int id);
 

@@ -3,6 +3,8 @@ package de.stealwonders.epicjobs.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
@@ -44,14 +46,27 @@ public class ProjectCommand extends BaseCommand {
     @Subcommand("create")
     @CommandPermission("epicjobs.command.project.create")
     public void onCreate(final Player player, @Single final String name, @Optional final Player leader) {
-        int id = plugin.getProjectManager().getFreeId();
-        if (plugin.getProjectManager().getProjectByName(name) == null) {
-            Project project = (leader == null) ? new Project(id, name, player) : new Project(id, name, leader);
-            plugin.getProjectManager().addProject(project);
-            player.sendMessage("Successfully created project with id #" + id);
-        } else {
-            player.sendMessage("Cannot create a project with duplicate name.");
-        }
+        EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (plugin.getProjectManager().getProjectByName(name) == null) {
+                    player.sendActionBar("Creating project " + name);
+                    return true;
+                } else {
+                    player.sendMessage("Cannot create a project with duplicate name.");
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .asyncFirst(() -> {
+                Project project = (leader == null) ? plugin.getStorageImplementation().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorageImplementation().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
+                plugin.getProjectManager().addProject(project);
+                return project;
+            })
+            .syncLast((project) -> {
+                String message = (project == null) ? "§cError while creating project. Please contact an administrator." : "§aSuccessfully created project with id #" + project.getId();
+                player.sendMessage(message);
+            })
+            .execute();
     }
 
     @Subcommand("edit")
