@@ -15,11 +15,11 @@ public class ProjectManager {
     public ProjectManager(EpicJobs plugin) {
         System.out.println("----- ProjectManager");
         this.plugin = plugin;
-        projects = new ArrayList<>();
-//        fetchProjects();
-        plugin.getStorageImplementation().loadAllProjects();
+        this.projects = new ArrayList<>();
+    }
 
-        //todo debuging
+    public void firstLoad() {
+        plugin.getStorageImplementation().loadAllProjects();
         for (Project project : projects) {
             System.out.println(project.getId());
             System.out.println(project.getName());
@@ -27,7 +27,6 @@ public class ProjectManager {
             System.out.println(project.getCreationTime());
             System.out.println(project.getLocation());
             System.out.println(project.getProjectStatus());
-
         }
 
     }

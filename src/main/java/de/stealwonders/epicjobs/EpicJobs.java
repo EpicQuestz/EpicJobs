@@ -44,13 +44,13 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     private SettingsFile settingsFile;
 
+    private ProjectManager projectManager;
+    private JobManager jobManager;
+
     private HikariDataSource hikariDataSource = new HikariDataSource();
     private StorageImplementation storageImplementation;
 
     private Set<EpicJobsPlayer> epicJobsPlayers;
-
-    private ProjectManager projectManager;
-    private JobManager jobManager;
 
     private PaperCommandManager commandManager;
 
@@ -62,14 +62,16 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
         settingsFile = new SettingsFile(this);
 
+        projectManager = new ProjectManager(this);
+        jobManager = new JobManager(this);
+
         storageImplementation = new SqlStorage(this, settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration()));
         storageImplementation.init();
+        projectManager.firstLoad();
+        jobManager.firstLoad();
 
         epicJobsPlayers = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.add(new EpicJobsPlayer(player.getUniqueId())));
-
-        projectManager = new ProjectManager(this);
-        jobManager = new JobManager(this);
 
         commandManager = new PaperCommandManager(this);
 

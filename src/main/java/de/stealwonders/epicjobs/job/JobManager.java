@@ -16,11 +16,11 @@ public class JobManager {
     public JobManager(EpicJobs plugin) {
         System.out.println("----- JobManager");
         this.plugin = plugin;
-        jobs = new ArrayList<>();
-//        fetchJobs();
-        plugin.getStorageImplementation().loadAllJobs();
+        this.jobs = new ArrayList<>();
+    }
 
-        //todo debuging
+    public void firstLoad() {
+        plugin.getStorageImplementation().loadAllJobs();
         for (Job job : jobs) {
             System.out.println(job.getId());
             System.out.println(job.getCreator());
@@ -32,6 +32,7 @@ public class JobManager {
             System.out.println(job.getJobStatus());
             System.out.println(job.getJobCategory());
         }
+
     }
 
     public List<Job> getJobs() {
