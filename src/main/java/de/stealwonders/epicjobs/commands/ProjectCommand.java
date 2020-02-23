@@ -4,8 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.constants.Messages;
-import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
 import org.bukkit.Bukkit;
