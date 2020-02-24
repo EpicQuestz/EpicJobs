@@ -19,6 +19,9 @@ public class SqlStorage implements StorageImplementation {
     private static final String PROJECT_SELECT_ALL = "SELECT * FROM project;";
     private static final String JOB_SELECT_ALL = "SELECT * FROM job;";
 
+    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leader = ?, location = ?, projectstatus = ? WHERE id = ?;";
+    private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
+
     private static final String PROJECT_INSERT = "INSERT INTO project(name, leader, location, projectstatus) VALUES (?, ?, ?, ?);";
     private static final String JOB_INSERT = "INSERT INTO job(creator, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?);";
     private static final String GET_ID = "SELECT LAST_INSERT_ID() AS 'id';";
@@ -195,8 +198,33 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public void saveProject(Project project) {
+    public void updateProject(Project project) {
 
+        Connection connection = null;
+
+        try {
+            connection = hikariDataSource.getConnection();
+
+            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE);
+            preparedStatement.setString(1, project.getName());
+            preparedStatement.setString(2, project.getLeader().toString());
+            preparedStatement.setString(3, Utils.serializeLocation(project.getLocation()));
+            preparedStatement.setString(4, project.getProjectStatus().toString());
+            preparedStatement.setInt(5, project.getId());
+            preparedStatement.execute();
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -322,9 +350,38 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public void saveJob(Job job) {
+    public void updateJob(Job job) {
 
+        Connection connection = null;
+
+        try {
+            connection = hikariDataSource.getConnection();
+
+            PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE);
+            preparedStatement.setString(1, job.getClaimant().toString());
+            preparedStatement.setString(2, job.getDescription());
+            preparedStatement.setInt(3, job.getProject().getId());
+            preparedStatement.setString(4, Utils.serializeLocation(job.getLocation()));
+            preparedStatement.setString(5, job.getJobStatus().toString());
+            preparedStatement.setString(6, job.getJobCategory().toString());
+            preparedStatement.setInt(7, job.getId());
+            preparedStatement.execute();
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
+
+
 
     @Override
     public void deleteJob(Job job) {

@@ -27,7 +27,7 @@ public interface StorageImplementation {
 
     void loadAllProjects();
 
-    void saveProject(Project project);
+    void updateProject(Project project);
 
     void deleteProject(Project project);
 
@@ -37,7 +37,7 @@ public interface StorageImplementation {
 
     void loadAllJobs();
 
-    void saveJob(Job job);
+    void updateJob(Job job);
 
     void deleteJob(Job job);
 }
