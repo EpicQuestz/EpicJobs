@@ -5,6 +5,7 @@ import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobStatus;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EpicJobsPlayer {
 
@@ -30,6 +31,16 @@ public class EpicJobsPlayer {
 
     public void removeJob(Job job) {
         jobs.remove(job);
+    }
+
+    public List<Job> getActiveJobs() {
+        List<Job> jobList = new ArrayList<>();
+        for (Job job : jobs) {
+            if (job.getJobStatus() == JobStatus.TAKEN) {
+                jobList.add(job);
+            }
+        }
+        return ImmutableList.copyOf(jobList);
     }
 
     public List<Job> getCompletedJobs() {

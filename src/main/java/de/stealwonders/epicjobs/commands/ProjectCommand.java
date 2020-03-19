@@ -1,6 +1,7 @@
 package de.stealwonders.epicjobs.commands;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 import co.aikar.taskchain.TaskChain;
@@ -27,17 +28,29 @@ public class ProjectCommand extends BaseCommand {
     }
 
     @Default
-    public void onDefault(final CommandSender commandSender) {
-        plugin.getProjectManager().getProjects().forEach(project -> commandSender.sendMessage("#" + project.getId() + " " +  project.getName()));
+    @HelpCommand
+    public void onHelp(final CommandSender commandSender, final CommandHelp commandHelp) {
+        commandHelp.showHelp();
     }
 
     @Subcommand("list")
     public void onList(final CommandSender sender) {
         final List<Project> projects = plugin.getProjectManager().getProjects().stream()
-                .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
-                .collect(Collectors.toList());
+            .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
+            .collect(Collectors.toList());
         if (projects.size() >= 1) {
             projects.forEach(project -> sender.sendMessage("#" + project.getId() + " | " + project.getName()));
+        } else {
+            NO_PROJECTS_AVAILABLE.send(sender);
+        }
+    }
+
+    @Subcommand("list all")
+    @CommandPermission("epicjobs.command.project.listall")
+    public void onListAll(final CommandSender sender) {
+        final List<Project> projects = plugin.getProjectManager().getProjects();
+        if (projects.size() >= 1) {
+            projects.forEach(project -> sender.sendMessage("#" + project.getId() + " | " +  project.getName() + " [" + project.getProjectStatus() + "]"));
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);
         }
@@ -68,6 +81,8 @@ public class ProjectCommand extends BaseCommand {
             })
             .execute();
     }
+
+    //todo: implement, finalize & test
 
     @Subcommand("edit")
     @CommandCompletion("@project *")
@@ -106,11 +121,19 @@ public class ProjectCommand extends BaseCommand {
     @CommandCompletion("@active-project")
     @CommandPermission("epicjobs.command.project.complete")
     public void onComplete(final Player player, final Project project) {
-        if (project.getProjectStatus() != ProjectStatus.COMPLETE) {
-            project.setProjectStatus(ProjectStatus.COMPLETE);
-            ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
-        } else {
-            player.sendMessage("This project is already marked as complete.");
-        }
+        EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (project.getProjectStatus() != ProjectStatus.COMPLETE) {
+                    project.setProjectStatus(ProjectStatus.COMPLETE);
+                    ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
+                    return true;
+                } else {
+                    player.sendMessage("This project is already marked as complete.");
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateProject(project))
+            .execute();
     }
 }

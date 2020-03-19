@@ -34,10 +34,6 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     private static TaskChainFactory taskChainFactory;
 
-    public static <T> TaskChain<T> newChain() {
-        return taskChainFactory.newChain();
-    }
-
     public static <T> TaskChain<T> newSharedChain(String name) {
         return taskChainFactory.newSharedChain(name);
     }
@@ -71,7 +67,11 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         jobManager.firstLoad();
 
         epicJobsPlayers = new HashSet<>();
-        Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.add(new EpicJobsPlayer(player.getUniqueId())));
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
+            loadPlayerJobs(epicJobsPlayer);
+            epicJobsPlayers.add(epicJobsPlayer);
+        });
 
         commandManager = new PaperCommandManager(this);
 
@@ -89,6 +89,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
         Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.remove(getEpicJobsPlayer(player.getUniqueId())));
     }
+
+
+
+    /*  #####  */
 
     //todo put into other class
     private void registerCommandContexts() {
@@ -142,14 +146,19 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         commandManager.getCommandCompletions().registerAsyncCompletion("active-project", c -> {
             List<String> projects;
             projects = projectManager.getProjects().stream()
-                    .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
-                    .map(Project::getName)
-                    .collect(Collectors.toList());
+                .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
+                .map(Project::getName)
+                .collect(Collectors.toList());
             return projects;
         });
     }
 
+    /*  #####  */
+
+
+
     private void registerCommands() {
+        commandManager.enableUnstableAPI("help");
         commandManager.registerCommand(new JobCommand(this));
         commandManager.registerCommand(new ProjectCommand(this));
     }
@@ -175,6 +184,17 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         return null;
     }
 
+    private void loadPlayerJobs(EpicJobsPlayer epicJobsPlayer) {
+        for (Job job : jobManager.getJobs()) {
+            System.out.println("Claimant: " + job.getClaimant() + " > " + epicJobsPlayer.getUuid());
+            if (job.getClaimant() != null) {
+                if (job.getClaimant().equals(epicJobsPlayer.getUuid())) {
+                    epicJobsPlayer.addJob(job);
+                }
+            }
+        }
+    }
+
     public ProjectManager getProjectManager() {
         return projectManager;
     }
@@ -185,7 +205,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        epicJobsPlayers.add(new EpicJobsPlayer(event.getPlayer().getUniqueId()));
+        EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(event.getPlayer().getUniqueId());
+        loadPlayerJobs(epicJobsPlayer);
+        epicJobsPlayers.add(epicJobsPlayer);
     }
 
     @EventHandler

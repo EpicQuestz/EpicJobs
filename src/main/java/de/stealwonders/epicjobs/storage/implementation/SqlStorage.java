@@ -30,28 +30,28 @@ public class SqlStorage implements StorageImplementation {
     private static final String JOB_DELETE = "DELETE FROM job WHERE id = ?;";
 
     private static final String PROJECT_TABLE_CREATE =
-        "CREATE TABLE IF NOT EXISTS project (" +
-        "id INT(11) COLLATE utf8_bin AUTO_INCREMENT PRIMARY KEY," +
-        "name VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-        "leader VARCHAR(36) COLLATE utf8_bin NOT NULL," +
-        "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL," +
-        "location VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-        "projectstatus enum('ACTIVE', 'COMPLETE') NOT NULL" +
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+            "CREATE TABLE IF NOT EXISTS project (" +
+                    "id INT(11) COLLATE utf8_bin AUTO_INCREMENT PRIMARY KEY," +
+                    "name VARCHAR(255) COLLATE utf8_bin NOT NULL," +
+                    "leader VARCHAR(36) COLLATE utf8_bin NOT NULL," +
+                    "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL," +
+                    "location VARCHAR(255) COLLATE utf8_bin NOT NULL," +
+                    "projectstatus enum('ACTIVE', 'COMPLETE') NOT NULL" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 //      "CREATE INDEX IF NOT EXISTS id ON project (id);";
 
     private static final String JOB_TABLE_CREATE =
-        "CREATE TABLE IF NOT EXISTS job (\n" +
-        "id INT(11) AUTO_INCREMENT PRIMARY KEY,\n" +
-        "creator VARCHAR(36) COLLATE utf8_bin NOT NULL,\n" +
-        "claimant VARCHAR(36) COLLATE utf8_bin NULL,\n" +
-        "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
-        "description VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-        "project INT NOT NULL,\n" +
-        "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-        "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'REOPENED', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
-        "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+            "CREATE TABLE IF NOT EXISTS job (\n" +
+                    "id INT(11) AUTO_INCREMENT PRIMARY KEY,\n" +
+                    "creator VARCHAR(36) COLLATE utf8_bin NOT NULL,\n" +
+                    "claimant VARCHAR(36) COLLATE utf8_bin NULL,\n" +
+                    "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
+                    "description VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
+                    "project INT NOT NULL,\n" +
+                    "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
+                    "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'REOPENED', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
+                    "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 //      "CONSTRAINT job_ibfk_1" +
 //      "FOREIGN KEY (project) REFERENCES project (id);" +
 //      "CREATE INDEX IF NOT EXISTS project ON job (project);";
@@ -86,7 +86,7 @@ public class SqlStorage implements StorageImplementation {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if(connection != null) {
+            if (connection != null) {
                 try {
                     connection.close();
                 } catch (SQLException e) {
@@ -358,7 +358,11 @@ public class SqlStorage implements StorageImplementation {
             connection = hikariDataSource.getConnection();
 
             PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE);
-            preparedStatement.setString(1, job.getClaimant().toString());
+            if (job.getClaimant() == null) {
+                preparedStatement.setNull(1, Types.VARCHAR);
+            } else {
+                preparedStatement.setString(1, job.getClaimant().toString());
+            }
             preparedStatement.setString(2, job.getDescription());
             preparedStatement.setInt(3, job.getProject().getId());
             preparedStatement.setString(4, Utils.serializeLocation(job.getLocation()));
@@ -380,8 +384,6 @@ public class SqlStorage implements StorageImplementation {
             }
         }
     }
-
-
 
     @Override
     public void deleteJob(Job job) {
