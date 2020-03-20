@@ -62,10 +62,10 @@ public class ProjectCommand extends BaseCommand {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (plugin.getProjectManager().getProjectByName(name) == null) {
-                    player.sendActionBar("Creating project " + name);
+                    CREATING_PROJECT.sendActionbar(player, name);
                     return true;
                 } else {
-                    player.sendMessage("Cannot create a project with duplicate name.");
+                    CANT_CREATE_PROJECT.send(player);
                     return false;
                 }
             })
@@ -76,7 +76,7 @@ public class ProjectCommand extends BaseCommand {
                 return project;
             })
             .syncLast((project) -> {
-                String message = (project == null) ? "§cError while creating project. Please contact an administrator." : "§aSuccessfully created project with id #" + project.getId();
+                String message = (project == null) ? "§cError while creating project. Please contact an administrator." : SUCCESSFULLY_CREATED_PROJECT.toString(project.getId());
                 player.sendMessage(message);
             })
             .execute();
@@ -128,7 +128,7 @@ public class ProjectCommand extends BaseCommand {
                     ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
                     return true;
                 } else {
-                    player.sendMessage("This project is already marked as complete.");
+                    PROJECT_ALREADY_COMPLETE.send(player);
                     return false;
                 }
             })

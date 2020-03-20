@@ -56,7 +56,7 @@ public class JobCommand extends BaseCommand {
         if (jobs.size() >= 1) {
             jobs.forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
         } else {
-            NO_JOBS.send(player);
+            NO_JOBS_AVAILABLE.send(player);
         }
     }
 
@@ -81,7 +81,7 @@ public class JobCommand extends BaseCommand {
                     JOB_DOESNT_EXIST.send(player);
                     return false;
                 } else {
-                    if (job.getJobStatus() == JobStatus.OPEN || job.getJobStatus() == JobStatus.REOPENED) {
+                    if (job.getJobStatus() == JobStatus.OPEN) {
                         job.claim(epicJobsPlayer);
                         ANNOUNCE_JOB_TAKEN.broadcast(player.getName(), job.getId());
                         return true;
@@ -218,17 +218,19 @@ public class JobCommand extends BaseCommand {
             .execute();
     }
 
+    //todo !!!!!!!!!!!
+
     @Subcommand("reopen")
     @CommandPermission("epicjobs.command.job.reopen")
     public void onReopen(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus() == JobStatus.DONE) {
-                    job.setJobStatus(JobStatus.REOPENED);
+                    job.setJobStatus(JobStatus.OPEN);
                     return true;
                 } else if (job.getJobStatus() == JobStatus.COMPLETE) {
                     EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
-                    job.setJobStatus(JobStatus.REOPENED);
+                    job.setJobStatus(JobStatus.OPEN);
                     job.setClaimant(null);
                     if (epicJobsPlayer != null) {
                         epicJobsPlayer.removeJob(job);
@@ -250,7 +252,7 @@ public class JobCommand extends BaseCommand {
     public void onUnassign(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus() == JobStatus.TAKEN || job.getJobStatus() == JobStatus.REOPENED) {
+                if (job.getJobStatus() == JobStatus.TAKEN) {
                     EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
                     job.setClaimant(null);
                     if (epicJobsPlayer != null) {
@@ -276,8 +278,8 @@ public class JobCommand extends BaseCommand {
                 if (job.getJobStatus() == JobStatus.OPEN) {
                     EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId());
                     job.claim(epicJobsPlayer);
-                    player.sendMessage("You have assigned " + target.getName() + "to job #" + job.getId());
-                    target.sendMessage("You have been assigned job #" + job.getId());
+                    HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
+                    HAS_BEEN_ASSIGNED_JOB.send(target, job.getId());
                     return true;
                 } else {
                     JOB_CANT_BE_ASSIGNED.send(player);
@@ -296,7 +298,7 @@ public class JobCommand extends BaseCommand {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (project.getProjectStatus() == ProjectStatus.ACTIVE) {
-                    player.sendActionBar("Creating job");
+                    CREATING_JOB.sendActionbar(player);
                     return true;
                 } else {
                     PROJECT_ALREADY_COMPLETE.send(player);
@@ -310,7 +312,7 @@ public class JobCommand extends BaseCommand {
                 return job;
             })
             .syncLast((job) -> {
-                String message = (job == null) ? "§cError while creating job. Please contact an administrator." : "§aSuccessfully created job with id #" + job.getId();
+                String message = (job == null) ? "§cError while creating job. Please contact an administrator." : SUCCESSFULLY_CREATED_JOB.toString(job.getId());
                 player.sendMessage(message);
             })
             .execute();
@@ -327,10 +329,10 @@ public class JobCommand extends BaseCommand {
                 if (epicJobsPlayer != null) {
                     epicJobsPlayer.removeJob(job);
                 }
-                player.sendActionBar("Removing job #" + job.getId());
+                REMOVING_JOB.sendActionbar(player, job.getId());
             })
             .async(() -> plugin.getStorageImplementation().deleteJob(job))
-            .syncLast((i) -> player.sendMessage("§aSuccessfully deleted job.")
+            .syncLast((i) -> SUCCESSFULLY_REMOVED_JOB.send(player)
         ).execute();
     }
 
