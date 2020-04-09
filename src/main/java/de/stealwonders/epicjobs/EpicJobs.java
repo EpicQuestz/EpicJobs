@@ -1,34 +1,28 @@
 package de.stealwonders.epicjobs;
 
-import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.zaxxer.hikari.HikariDataSource;
-import de.stealwonders.epicjobs.commands.JobCommand;
-import de.stealwonders.epicjobs.commands.ProjectCommand;
-import de.stealwonders.epicjobs.constants.Messages;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobManager;
-import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectManager;
-import de.stealwonders.epicjobs.project.ProjectStatus;
 import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
@@ -47,8 +41,6 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     private StorageImplementation storageImplementation;
 
     private Set<EpicJobsPlayer> epicJobsPlayers;
-
-    private PaperCommandManager commandManager;
 
     @Override
     public void onEnable() {
@@ -73,11 +65,6 @@ public final class EpicJobs extends JavaPlugin implements Listener {
             epicJobsPlayers.add(epicJobsPlayer);
         });
 
-        commandManager = new PaperCommandManager(this);
-
-        registerCommandContexts();
-        registerCommandCompletion();
-        registerCommands();
         registerListeners();
     }
 
@@ -87,80 +74,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
         storageImplementation.shutdown();
 
-        Bukkit.getOnlinePlayers().forEach(player -> epicJobsPlayers.remove(getEpicJobsPlayer(player.getUniqueId())));
-    }
-
-
-
-    /*  #####  */
-
-    //todo put into other class
-    private void registerCommandContexts() {
-        commandManager.getCommandContexts().registerContext(Job.class, c -> {
-            String number = c.popFirstArg();
-            try {
-                int id = Integer.parseInt(number);
-                Job job = jobManager.getJobById(id);
-                if (job != null) {
-                    return job;
-                } else {
-                    throw new InvalidCommandArgument(Messages.JOB_DOESNT_EXIST.toString(), false);
-                }
-            } catch (NumberFormatException e) {
-                throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
-            }
-        });
-
-        commandManager.getCommandContexts().registerContext(Project.class, c -> {
-            Project project = getProjectManager().getProjectByName(c.popFirstArg());
-            if (project != null) {
-                return project;
-            } else {
-                throw new InvalidCommandArgument(Messages.PROJECT_DOESNT_EXIST.toString(), false);
-            }
-        });
-    }
-
-    //todo put into other class
-    private void registerCommandCompletion() {
-        commandManager.getCommandCompletions().registerAsyncCompletion("open-job", c -> {
-            List<String> jobs = new ArrayList<>();
-            jobManager.getOpenJobs().forEach(job -> jobs.add(String.valueOf(job.getId())));
-            return jobs;
-        });
-
-        commandManager.getCommandCompletions().registerAsyncCompletion("player-job", c -> {
-            List<String> jobs = new ArrayList<>();
-            Player player = c.getPlayer();
-            EpicJobsPlayer epicJobsPlayer = getEpicJobsPlayer(player.getUniqueId());
-            epicJobsPlayer.getJobs().forEach(job -> jobs.add(String.valueOf(job.getId())));
-            return jobs;
-        });
-
-        commandManager.getCommandCompletions().registerAsyncCompletion("project", c -> {
-            List<String> projects = new ArrayList<>();
-            projectManager.getProjects().forEach(project -> projects.add(project.getName()));
-            return projects;
-        });
-
-        commandManager.getCommandCompletions().registerAsyncCompletion("active-project", c -> {
-            List<String> projects;
-            projects = projectManager.getProjects().stream()
-                .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
-                .map(Project::getName)
-                .collect(Collectors.toList());
-            return projects;
-        });
-    }
-
-    /*  #####  */
-
-
-
-    private void registerCommands() {
-        commandManager.enableUnstableAPI("help");
-        commandManager.registerCommand(new JobCommand(this));
-        commandManager.registerCommand(new ProjectCommand(this));
+        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer)));
     }
 
     private void registerListeners() {
@@ -175,18 +89,17 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         return settingsFile;
     }
 
-    public EpicJobsPlayer getEpicJobsPlayer(UUID uuid) {
+    public Optional<EpicJobsPlayer> getEpicJobsPlayer(UUID uuid) {
         for (EpicJobsPlayer epicJobsPlayer : epicJobsPlayers) {
-            if (epicJobsPlayer.getUuid() == uuid) {
-                return epicJobsPlayer;
+            if (epicJobsPlayer.getUuid().equals(uuid)) {
+                return Optional.of(epicJobsPlayer);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private void loadPlayerJobs(EpicJobsPlayer epicJobsPlayer) {
         for (Job job : jobManager.getJobs()) {
-            System.out.println("Claimant: " + job.getClaimant() + " > " + epicJobsPlayer.getUuid());
             if (job.getClaimant() != null) {
                 if (job.getClaimant().equals(epicJobsPlayer.getUuid())) {
                     epicJobsPlayer.addJob(job);
@@ -212,7 +125,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        epicJobsPlayers.remove(getEpicJobsPlayer(event.getPlayer().getUniqueId()));
+        getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer));
     }
 
 }
