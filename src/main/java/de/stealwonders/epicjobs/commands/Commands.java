@@ -74,7 +74,7 @@ public class Commands {
         commandManager.getCommandCompletions().registerAsyncCompletion("active-project", c -> {
             final List<String> projects;
             projects = plugin.getProjectManager().getProjects().stream()
-                .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
+                .filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
                 .map(Project::getName)
                 .collect(Collectors.toList());
             return projects;
