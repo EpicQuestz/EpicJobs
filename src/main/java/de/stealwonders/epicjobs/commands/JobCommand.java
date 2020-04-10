@@ -39,7 +39,7 @@ public class JobCommand extends BaseCommand {
     @Subcommand("list")
     public void onList(final CommandSender sender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-            .filter(job -> job.getJobStatus() == JobStatus.OPEN)
+            .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
             .collect(Collectors.toList());
         if (jobs.size() >= 1) {
             jobs.forEach(job -> sender.sendMessage("#" + job.getId() + " | " + job.getDescription()));
@@ -82,7 +82,7 @@ public class JobCommand extends BaseCommand {
                     JOB_DOESNT_EXIST.send(player);
                     return false;
                 } else {
-                    if (job.getJobStatus() == JobStatus.OPEN) {
+                    if (job.getJobStatus().equals(JobStatus.OPEN)) {
                         if (epicJobsPlayer.isPresent()) {
                             job.claim(epicJobsPlayer.get());
                             ANNOUNCE_JOB_TAKEN.broadcast(player.getName(), job.getId());
@@ -112,7 +112,7 @@ public class JobCommand extends BaseCommand {
                 if (epicJobsPlayer.isPresent()) {
                     if (job == null) {
                         if (jobs.size() == 1) {
-                            if (jobs.get(0).getJobStatus() == JobStatus.TAKEN || jobs.get(0).getJobStatus() == JobStatus.DONE) {
+                            if (jobs.get(0).getJobStatus().equals(JobStatus.TAKEN) || jobs.get(0).getJobStatus().equals(JobStatus.DONE)) {
                                 jobEdited = jobs.get(0);
                                 jobEdited.abandon(epicJobsPlayer.get());
                                 ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobs.get(0).getId());
@@ -126,7 +126,7 @@ public class JobCommand extends BaseCommand {
                         }
                     } else {
                         if (jobs.contains(job)) {
-                            if (jobs.get(0).getJobStatus() == JobStatus.TAKEN || jobs.get(0).getJobStatus() == JobStatus.DONE) {
+                            if (jobs.get(0).getJobStatus().equals(JobStatus.TAKEN) || jobs.get(0).getJobStatus().equals(JobStatus.DONE)) {
                                 job.abandon(epicJobsPlayer.get());
                                 ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), job.getId());
                                 jobEdited = job;
@@ -174,7 +174,7 @@ public class JobCommand extends BaseCommand {
                 if (job == null) {
                     if (jobs.size() == 1) {
                             jobEdited = jobs.get(0);
-                        if (jobEdited.getJobStatus() == JobStatus.TAKEN) {
+                        if (jobEdited.getJobStatus().equals(JobStatus.TAKEN)) {
                             jobEdited.setJobStatus(JobStatus.DONE);
                             ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.get(0).getId());
                         } else {
@@ -187,7 +187,7 @@ public class JobCommand extends BaseCommand {
                     }
                 } else {
                     if (jobs.contains(job)) {
-                        if (job.getJobStatus() == JobStatus.TAKEN) {
+                        if (job.getJobStatus().equals(JobStatus.TAKEN)) {
                             job.setJobStatus(JobStatus.DONE);
                             ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
                             jobEdited = job;
@@ -211,7 +211,7 @@ public class JobCommand extends BaseCommand {
     public void onComplete(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus() == JobStatus.DONE) {
+                if (job.getJobStatus().equals(JobStatus.DONE)) {
                     job.setJobStatus(JobStatus.COMPLETE);
                     JOB_COMPLETED.send(player, job.getId());
                     return true;
@@ -232,10 +232,10 @@ public class JobCommand extends BaseCommand {
     public void onReopen(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus() == JobStatus.DONE) {
+                if (job.getJobStatus().equals(JobStatus.DONE)) {
                     job.setJobStatus(JobStatus.OPEN);
                     return true;
-                } else if (job.getJobStatus() == JobStatus.COMPLETE) {
+                } else if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
                     final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
                     job.setJobStatus(JobStatus.OPEN);
                     job.setClaimant(null);
@@ -259,7 +259,7 @@ public class JobCommand extends BaseCommand {
     public void onUnassign(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus() == JobStatus.TAKEN) {
+                if (job.getJobStatus().equals(JobStatus.TAKEN)) {
                     final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
                     job.setClaimant(null);
                     if (epicJobsPlayer != null) {
@@ -282,7 +282,7 @@ public class JobCommand extends BaseCommand {
     public void onAssign(final Player player, final Job job, final Player target) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus() == JobStatus.OPEN) {
+                if (job.getJobStatus().equals(JobStatus.OPEN)) {
                     final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId()).get();
                     job.claim(epicJobsPlayer);
                     HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
@@ -304,7 +304,7 @@ public class JobCommand extends BaseCommand {
     public void onCreate(final Player player, final Project project, final JobCategory jobCategory, final String description) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (project.getProjectStatus() == ProjectStatus.ACTIVE) {
+                if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
                     CREATING_JOB.sendActionbar(player);
                     return true;
                 } else {

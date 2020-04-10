@@ -34,7 +34,7 @@ public class ProjectCommand extends BaseCommand {
     @Subcommand("list")
     public void onList(final CommandSender sender) {
         final List<Project> projects = plugin.getProjectManager().getProjects().stream()
-            .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
+            .filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
             .collect(Collectors.toList());
         if (projects.size() >= 1) {
             projects.forEach(project -> sender.sendMessage("#" + project.getId() + " | " + project.getName()));
@@ -121,7 +121,7 @@ public class ProjectCommand extends BaseCommand {
     public void onComplete(final Player player, final Project project) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (project.getProjectStatus() != ProjectStatus.COMPLETE) {
+                if (!project.getProjectStatus().equals(ProjectStatus.COMPLETE)) {
                     project.setProjectStatus(ProjectStatus.COMPLETE);
                     ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
                     return true;
