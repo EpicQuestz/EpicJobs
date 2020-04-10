@@ -11,17 +11,15 @@ public class Utils {
     }
 
     public static Location deserializeLocation(final String input) {
+        Location location = null;
         final String[] parts = input.split(" ");
-        if (parts.length != 4) {
-            return null;
-        } else {
+        if (parts.length >= 4) {
             final World world = Bukkit.getWorld(parts[0]);
             if (world != null) {
-                return new Location(world, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
-            } else {
-                return null;
+                location = new Location(world, Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
             }
         }
+        return location;
     }
 
 }
