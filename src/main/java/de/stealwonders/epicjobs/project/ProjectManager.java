@@ -12,7 +12,7 @@ public class ProjectManager {
 
     private List<Project> projects;
 
-    public ProjectManager(EpicJobs plugin) {
+    public ProjectManager(final EpicJobs plugin) {
         System.out.println("----- ProjectManager");
         this.plugin = plugin;
         this.projects = new ArrayList<>();
@@ -20,7 +20,7 @@ public class ProjectManager {
 
     public void firstLoad() {
         plugin.getStorageImplementation().loadAllProjects();
-        for (Project project : projects) {
+        for (final Project project : projects) {
             System.out.println(project.getId());
             System.out.println(project.getName());
             System.out.println(project.getLeader());
@@ -35,8 +35,8 @@ public class ProjectManager {
         return ImmutableList.copyOf(projects);
     }
 
-    public Project getProjectById(int id) {
-        for (Project project : projects) {
+    public Project getProjectById(final int id) {
+        for (final Project project : projects) {
             if (project.getId() == id) {
                 return project;
             }
@@ -44,8 +44,8 @@ public class ProjectManager {
         return null;
     }
 
-    public Project getProjectByName(String name) {
-        for (Project project : projects) {
+    public Project getProjectByName(final String name) {
+        for (final Project project : projects) {
             if (project.getName().equalsIgnoreCase(name)) {
                 return project;
             }
@@ -53,17 +53,17 @@ public class ProjectManager {
         return null;
     }
 
-    public void addProject(Project project) {
+    public void addProject(final Project project) {
         projects.add(project);
     }
 
-    public void removeProject(Project project) {
+    public void removeProject(final Project project) {
         projects.remove(project);
     }
 
     public List<Project> getOpenProjects() {
-        List<Project> projectList = new ArrayList<>();
-        for (Project project : projects) {
+        final List<Project> projectList = new ArrayList<>();
+        for (final Project project : projects) {
             if (project.getProjectStatus() == ProjectStatus.ACTIVE) {
                 projectList.add(project);
             }
@@ -73,11 +73,12 @@ public class ProjectManager {
 
     public int getFreeId() {
         int maxNumber = 0;
-        for (Project project : projects) {
+        for (final Project project : projects) {
             if (project.getId() > maxNumber) {
                 maxNumber = project.getId();
             }
         }
         return maxNumber + 1;
     }
+
 }

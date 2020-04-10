@@ -27,7 +27,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     private static TaskChainFactory taskChainFactory;
 
-    public static <T> TaskChain<T> newSharedChain(String name) {
+    public static <T> TaskChain<T> newSharedChain(final String name) {
         return taskChainFactory.newSharedChain(name);
     }
 
@@ -59,7 +59,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
         epicJobsPlayers = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> {
-            EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
+            final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
             loadPlayerJobs(epicJobsPlayer);
             epicJobsPlayers.add(epicJobsPlayer);
         });
@@ -88,8 +88,8 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         return settingsFile;
     }
 
-    public Optional<EpicJobsPlayer> getEpicJobsPlayer(UUID uuid) {
-        for (EpicJobsPlayer epicJobsPlayer : epicJobsPlayers) {
+    public Optional<EpicJobsPlayer> getEpicJobsPlayer(final UUID uuid) {
+        for (final EpicJobsPlayer epicJobsPlayer : epicJobsPlayers) {
             if (epicJobsPlayer.getUuid().equals(uuid)) {
                 return Optional.of(epicJobsPlayer);
             }
@@ -97,8 +97,8 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         return Optional.empty();
     }
 
-    private void loadPlayerJobs(EpicJobsPlayer epicJobsPlayer) {
-        for (Job job : jobManager.getJobs()) {
+    private void loadPlayerJobs(final EpicJobsPlayer epicJobsPlayer) {
+        for (final Job job : jobManager.getJobs()) {
             if (job.getClaimant() != null) {
                 if (job.getClaimant().equals(epicJobsPlayer.getUuid())) {
                     epicJobsPlayer.addJob(job);
@@ -116,14 +116,14 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(event.getPlayer().getUniqueId());
+    public void onJoin(final PlayerJoinEvent event) {
+        final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(event.getPlayer().getUniqueId());
         loadPlayerJobs(epicJobsPlayer);
         epicJobsPlayers.add(epicJobsPlayer);
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    public void onQuit(final PlayerQuitEvent event) {
         getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer));
     }
 

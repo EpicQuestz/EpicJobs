@@ -18,7 +18,7 @@ public class Commands {
 
     private PaperCommandManager commandManager;
 
-    public Commands(EpicJobs plugin) {
+    public Commands(final EpicJobs plugin) {
         this.commandManager = new PaperCommandManager(plugin);
         registerCommandContexts(plugin);
         registerCommandCompletions(plugin);
@@ -26,24 +26,24 @@ public class Commands {
     }
 
     //todo put into other class
-    private void registerCommandContexts(EpicJobs plugin) {
+    private void registerCommandContexts(final EpicJobs plugin) {
         commandManager.getCommandContexts().registerContext(Job.class, c -> {
-            String number = c.popFirstArg();
+            final String number = c.popFirstArg();
             try {
-                int id = Integer.parseInt(number);
-                Job job = plugin.getJobManager().getJobById(id);
+                final int id = Integer.parseInt(number);
+                final Job job = plugin.getJobManager().getJobById(id);
                 if (job != null) {
                     return job;
                 } else {
                     throw new InvalidCommandArgument(Messages.JOB_DOESNT_EXIST.toString(), false);
                 }
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER, "{num}", number);
             }
         });
 
         commandManager.getCommandContexts().registerContext(Project.class, c -> {
-            Project project = plugin.getProjectManager().getProjectByName(c.popFirstArg());
+            final Project project = plugin.getProjectManager().getProjectByName(c.popFirstArg());
             if (project != null) {
                 return project;
             } else {
@@ -52,28 +52,28 @@ public class Commands {
         });
     }
 
-    private void registerCommandCompletions(EpicJobs plugin) {
+    private void registerCommandCompletions(final EpicJobs plugin) {
         commandManager.getCommandCompletions().registerAsyncCompletion("open-job", c -> {
-            List<String> jobs = new ArrayList<>();
+            final List<String> jobs = new ArrayList<>();
             plugin.getJobManager().getOpenJobs().forEach(job -> jobs.add(String.valueOf(job.getId())));
             return jobs;
         });
 
         commandManager.getCommandCompletions().registerAsyncCompletion("player-job", c -> {
-            List<String> jobs = new ArrayList<>();
-            Player player = c.getPlayer();
+            final List<String> jobs = new ArrayList<>();
+            final Player player = c.getPlayer();
             plugin.getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayer.getJobs().forEach(job -> jobs.add(String.valueOf(job.getId()))));
             return jobs;
         });
 
         commandManager.getCommandCompletions().registerAsyncCompletion("project", c -> {
-            List<String> projects = new ArrayList<>();
+            final List<String> projects = new ArrayList<>();
             plugin.getProjectManager().getProjects().forEach(project -> projects.add(project.getName()));
             return projects;
         });
 
         commandManager.getCommandCompletions().registerAsyncCompletion("active-project", c -> {
-            List<String> projects;
+            final List<String> projects;
             projects = plugin.getProjectManager().getProjects().stream()
                 .filter(project -> project.getProjectStatus() == ProjectStatus.ACTIVE)
                 .map(Project::getName)
@@ -82,7 +82,7 @@ public class Commands {
         });
     }
 
-    private void registerCommands(EpicJobs plugin) {
+    private void registerCommands(final EpicJobs plugin) {
         commandManager.enableUnstableAPI("help");
         commandManager.registerCommand(new JobCommand(plugin));
         commandManager.registerCommand(new ProjectCommand(plugin));

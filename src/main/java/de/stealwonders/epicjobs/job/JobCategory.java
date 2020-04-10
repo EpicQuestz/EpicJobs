@@ -10,8 +10,8 @@ public enum JobCategory {
     REMOVAL,
     OTHER;
 
-    public static JobCategory getJobCategoryByName(String name) {
-        for (JobCategory jobCategory : JobCategory.values()) {
+    public static JobCategory getJobCategoryByName(final String name) {
+        for (final JobCategory jobCategory : JobCategory.values()) {
             if (jobCategory.toString().equalsIgnoreCase(name)) {
                 return jobCategory;
             }

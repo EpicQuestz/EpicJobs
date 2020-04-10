@@ -51,7 +51,7 @@ public class JobCommand extends BaseCommand {
     @Subcommand("list mine")
     public void onListMine(final Player player) {
         final List<Job> jobs = new ArrayList(plugin.getEpicJobsPlayer(player.getUniqueId()).get().getJobs());
-        Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
+        final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
         comparator.thenComparingInt(Job::getId);
         jobs.sort(comparator);
         if (jobs.size() >= 1) {
@@ -236,7 +236,7 @@ public class JobCommand extends BaseCommand {
                     job.setJobStatus(JobStatus.OPEN);
                     return true;
                 } else if (job.getJobStatus() == JobStatus.COMPLETE) {
-                    EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
+                    final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
                     job.setJobStatus(JobStatus.OPEN);
                     job.setClaimant(null);
                     if (epicJobsPlayer != null) {
@@ -260,7 +260,7 @@ public class JobCommand extends BaseCommand {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus() == JobStatus.TAKEN) {
-                    EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
+                    final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
                     job.setClaimant(null);
                     if (epicJobsPlayer != null) {
                         epicJobsPlayer.removeJob(job);
@@ -283,7 +283,7 @@ public class JobCommand extends BaseCommand {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus() == JobStatus.OPEN) {
-                    EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId()).get();
+                    final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId()).get();
                     job.claim(epicJobsPlayer);
                     HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
                     HAS_BEEN_ASSIGNED_JOB.send(target, job.getId());
@@ -314,12 +314,12 @@ public class JobCommand extends BaseCommand {
             })
             .abortIf(false)
             .asyncFirst(() -> {
-                Job job = plugin.getStorageImplementation().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
+                final Job job = plugin.getStorageImplementation().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
                 plugin.getJobManager().addJob(job);
                 return job;
             })
             .syncLast((job) -> {
-                String message = (job == null) ? "§cError while creating job. Please contact an administrator." : SUCCESSFULLY_CREATED_JOB.toString(job.getId());
+                final String message = (job == null) ? "§cError while creating job. Please contact an administrator." : SUCCESSFULLY_CREATED_JOB.toString(job.getId());
                 player.sendMessage(message);
             })
             .execute();
@@ -332,7 +332,7 @@ public class JobCommand extends BaseCommand {
             .sync(() -> {
                 plugin.getJobManager().removeJob(job);
                 job.getProject().removeJob(job);
-                EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
+                final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
                 if (epicJobsPlayer != null) {
                     epicJobsPlayer.removeJob(job);
                 }
@@ -348,7 +348,7 @@ public class JobCommand extends BaseCommand {
     @Subcommand("stats")
     @CommandPermission("epicjobs.command.job.stats")
     public void onStats(final Player player, @co.aikar.commands.annotation.Optional final Player target) {
-        EpicJobsPlayer epicJobsPlayer = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()).get() : plugin.getEpicJobsPlayer(player.getUniqueId()).get();
+        final EpicJobsPlayer epicJobsPlayer = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()).get() : plugin.getEpicJobsPlayer(player.getUniqueId()).get();
         player.sendMessage("Completed jobs: " + epicJobsPlayer.getCompletedJobs().size());
     }
 

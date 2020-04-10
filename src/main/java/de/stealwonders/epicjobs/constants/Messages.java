@@ -77,7 +77,7 @@ public enum Messages {
 
     private String message;
 
-    Messages(String message) {
+    Messages(final String message) {
         this.message = message;
     }
 
@@ -85,35 +85,35 @@ public enum Messages {
         return message;
     }
 
-    public String toString(Object... parts) {
+    public String toString(final Object... parts) {
         return String.format(message, parts);
     }
 
-    public void send(Player player) {
+    public void send(final Player player) {
         player.sendMessage(message);
     }
 
-    public void send(CommandSender sender) {
+    public void send(final CommandSender sender) {
         sender.sendMessage(message);
     }
 
-    public void send(Player player, String replacement) {
+    public void send(final Player player, final String replacement) {
         player.sendMessage(message.replace("%s", replacement));
     }
 
-    public void send(Player player, Object... replacements) {
+    public void send(final Player player, final Object... replacements) {
         player.sendMessage(String.format(message, replacements));
     }
 
-    public void sendActionbar(Player player) {
+    public void sendActionbar(final Player player) {
         player.sendActionBar(message);
     }
 
-    public void sendActionbar(Player player, String replacement) {
+    public void sendActionbar(final Player player, final String replacement) {
         player.sendActionBar(message.replace("%s", replacement));
     }
 
-    public void sendActionbar(Player player, Object... replacements) {
+    public void sendActionbar(final Player player, final Object... replacements) {
         player.sendActionBar(String.format(message, replacements));
     }
 
@@ -121,11 +121,12 @@ public enum Messages {
         Bukkit.broadcastMessage(message);
     }
 
-    public void broadcast(String replacement) {
+    public void broadcast(final String replacement) {
         Bukkit.broadcastMessage(message.replace("%s", replacement));
     }
 
-    public void broadcast(Object... replacements) {
+    public void broadcast(final Object... replacements) {
         Bukkit.broadcastMessage(String.format(message, replacements));
     }
+
 }

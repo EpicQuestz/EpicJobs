@@ -69,12 +69,12 @@ public class ProjectCommand extends BaseCommand {
             })
             .abortIf(false)
             .asyncFirst(() -> {
-                Project project = (leader == null) ? plugin.getStorageImplementation().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorageImplementation().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
+                final Project project = (leader == null) ? plugin.getStorageImplementation().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorageImplementation().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
                 plugin.getProjectManager().addProject(project);
                 return project;
             })
             .syncLast((project) -> {
-                String message = (project == null) ? "§cError while creating project. Please contact an administrator." : SUCCESSFULLY_CREATED_PROJECT.toString(project.getId());
+                final String message = (project == null) ? "§cError while creating project. Please contact an administrator." : SUCCESSFULLY_CREATED_PROJECT.toString(project.getId());
                 player.sendMessage(message);
             })
             .execute();
@@ -96,7 +96,7 @@ public class ProjectCommand extends BaseCommand {
                 player.sendMessage("The project site has been set to your position");
                 break;
             case "LEADER":
-                Player leader = Bukkit.getPlayer(option);
+                final Player leader = Bukkit.getPlayer(option);
                 if (leader != null) {
                     project.setLeader(leader);
                     player.sendMessage("Project leader has been set to " + leader.getName());
@@ -134,4 +134,5 @@ public class ProjectCommand extends BaseCommand {
             .async(() -> plugin.getStorageImplementation().updateProject(project))
             .execute();
     }
+
 }

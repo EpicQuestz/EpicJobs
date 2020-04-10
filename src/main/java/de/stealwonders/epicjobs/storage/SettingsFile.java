@@ -40,11 +40,11 @@ public class SettingsFile {
         }
     }
 
-    public HikariDataSource setupHikari(HikariDataSource hikariDataSource, FileConfiguration settings) {
-        String address = settings.getString(MYSQL_INFO + "address");
-        String database = settings.getString(MYSQL_INFO + "database");
-        String username = settings.getString(MYSQL_INFO + "username");
-        String password = settings.getString(MYSQL_INFO + "password");
+    public HikariDataSource setupHikari(final HikariDataSource hikariDataSource, final FileConfiguration settings) {
+        final String address = settings.getString(MYSQL_INFO + "address");
+        final String database = settings.getString(MYSQL_INFO + "database");
+        final String username = settings.getString(MYSQL_INFO + "username");
+        final String password = settings.getString(MYSQL_INFO + "password");
 
         hikariDataSource.setMaximumPoolSize(10);
         hikariDataSource.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
@@ -57,4 +57,5 @@ public class SettingsFile {
 
         return hikariDataSource;
     }
+
 }

@@ -40,4 +40,5 @@ public interface StorageImplementation {
     void updateJob(Job job);
 
     void deleteJob(Job job);
+
 }

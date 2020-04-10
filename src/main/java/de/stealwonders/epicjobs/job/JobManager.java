@@ -13,7 +13,7 @@ public class JobManager {
     private List<Job> jobs;
 
 
-    public JobManager(EpicJobs plugin) {
+    public JobManager(final EpicJobs plugin) {
         System.out.println("----- JobManager");
         this.plugin = plugin;
         this.jobs = new ArrayList<>();
@@ -21,7 +21,7 @@ public class JobManager {
 
     public void firstLoad() {
         plugin.getStorageImplementation().loadAllJobs();
-        for (Job job : jobs) {
+        for (final Job job : jobs) {
             System.out.println(job.getId());
             System.out.println(job.getCreator());
             System.out.println(job.getClaimant());
@@ -39,8 +39,8 @@ public class JobManager {
         return ImmutableList.copyOf(jobs);
     }
 
-    public Job getJobById(int id) {
-        for (Job job : jobs) {
+    public Job getJobById(final int id) {
+        for (final Job job : jobs) {
             if (job.getId() == id) {
                 return job;
             }
@@ -48,17 +48,17 @@ public class JobManager {
         return null;
     }
 
-    public void addJob(Job job) {
+    public void addJob(final Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(Job job) {
+    public void removeJob(final Job job) {
         jobs.remove(job);
     }
 
     public List<Job> getOpenJobs() {
-        List<Job> jobList = new ArrayList<>();
-        for (Job job : jobs) {
+        final List<Job> jobList = new ArrayList<>();
+        for (final Job job : jobs) {
             if (job.getJobStatus() == JobStatus.OPEN) {
                 jobList.add(job);
             }
@@ -68,11 +68,12 @@ public class JobManager {
 
     public int getFreeId() {
         int maxNumber = 0;
-        for (Job job : jobs) {
+        for (final Job job : jobs) {
             if (job.getId() > maxNumber) {
                 maxNumber = job.getId();
             }
         }
         return maxNumber + 1;
     }
+
 }

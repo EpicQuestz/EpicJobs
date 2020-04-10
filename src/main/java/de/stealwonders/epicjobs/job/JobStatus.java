@@ -9,11 +9,12 @@ public enum JobStatus {
 
     private int weight;
 
-    JobStatus(int weight) {
+    JobStatus(final int weight) {
         this.weight = weight;
     }
 
     public int getWeight() {
         return weight;
     }
+
 }

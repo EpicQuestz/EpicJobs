@@ -59,7 +59,7 @@ public class SqlStorage implements StorageImplementation {
     private EpicJobs plugin;
     private HikariDataSource hikariDataSource;
 
-    public SqlStorage(EpicJobs plugin, HikariDataSource hikariDataSource) {
+    public SqlStorage(final EpicJobs plugin, final HikariDataSource hikariDataSource) {
         this.plugin = plugin;
         this.hikariDataSource = hikariDataSource;
     }
@@ -83,13 +83,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement = connection.prepareStatement(JOB_TABLE_CREATE);
             preparedStatement.execute();
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -102,12 +102,12 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public EpicJobsPlayer loadPlayer(UUID uniqueId) {
+    public EpicJobsPlayer loadPlayer(final UUID uniqueId) {
         return null;
     }
 
     @Override
-    public Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus) {
+    public Project createAndLoadProject(final String name, final UUID leader, final Location location, final ProjectStatus projectStatus) {
 
         Project project = null;
         Connection connection = null;
@@ -125,7 +125,7 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement = connection.prepareStatement(GET_ID);
             preparedStatement.execute();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 project = new Project(resultSet.getInt("id"), name, leader, System.currentTimeMillis(), location, projectStatus);
             }
@@ -133,13 +133,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.close();
             resultSet.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -149,7 +149,7 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public Project loadProject(int id) {
+    public Project loadProject(final int id) {
         return null;
     }
 
@@ -162,21 +162,21 @@ public class SqlStorage implements StorageImplementation {
         try {
             connection = hikariDataSource.getConnection();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_SELECT_ALL);
+            final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_SELECT_ALL);
             preparedStatement.execute();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            final ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
 
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                UUID uniqueId = UUID.fromString(resultSet.getString("leader"));
-                Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
-                Location location = Utils.deserializeLocation(resultSet.getString("location"));
-                ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
+                final int id = resultSet.getInt("id");
+                final String name = resultSet.getString("name");
+                final UUID uniqueId = UUID.fromString(resultSet.getString("leader"));
+                final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
+                final Location location = Utils.deserializeLocation(resultSet.getString("location"));
+                final ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
 
                 if (location != null) {
-                    Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
+                    final Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
                     getPlugin().getProjectManager().addProject(project);
                 }
             }
@@ -184,13 +184,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.close();
             resultSet.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -198,14 +198,14 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public void updateProject(Project project) {
+    public void updateProject(final Project project) {
 
         Connection connection = null;
 
         try {
             connection = hikariDataSource.getConnection();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE);
+            final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE);
             preparedStatement.setString(1, project.getName());
             preparedStatement.setString(2, project.getLeader().toString());
             preparedStatement.setString(3, Utils.serializeLocation(project.getLocation()));
@@ -214,13 +214,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.execute();
             preparedStatement.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -228,25 +228,25 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public void deleteProject(Project project) {
+    public void deleteProject(final Project project) {
 
         Connection connection = null;
 
         try {
             connection = hikariDataSource.getConnection();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_DELETE);
+            final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_DELETE);
             preparedStatement.setInt(1, project.getId());
             preparedStatement.execute();
             preparedStatement.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -254,7 +254,7 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public Job createAndLoadJob(UUID creator, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
+    public Job createAndLoadJob(final UUID creator, final String description, final Project project, final Location location, final JobStatus jobStatus, final JobCategory jobCategory) {
 
         Job job = null;
         Connection connection = null;
@@ -274,7 +274,7 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement = connection.prepareStatement(GET_ID);
             preparedStatement.execute();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 job = new Job(resultSet.getInt("id"), creator, null, System.currentTimeMillis(), description, project, location, jobStatus, jobCategory);
             }
@@ -282,13 +282,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.close();
             resultSet.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -298,7 +298,7 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public Job loadJob(int id) {
+    public Job loadJob(final int id) {
         return null;
     }
 
@@ -310,24 +310,24 @@ public class SqlStorage implements StorageImplementation {
         try {
             connection = hikariDataSource.getConnection();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(JOB_SELECT_ALL);
+            final PreparedStatement preparedStatement = connection.prepareStatement(JOB_SELECT_ALL);
             preparedStatement.execute();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            final ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
 
-                int id = resultSet.getInt("id");
-                UUID creator = UUID.fromString(resultSet.getString("creator"));
-                UUID claimant = resultSet.getObject("claimant") != null ? UUID.fromString(resultSet.getString("claimant")) : null;
-                Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
-                String description = resultSet.getString("description");
-                Project project = plugin.getProjectManager().getProjectById(resultSet.getInt("project"));
-                Location location = Utils.deserializeLocation(resultSet.getString("location"));
-                JobStatus jobStatus = JobStatus.valueOf(resultSet.getString("jobstatus"));
-                JobCategory jobCategory = JobCategory.valueOf(resultSet.getString("jobcategory"));
+                final int id = resultSet.getInt("id");
+                final UUID creator = UUID.fromString(resultSet.getString("creator"));
+                final UUID claimant = resultSet.getObject("claimant") != null ? UUID.fromString(resultSet.getString("claimant")) : null;
+                final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
+                final String description = resultSet.getString("description");
+                final Project project = plugin.getProjectManager().getProjectById(resultSet.getInt("project"));
+                final Location location = Utils.deserializeLocation(resultSet.getString("location"));
+                final JobStatus jobStatus = JobStatus.valueOf(resultSet.getString("jobstatus"));
+                final JobCategory jobCategory = JobCategory.valueOf(resultSet.getString("jobcategory"));
 
                 if (location != null) {
-                    Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
+                    final Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
                     getPlugin().getJobManager().addJob(job);
                 }
 
@@ -336,13 +336,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.close();
             resultSet.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -350,14 +350,14 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public void updateJob(Job job) {
+    public void updateJob(final Job job) {
 
         Connection connection = null;
 
         try {
             connection = hikariDataSource.getConnection();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE);
+            final PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE);
             if (job.getClaimant() == null) {
                 preparedStatement.setNull(1, Types.VARCHAR);
             } else {
@@ -372,13 +372,13 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.execute();
             preparedStatement.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -386,28 +386,29 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public void deleteJob(Job job) {
+    public void deleteJob(final Job job) {
 
         Connection connection = null;
 
         try {
             connection = hikariDataSource.getConnection();
 
-            PreparedStatement preparedStatement = connection.prepareStatement(JOB_DELETE);
+            final PreparedStatement preparedStatement = connection.prepareStatement(JOB_DELETE);
             preparedStatement.setInt(1, job.getId());
             preparedStatement.execute();
             preparedStatement.close();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
+
 }
