@@ -27,7 +27,7 @@ public enum Messages {
     PLAYER_HAS_NO_ACTIVE_JOBS("§cYou have no active jobs."),
 
     // Jobs Complete
-    JOB_COMPLETED("§aJob %s has been marked as complete."),
+    JOB_COMPLETED("§aJob §b#%s§a has been marked as complete."),
     JOB_CANT_BE_COMPLETE("§cA job has to be marked done to complete."),
 
     // Jobs Reopen
