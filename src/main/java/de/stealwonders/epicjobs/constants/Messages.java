@@ -38,13 +38,13 @@ public enum Messages {
     JOB_CANT_BE_UNASSIGNED("§cYou can only un-assign incomplete jobs taken by a player."),
 
     // Jobs Assign,
-    HAS_ASSIGNED_JOB("§6You have assigned %s to job #%s."),
+    HAS_ASSIGNED_JOB("§6You have assigned %s to job §b#%s."),
     JOB_CANT_BE_ASSIGNED("§cYou can only assign available jobs to a player."),
-    HAS_BEEN_ASSIGNED_JOB("§6You have been assigned job #%s."),
+    HAS_BEEN_ASSIGNED_JOB("§6You have been assigned job §b#%s."),
 
     // Jobs Create
     CREATING_JOB("§6Creating job..."), //actionbar
-    SUCCESSFULLY_CREATED_JOB("§aSuccessfully created job with id #%s."),
+    SUCCESSFULLY_CREATED_JOB("§aSuccessfully created job with id §b#%s."),
 
     // Jobs Remove
     REMOVING_JOB("§6Removing job #%s..."), //actionbar
