@@ -7,64 +7,64 @@ import org.bukkit.entity.Player;
 public enum Messages {
 
     // Jobs List & General
-    JOB_DOESNT_EXIST("This job does not exist. Please check again if you entered the correct id."),
-    NO_JOBS_AVAILABLE("There aren't §bany§f jobs available."),
-    PLAYER_HAS_NO_JOBS("You have no claimed jobs."), // could maybe be replaced with NO_JOBS_AVAILABLE
-    PLAYER_HAS_MULITPLE_JOBS("You have more than one job. Please specify a job it to continue."),
-    PLAYER_HASNT_CLAIMED_JOB("You haven't claimed this job."),
+    JOB_DOESNT_EXIST("§cThis job does not exist. Did you enter the correct job ID?"),
+    NO_JOBS_AVAILABLE("§cThere are no jobs available! Check back later."),
+    PLAYER_HAS_NO_JOBS("§cYou have no claimed jobs!\n§6Use /job check to see if there are any available to claim."),
+    PLAYER_HAS_MULITPLE_JOBS("§cYou have more than one job.\n§6Please specify a job to continue."),
+    PLAYER_HASNT_CLAIMED_JOB("§cYou have not claimed this job."),
 
     // Jobs Claim
-    ANNOUNCE_JOB_TAKEN("%s has claimed job #%s"),
-    JOB_NOT_OPEN("This job is not open to be claimed."),
+    ANNOUNCE_JOB_TAKEN("§a%s has claimed job §b#%s."),
+    JOB_NOT_OPEN("§cThis job is not available to be claimed."),
 
     // Jobs Abandon
-    ANNOUNCE_JOB_ABANDONMENT("%s has abandoned job #%s. It is free to be claimed again."),
-    JOB_CANT_BE_ABANDONED("You can only abandon jobs that haven't been completed."),
+    ANNOUNCE_JOB_ABANDONMENT("§c%s has abandoned job §b#%s.\n§aIt is available to be claimed again."),
+    JOB_CANT_BE_ABANDONED("§cYou can only abandon jobs that are incomplete."),
 
     // Jobs Done
-    ANNOUNCE_JOB_DONE("%s has marked job #%s as done."),
-    JOB_HAS_TO_BE_ACTIVE("The job has to be active to be marked done."),
-    PLAYER_HAS_NO_ACTIVE_JOBS("You have §bno active§f jobs."),
+    ANNOUNCE_JOB_DONE("§a%s has marked job #%s as done."),
+    JOB_HAS_TO_BE_ACTIVE("§cThe job has to be active to be marked done."),
+    PLAYER_HAS_NO_ACTIVE_JOBS("§cYou have no active jobs."),
 
     // Jobs Complete
-    JOB_COMPLETED("Job %s has been marked as complete."),
-    JOB_CANT_BE_COMPLETE("A job has to be marked 'done' to complete."),
+    JOB_COMPLETED("§aJob %s has been marked as complete."),
+    JOB_CANT_BE_COMPLETE("§cA job has to be marked done to complete."),
 
     // Jobs Reopen
-    ANNOUNCE_JOB_REOPEN("%s has reopened job #%s."),
-    JOB_NOT_DONE("This job is marked as done."), //????
+    ANNOUNCE_JOB_REOPEN("§6%s has reopened job #%s."),
+    JOB_NOT_DONE("§cThis job is not marked as done or complete."),
 
-    // Jobs Unassign
-    HAS_ASSIGNED_JOB("You have assigned %s to job #%s"),
+    // Jobs Un-assign
+    JOB_CANT_BE_UNASSIGNED("§cYou can only un-assign incomplete jobs taken by a player."),
 
-    // Jobs Assign
-    JOB_CANT_BE_ASSIGNED("You can only assign untaken jobs to a player."),
-    HAS_BEEN_ASSIGNED_JOB("You have been assigned job #%s"),
-    JOB_CANT_BE_UNASSIGNED("You can only unassign uncomplete jobs taken by a player."),
+    // Jobs Assign,
+    HAS_ASSIGNED_JOB("§6You have assigned %s to job #%s."),
+    JOB_CANT_BE_ASSIGNED("§cYou can only assign available jobs to a player."),
+    HAS_BEEN_ASSIGNED_JOB("§6You have been assigned job #%s."),
 
     // Jobs Create
-    CREATING_JOB("Creating job"), //actionbar
-    SUCCESSFULLY_CREATED_JOB("§aSuccessfully created job with id #%s"),
+    CREATING_JOB("§6Creating job..."), //actionbar
+    SUCCESSFULLY_CREATED_JOB("§aSuccessfully created job with id #%s."),
 
     // Jobs Remove
-    REMOVING_JOB("Removing job #%s"), //actionbar
+    REMOVING_JOB("§6Removing job #%s..."), //actionbar
     SUCCESSFULLY_REMOVED_JOB("§aSuccessfully deleted job."),
 
     // Project List & General
-    PROJECT_DOESNT_EXIST("This project does not exist. Please check again if you entered the correct project name."),
-    NO_PROJECTS_AVAILABLE("There are §bno§f active projects to participate in."),
-    PROJECT_ALREADY_COMPLETE("This project is already marked as complete."),
+    PROJECT_DOESNT_EXIST("§cThis project does not exist. Did you enter the correct project name?"),
+    NO_PROJECTS_AVAILABLE("§cThere are no active projects to participate in."),
+    PROJECT_ALREADY_COMPLETE("§cThis project is already marked as complete."),
 
     // Create Project
-    CREATING_PROJECT("Creating project %s"), //actionbar
-    SUCCESSFULLY_CREATED_PROJECT("§aSuccessfully created project with id #%s"),
-    CANT_CREATE_PROJECT("Cannot create a project with duplicate name."),
+    CREATING_PROJECT("§6Creating project %s..."), //actionbar
+    SUCCESSFULLY_CREATED_PROJECT("§aSuccessfully created project with id #%s."),
+    CANT_CREATE_PROJECT("§cCannot create a project with duplicate name."),
 
     // Project Edit
-    PLAYER_NOT_FOUND("Player %s could not be found."),
+    PLAYER_NOT_FOUND("§cPlayer %s could not be found."),
 
     // Project Complete
-    ANNOUNCE_PROJECT_COMPLETION("Project '%s' has been completed!");
+    ANNOUNCE_PROJECT_COMPLETION("§aProject %s has been completed!");
 
 //    /*
 //     * Old unused - maybe needed in the future
