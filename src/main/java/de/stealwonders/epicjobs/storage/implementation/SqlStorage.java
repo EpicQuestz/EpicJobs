@@ -49,7 +49,7 @@ public class SqlStorage implements StorageImplementation {
                     "description VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
                     "project INT NOT NULL,\n" +
                     "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-                    "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'REOPENED', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
+                    "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
                     "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 //      "CONSTRAINT job_ibfk_1" +
