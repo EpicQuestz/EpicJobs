@@ -22,7 +22,7 @@ public enum Messages {
     JOB_CANT_BE_ABANDONED("§cYou can only abandon jobs that are incomplete."),
 
     // Jobs Done
-    ANNOUNCE_JOB_DONE("§a%s has marked job #%s as done."),
+    ANNOUNCE_JOB_DONE("§a%s has marked job §b#%s§a as done."),
     JOB_HAS_TO_BE_ACTIVE("§cThe job has to be active to be marked done."),
     PLAYER_HAS_NO_ACTIVE_JOBS("§cYou have no active jobs."),
 
