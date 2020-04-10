@@ -4,6 +4,7 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.zaxxer.hikari.HikariDataSource;
+import de.stealwonders.epicjobs.commands.Commands;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobManager;
 import de.stealwonders.epicjobs.project.ProjectManager;
@@ -39,6 +40,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     private HikariDataSource hikariDataSource = new HikariDataSource();
     private StorageImplementation storageImplementation;
 
+    private Commands commands;
     private Set<EpicJobsPlayer> epicJobsPlayers;
 
     @Override
@@ -57,6 +59,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         projectManager.firstLoad();
         jobManager.firstLoad();
 
+        commands = new Commands(this);
         epicJobsPlayers = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> {
             final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
