@@ -25,7 +25,6 @@ public class Commands {
         registerCommands(plugin);
     }
 
-    //todo put into other class
     private void registerCommandContexts(final EpicJobs plugin) {
         commandManager.getCommandContexts().registerContext(Job.class, c -> {
             final String number = c.popFirstArg();
