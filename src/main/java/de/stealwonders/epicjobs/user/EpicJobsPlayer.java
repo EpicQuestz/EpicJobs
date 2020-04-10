@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobStatus;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class EpicJobsPlayer {
 
@@ -36,7 +37,7 @@ public class EpicJobsPlayer {
     public List<Job> getActiveJobs() {
         final List<Job> jobList = new ArrayList<>();
         for (final Job job : jobs) {
-            if (job.getJobStatus() == JobStatus.TAKEN) {
+            if (job.getJobStatus().equals(JobStatus.TAKEN)) {
                 jobList.add(job);
             }
         }
@@ -46,7 +47,7 @@ public class EpicJobsPlayer {
     public List<Job> getCompletedJobs() {
         final List<Job> jobList = new ArrayList<>();
         for (final Job job : jobs) {
-            if (job.getJobStatus() == JobStatus.COMPLETE) {
+            if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
                 jobList.add(job);
             }
         }
