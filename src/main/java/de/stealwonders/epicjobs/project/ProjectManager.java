@@ -28,7 +28,6 @@ public class ProjectManager {
             System.out.println(project.getLocation());
             System.out.println(project.getProjectStatus());
         }
-
     }
 
     public List<Project> getProjects() {
@@ -64,21 +63,11 @@ public class ProjectManager {
     public List<Project> getOpenProjects() {
         final List<Project> projectList = new ArrayList<>();
         for (final Project project : projects) {
-            if (project.getProjectStatus() == ProjectStatus.ACTIVE) {
+            if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
                 projectList.add(project);
             }
         }
         return ImmutableList.copyOf(projectList);
-    }
-
-    public int getFreeId() {
-        int maxNumber = 0;
-        for (final Project project : projects) {
-            if (project.getId() > maxNumber) {
-                maxNumber = project.getId();
-            }
-        }
-        return maxNumber + 1;
     }
 
 }

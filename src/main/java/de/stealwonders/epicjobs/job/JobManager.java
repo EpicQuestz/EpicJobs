@@ -12,7 +12,6 @@ public class JobManager {
 
     private List<Job> jobs;
 
-
     public JobManager(final EpicJobs plugin) {
         System.out.println("----- JobManager");
         this.plugin = plugin;
@@ -32,7 +31,6 @@ public class JobManager {
             System.out.println(job.getJobStatus());
             System.out.println(job.getJobCategory());
         }
-
     }
 
     public List<Job> getJobs() {
@@ -59,7 +57,7 @@ public class JobManager {
     public List<Job> getOpenJobs() {
         final List<Job> jobList = new ArrayList<>();
         for (final Job job : jobs) {
-            if (job.getJobStatus() == JobStatus.OPEN) {
+            if (job.getJobStatus().equals(JobStatus.OPEN)) {
                 jobList.add(job);
             }
         }
