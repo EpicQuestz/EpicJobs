@@ -46,6 +46,7 @@ public class SettingsFile {
         final String username = settings.getString(MYSQL_INFO + "username");
         final String password = settings.getString(MYSQL_INFO + "password");
 
+        hikariDataSource.setMaxLifetime(8000);
         hikariDataSource.setMaximumPoolSize(10);
         hikariDataSource.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
         hikariDataSource.addDataSourceProperty("serverName", address.split(":")[0]);
