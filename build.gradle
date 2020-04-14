@@ -45,8 +45,8 @@ dependencies {
 import org.apache.tools.ant.filters.ReplaceTokens
 
 shadowJar {
-    relocate 'co.aikar.commands', 'de.stealwonders.epicjobs.acf'
     relocate 'org.mariadb.jdbc', 'de.stealwonders.epicjobs.jdbc'
+    relocate 'co.aikar.commands', 'de.stealwonders.epicjobs.acf'
 }
 
 build.dependsOn shadowJar
