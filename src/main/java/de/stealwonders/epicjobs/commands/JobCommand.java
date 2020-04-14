@@ -61,6 +61,19 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("list done")
+    @CommandPermission("epicjobs.command.job.listdone")
+    public void onListDone(final CommandSender sender) {
+        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+            .filter(job -> job.getJobStatus().equals(JobStatus.DONE))
+            .collect(Collectors.toList());
+        if (jobs.size() >= 1) {
+            jobs.forEach(job -> sender.sendMessage("#" + job.getId() + " | " +  job.getProject().getName() + ": " + job.getJobCategory() + " '" + job.getDescription() + "' [" + job.getClaimant() + " " +  job.getJobStatus() + "]"));
+        } else {
+            NO_JOBS_AVAILABLE.send(sender);
+        }
+    }
+
     @Subcommand("list all")
     @CommandPermission("epicjobs.command.job.listall")
     public void onListAll(final CommandSender sender) {
