@@ -37,7 +37,7 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
     compileOnly 'com.google.guava:guava:28.0-jre'
     compile 'com.zaxxer:HikariCP:3.4.2'
-    compile 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
+    compile 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
     compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
     compile 'co.aikar:taskchain-bukkit:3.7.2'
     compile 'net.kyori:text-adapter-bukkit:3.0.3'
@@ -46,6 +46,7 @@ dependencies {
 import org.apache.tools.ant.filters.ReplaceTokens
 
 shadowJar {
+    relocate 'com.zaxxer.hikari', 'de.stealwonders.epicjobs.hikari'
     relocate 'org.mariadb.jdbc', 'de.stealwonders.epicjobs.jdbc'
     relocate 'co.aikar.commands', 'de.stealwonders.epicjobs.acf'
 }
