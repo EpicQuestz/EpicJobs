@@ -98,7 +98,8 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void shutdown() {
-        System.out.println("This does nothing: shutdown");
+        hikariDataSource.close();
+        System.out.println("Shutting down SQL data storage...");
     }
 
     @Override
