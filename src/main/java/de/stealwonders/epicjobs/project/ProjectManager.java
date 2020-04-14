@@ -13,21 +13,12 @@ public class ProjectManager {
     private List<Project> projects;
 
     public ProjectManager(final EpicJobs plugin) {
-        System.out.println("----- ProjectManager");
         this.plugin = plugin;
         this.projects = new ArrayList<>();
     }
 
     public void firstLoad() {
         plugin.getStorageImplementation().loadAllProjects();
-        for (final Project project : projects) {
-            System.out.println(project.getId());
-            System.out.println(project.getName());
-            System.out.println(project.getLeader());
-            System.out.println(project.getCreationTime());
-            System.out.println(project.getLocation());
-            System.out.println(project.getProjectStatus());
-        }
     }
 
     public List<Project> getProjects() {

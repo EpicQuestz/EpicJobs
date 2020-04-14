@@ -13,24 +13,12 @@ public class JobManager {
     private List<Job> jobs;
 
     public JobManager(final EpicJobs plugin) {
-        System.out.println("----- JobManager");
         this.plugin = plugin;
         this.jobs = new ArrayList<>();
     }
 
     public void firstLoad() {
         plugin.getStorageImplementation().loadAllJobs();
-        for (final Job job : jobs) {
-            System.out.println(job.getId());
-            System.out.println(job.getCreator());
-            System.out.println(job.getClaimant());
-            System.out.println(job.getCreationTime());
-            System.out.println(job.getDescription());
-            System.out.println(job.getProject().getName());
-            System.out.println(job.getLocation());
-            System.out.println(job.getJobStatus());
-            System.out.println(job.getJobCategory());
-        }
     }
 
     public List<Job> getJobs() {
