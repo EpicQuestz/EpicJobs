@@ -72,6 +72,25 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("log")
+    public void onLog(final Player player) {
+        Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+        if (epicJobsPlayer.isPresent()) {
+            final List<Job> jobs = epicJobsPlayer.get().getJobs();
+            jobs.forEach(job -> {
+                if (job.getJobStatus().equals(JobStatus.TAKEN)) {
+                    jobs.remove(job);
+                }
+            });
+            jobs.sort(Comparator.comparingInt(Job::getId).reversed());
+            if (jobs.size() >= 1) {
+                jobs.forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
+            } else {
+                NO_JOBS_AVAILABLE.send(player);
+            }
+        }
+    }
+
     @Subcommand("claim|c")
     @CommandCompletion("@open-job")
     public void onClaim(final Player player, final Job job) {
@@ -232,7 +251,7 @@ public class JobCommand extends BaseCommand {
     public void onReopen(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus().equals(JobStatus.DONE)) {
+                if (job.getJobStatus().equals(JobStatus.DONE)) { //todo: is this usefull?
                     job.setJobStatus(JobStatus.OPEN);
                     return true;
                 } else if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
