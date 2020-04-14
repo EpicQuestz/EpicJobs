@@ -104,6 +104,17 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("info")
+    public void onInfo(final CommandSender sender, Job job) {
+        sender.sendMessage(String.format("Job #%s @ §s x:%s y:%s z:%s",
+            job.getLocation().getWorld().getName(),
+            job.getLocation().getBlockX(),
+            job.getLocation().getBlockY(),
+            job.getLocation().getBlockZ())
+        );
+        sender.sendMessage(job.getDescription());
+    }
+
     @Subcommand("claim|c")
     @CommandCompletion("@open-job")
     public void onClaim(final Player player, final Job job) {
