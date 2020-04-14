@@ -128,8 +128,8 @@ public class JobCommand extends BaseCommand {
                     jobs.remove(job);
                 }
             });
-            jobs.sort(Comparator.comparingInt(Job::getId).reversed());
             if (jobs.size() >= 1) {
+                jobs.sort(Comparator.comparingInt(Job::getId).reversed());
                 jobs.stream().limit(20).forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
             } else {
                 NO_JOBS_AVAILABLE.send(player);
