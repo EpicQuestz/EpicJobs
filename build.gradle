@@ -40,6 +40,7 @@ dependencies {
     compile 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
     compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
     compile 'co.aikar:taskchain-bukkit:3.7.2'
+    compile 'net.kyori:text-adapter-bukkit:3.0.3'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
