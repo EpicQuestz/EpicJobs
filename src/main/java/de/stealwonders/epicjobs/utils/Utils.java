@@ -1,12 +1,15 @@
 package de.stealwonders.epicjobs.utils;
 
+import de.stealwonders.epicjobs.job.Job;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class Utils {
 
-    public static String serializeLocation(final Location location) {
+    public static String serializeLocation(@NonNull final Location location) {
         return location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ();
     }
 
@@ -20,6 +23,10 @@ public class Utils {
             }
         }
         return location;
+    }
+
+    public static String shortenDescription(@NonNull Job job) {
+        return StringUtils.abbreviate(job.getDescription(), 100);
     }
 
 }

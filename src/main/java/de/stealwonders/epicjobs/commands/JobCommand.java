@@ -10,6 +10,7 @@ import de.stealwonders.epicjobs.job.JobStatus;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import de.stealwonders.epicjobs.utils.Utils;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
@@ -61,8 +62,8 @@ public class JobCommand extends BaseCommand {
                             job.getLocation().getBlockY(),
                             job.getLocation().getBlockZ()
                         )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-                    .append(TextComponent.of("Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString()).color(TextColor.YELLOW)).append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
-                    .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(job.getDescription()).color(TextColor.YELLOW))
+                    .append(TextComponent.of("Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString() + "\n").color(TextColor.YELLOW))
+                    .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
                     .build();
                 TextAdapter.sendComponent(sender, text);
                 sender.sendMessage("");
