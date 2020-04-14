@@ -46,6 +46,7 @@ public class JobCommand extends BaseCommand {
     public void onList(final CommandSender sender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
+            .limit(20)
             .collect(Collectors.toList());
         if (jobs.size() >= 1) {
             jobs.forEach(job -> sender.sendMessage("#" + job.getId() + " | " + job.getDescription()));
@@ -54,16 +55,19 @@ public class JobCommand extends BaseCommand {
         }
     }
 
-    @Subcommand("list mine")
+    @Subcommand("list mine|mine")
     public void onListMine(final Player player) {
-        final List<Job> jobs = new ArrayList(plugin.getEpicJobsPlayer(player.getUniqueId()).get().getJobs());
-        final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
-        comparator.thenComparingInt(Job::getId);
-        jobs.sort(comparator);
-        if (jobs.size() >= 1) {
-            jobs.forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
-        } else {
-            NO_JOBS_AVAILABLE.send(player);
+        Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+        if (epicJobsPlayer.isPresent()) {
+            final List<Job> jobs = epicJobsPlayer.get().getJobs();
+            final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
+            comparator.thenComparingInt(Job::getId);
+            jobs.sort(comparator);
+            if (jobs.size() >= 1) {
+                jobs.stream().limit(20).forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
+            } else {
+                NO_JOBS_AVAILABLE.send(player);
+            }
         }
     }
 
@@ -72,6 +76,7 @@ public class JobCommand extends BaseCommand {
     public void onListDone(final CommandSender sender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.DONE))
+            .limit(20)
             .collect(Collectors.toList());
         if (jobs.size() >= 1) {
             jobs.forEach(job -> sender.sendMessage("#" + job.getId() + " | " +  job.getProject().getName() + ": " + job.getJobCategory() + " '" + job.getDescription() + "' [" + job.getClaimant() + " " +  job.getJobStatus() + "]"));
@@ -83,7 +88,7 @@ public class JobCommand extends BaseCommand {
     @Subcommand("list all")
     @CommandPermission("epicjobs.command.job.listall")
     public void onListAll(final CommandSender sender) {
-        final List<Job> jobs = plugin.getJobManager().getJobs();
+        final List<Job> jobs = plugin.getJobManager().getJobs().stream().limit(20).collect(Collectors.toList());
         if (jobs.size() >= 1) {
             jobs.forEach(job -> sender.sendMessage("#" + job.getId() + " | " +  job.getProject().getName() + ": " + job.getJobCategory() + " '" + job.getDescription() + "' [" + job.getClaimant() + " " +  job.getJobStatus() + "]"));
         } else {
@@ -103,7 +108,7 @@ public class JobCommand extends BaseCommand {
             });
             jobs.sort(Comparator.comparingInt(Job::getId).reversed());
             if (jobs.size() >= 1) {
-                jobs.forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
+                jobs.stream().limit(20).forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
             } else {
                 NO_JOBS_AVAILABLE.send(player);
             }
