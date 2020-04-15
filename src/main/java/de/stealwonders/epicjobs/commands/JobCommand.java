@@ -3,6 +3,7 @@ package de.stealwonders.epicjobs.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
+import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobCategory;
@@ -62,7 +63,7 @@ public class JobCommand extends BaseCommand {
                             job.getLocation().getBlockY(),
                             job.getLocation().getBlockZ()
                         )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-                    .append(TextComponent.of("Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString() + "\n").color(TextColor.YELLOW))
+                    .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW)).append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString() + "\n").color(TextColor.YELLOW))
                     .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
                     .build();
                 TextAdapter.sendComponent(sender, text);
@@ -73,27 +74,46 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("mine")
+    public void onMine(final Player player) {
+        onListMine(player);
+    }
+
     @Subcommand("list mine")
     public void onListMine(final Player player) {
         Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
         if (epicJobsPlayer.isPresent()) {
-            final List<Job> jobs = epicJobsPlayer.get().getJobs();
+            final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
+            comparator.thenComparingInt(Job::getId);
+            List<Job> jobs = epicJobsPlayer.get().getJobs().stream().sorted(comparator).limit(20).collect(Collectors.toList());
             if (jobs.size() >= 1) {
-                final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
-                comparator.thenComparingInt(Job::getId);
-                jobs.sort(comparator);
-                jobs.stream().limit(20).forEach(job -> player.sendMessage("#" + job.getId() + " | " + job.getDescription()));
+                player.sendMessage("");
+                jobs.forEach(job -> {
+                    final Component text = TextComponent.builder()
+                        .content("Job ").append(TextComponent.of("#" + job.getId()).color(TextColor.AQUA)
+                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Show info!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job info " + job.getId()))).append(" @ ").color(TextColor.GOLD)
+                        .append(TextComponent.builder(
+                            String.format("[%s x:%s y:%s z:%s]\n",
+                                job.getLocation().getWorld().getName(),
+                                job.getLocation().getBlockX(),
+                                job.getLocation().getBlockY(),
+                                job.getLocation().getBlockZ()
+                            )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
+                        .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW))
+                        .append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString()).color(TextColor.YELLOW))
+                        .append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
+                        .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
+                        .build();
+                    TextAdapter.sendComponent(player, text);
+                    player.sendMessage("");
+                });
             } else {
                 NO_JOBS_AVAILABLE.send(player);
             }
         }
     }
 
-    @Subcommand("mine")
-    public void onMine(final Player player) {
-        onListMine(player);
-    }
-
+    //todo
     @Subcommand("list done")
     @CommandPermission("epicjobs.command.job.listdone")
     public void onListDone(final CommandSender sender) {
@@ -108,6 +128,7 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    //todo
     @Subcommand("list all")
     @CommandPermission("epicjobs.command.job.listall")
     public void onListAll(final CommandSender sender) {
@@ -119,6 +140,7 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    //todo
     @Subcommand("log")
     public void onLog(final Player player) {
         Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
@@ -149,7 +171,9 @@ public class JobCommand extends BaseCommand {
                     job.getLocation().getBlockY(),
                     job.getLocation().getBlockZ()
                 )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-            .append(TextComponent.of("Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString()).color(TextColor.YELLOW)).append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
+            .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW))
+            .append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString()).color(TextColor.YELLOW))
+            .append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
             .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(job.getDescription()).color(TextColor.YELLOW))
             .build();
         sender.sendMessage("");
