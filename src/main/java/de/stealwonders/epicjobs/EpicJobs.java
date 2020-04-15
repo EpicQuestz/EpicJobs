@@ -4,6 +4,7 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.zaxxer.hikari.HikariDataSource;
+import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.commands.Commands;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobManager;
@@ -18,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -25,6 +27,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
+
+    private static PlayerUUIDCacheAPI playerUuidCache;
 
     private static TaskChainFactory taskChainFactory;
 
@@ -46,6 +50,8 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        playerUuidCache = getServer().getServicesManager().load(PlayerUUIDCacheAPI.class);
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
@@ -82,6 +88,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(this, this);
+    }
+
+    public static @Nullable PlayerUUIDCacheAPI getPlayerUuidCache() {
+        return playerUuidCache;
     }
 
     public StorageImplementation getStorageImplementation() {

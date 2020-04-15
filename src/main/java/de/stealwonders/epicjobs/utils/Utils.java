@@ -1,11 +1,17 @@
 package de.stealwonders.epicjobs.utils;
 
+import de.iani.playerUUIDCache.PlayerUUIDCache;
+import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
+import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.UUID;
 
 public class Utils {
 
@@ -27,6 +33,15 @@ public class Utils {
 
     public static String shortenDescription(@NonNull Job job) {
         return StringUtils.abbreviate(job.getDescription(), 100);
+    }
+
+    public static String getPlayerHolderText(@Nullable UUID uuid) {
+       final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
+        if (playerUUIDCacheAPI != null) {
+            return uuid != null ? playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString()).getName() : "<none>";
+        } else {
+            return "Error fetching username!";
+        }
     }
 
 }
