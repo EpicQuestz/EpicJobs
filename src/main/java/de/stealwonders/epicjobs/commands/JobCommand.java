@@ -3,8 +3,6 @@ package de.stealwonders.epicjobs.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
-import com.google.common.collect.ImmutableList;
-import de.iani.playerUUIDCache.CachedPlayer;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobCategory;
