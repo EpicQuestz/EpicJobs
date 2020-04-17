@@ -60,8 +60,8 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         projectManager = new ProjectManager(this);
         jobManager = new JobManager(this);
 
-        hikariDataSource = new HikariDataSource();
-        storageImplementation = new SqlStorage(this, settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration()));
+        hikariDataSource = settingsFile.setupHikari(new HikariDataSource(), settingsFile.getConfiguration());
+        storageImplementation = new SqlStorage(this, hikariDataSource);
         storageImplementation.init();
         projectManager.firstLoad();
         jobManager.firstLoad();
