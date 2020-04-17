@@ -1,6 +1,5 @@
 package de.stealwonders.epicjobs.utils;
 
-import de.iani.playerUUIDCache.PlayerUUIDCache;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
@@ -31,11 +30,11 @@ public class Utils {
         return location;
     }
 
-    public static String shortenDescription(@NonNull Job job) {
+    public static String shortenDescription(@NonNull final Job job) {
         return StringUtils.abbreviate(job.getDescription(), 100);
     }
 
-    public static String getPlayerHolderText(@Nullable UUID uuid) {
+    public static String getPlayerHolderText(@Nullable final UUID uuid) {
        final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
         if (playerUUIDCacheAPI != null) {
             return uuid != null ? playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString()).getName() : "<none>";
