@@ -60,8 +60,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         projectManager = new ProjectManager(this);
         jobManager = new JobManager(this);
 
-        hikariDataSource = settingsFile.setupHikari(new HikariDataSource(), settingsFile.getConfiguration());
-        storageImplementation = new SqlStorage(this, hikariDataSource);
+        hikariDataSource = new HikariDataSource();
+        settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration());
+        storageImplementation = new SqlStorage(this);
         storageImplementation.init();
         projectManager.firstLoad();
         jobManager.firstLoad();
@@ -92,6 +93,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     public static @Nullable PlayerUUIDCacheAPI getPlayerUuidCache() {
         return playerUuidCache;
+    }
+
+    public HikariDataSource getHikariDataSource() {
+        return hikariDataSource;
     }
 
     public StorageImplementation getStorageImplementation() {

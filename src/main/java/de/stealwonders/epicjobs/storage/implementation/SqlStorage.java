@@ -1,6 +1,5 @@
 package de.stealwonders.epicjobs.storage.implementation;
 
-import com.zaxxer.hikari.HikariDataSource;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobCategory;
@@ -57,11 +56,9 @@ public class SqlStorage implements StorageImplementation {
 //      "CREATE INDEX IF NOT EXISTS project ON job (project);";
 
     private EpicJobs plugin;
-    private HikariDataSource hikariDataSource;
 
-    public SqlStorage(final EpicJobs plugin, final HikariDataSource hikariDataSource) {
+    public SqlStorage(final EpicJobs plugin) {
         this.plugin = plugin;
-        this.hikariDataSource = hikariDataSource;
     }
 
     @Override
@@ -75,7 +72,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_TABLE_CREATE);
             preparedStatement.execute();
@@ -98,7 +95,7 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void shutdown() {
-        hikariDataSource.close();
+        plugin.getHikariDataSource().close();
         System.out.println("Shutting down SQL data storage...");
     }
 
@@ -114,7 +111,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_INSERT);
             preparedStatement.setString(1, name);
@@ -161,14 +158,13 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_SELECT_ALL);
             preparedStatement.execute();
 
             final ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-
                 final int id = resultSet.getInt("id");
                 final String name = resultSet.getString("name");
                 final UUID uniqueId = UUID.fromString(resultSet.getString("leader"));
@@ -204,7 +200,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE);
             preparedStatement.setString(1, project.getName());
@@ -234,7 +230,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_DELETE);
             preparedStatement.setInt(1, project.getId());
@@ -261,7 +257,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             PreparedStatement preparedStatement = connection.prepareStatement(JOB_INSERT);
             preparedStatement.setString(1, creator.toString());
@@ -309,7 +305,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(JOB_SELECT_ALL);
             preparedStatement.execute();
@@ -356,7 +352,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE);
             if (job.getClaimant() == null) {
@@ -392,7 +388,7 @@ public class SqlStorage implements StorageImplementation {
         Connection connection = null;
 
         try {
-            connection = hikariDataSource.getConnection();
+            connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(JOB_DELETE);
             preparedStatement.setInt(1, job.getId());
