@@ -31,7 +31,8 @@ public enum Messages {
     JOB_CANT_BE_COMPLETE("§cA job has to be marked done to complete."),
 
     // Jobs Reopen
-    ANNOUNCE_JOB_REOPEN("§6%s has reopened job #%s."),
+    ANNOUNCE_JOB_REOPEN("§6%s has reopened job §b#%s."),
+    JOB_REOPEN("§aRe-opened job §b#%s§a for player %s to make edits."),
     JOB_NOT_DONE("§cThis job is not marked as done or complete."),
 
     // Jobs Un-assign
