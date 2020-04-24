@@ -6,7 +6,8 @@ authors: [StealWonders]
 description: Helps manage builder tasks and jobs.
 website: www.stealwonders.de
 
-depend: [Multiverse-Core, PlayerUUIDCache]
+depend: [PlayerUUIDCache]
+softdepend: [Multiverse-Core]
 
 commands:
   # handled by the Aikar annotation command framework (ACF).
