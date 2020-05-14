@@ -41,38 +41,17 @@ public class JobCommand extends BaseCommand {
 
     @Default
     @HelpCommand
-    public void onHelp(final CommandSender commandSender, final CommandHelp commandHelp) {
+    public void onHelp(final CommandHelp commandHelp) {
         commandHelp.showHelp();
     }
 
     @Subcommand("list")
-    public void onList(final CommandSender sender) {
+    public void onList(final CommandSender commandSender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
             .limit(20)
             .collect(Collectors.toList());
-        if (jobs.size() >= 1) {
-            sender.sendMessage("");
-            jobs.forEach(job -> {
-                final Component text = TextComponent.builder()
-                    .content("Job ").append(TextComponent.of("#" + job.getId()).color(TextColor.AQUA)
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Show info!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job info " + job.getId()))).append(" @ ").color(TextColor.GOLD)
-                    .append(TextComponent.builder(
-                        String.format("[%s x:%s y:%s z:%s]\n",
-                            job.getLocation().getWorld().getName(),
-                            job.getLocation().getBlockX(),
-                            job.getLocation().getBlockY(),
-                            job.getLocation().getBlockZ()
-                        )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-                    .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW)).append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString() + "\n").color(TextColor.YELLOW))
-                    .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
-                    .build();
-                TextAdapter.sendComponent(sender, text);
-                sender.sendMessage("");
-            });
-        } else {
-            NO_JOBS_AVAILABLE.send(sender);
-        }
+        sendJobList(commandSender, jobs);
     }
 
     @Subcommand("mine")
@@ -87,73 +66,40 @@ public class JobCommand extends BaseCommand {
             final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
             comparator.thenComparingInt(Job::getId);
             final List<Job> jobs = epicJobsPlayer.get().getJobs().stream().sorted(comparator).limit(20).collect(Collectors.toList());
-            if (jobs.size() >= 1) {
-                player.sendMessage("");
-                jobs.forEach(job -> {
-                    final Component text = TextComponent.builder()
-                        .content("Job ").append(TextComponent.of("#" + job.getId()).color(TextColor.AQUA)
-                        .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Show info!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job info " + job.getId()))).append(" @ ").color(TextColor.GOLD)
-                        .append(TextComponent.builder(
-                            String.format("[%s x:%s y:%s z:%s]\n",
-                                job.getLocation().getWorld().getName(),
-                                job.getLocation().getBlockX(),
-                                job.getLocation().getBlockY(),
-                                job.getLocation().getBlockZ()
-                            )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-                        .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW))
-                        .append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString()).color(TextColor.YELLOW))
-                        .append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
-                        .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
-                        .build();
-                    TextAdapter.sendComponent(player, text);
-                    player.sendMessage("");
-                });
-            } else {
-                NO_JOBS_AVAILABLE.send(player);
-            }
+            sendJobList(player, jobs);
         }
     }
 
+    @Subcommand("list project")
+    @CommandCompletion("@project")
+    public void onListProject(final CommandSender commandSender, final Project project) {
+        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+            .filter(job -> job.getProject().equals(project))
+            .limit(20)
+            .collect(Collectors.toList());
+        sendJobList(commandSender, jobs);
+    }
+
     @Subcommand("list done")
-    @CommandPermission("epicjobs.command.job.listdone")
-    public void onListDone(final CommandSender sender) {
+    @CommandPermission("epicjobs.command.job.list.done")
+    public void onListDone(final CommandSender commandSender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.DONE))
             .limit(20)
             .collect(Collectors.toList());
-        if (jobs.size() >= 1) {
-            sender.sendMessage("");
-            jobs.forEach(job -> {
-                final Component text = TextComponent.builder()
-                    .content("Job ").append(TextComponent.of("#" + job.getId()).color(TextColor.AQUA)
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Show info!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job info " + job.getId()))).append(" @ ").color(TextColor.GOLD)
-                    .append(TextComponent.builder(
-                        String.format("[%s x:%s y:%s z:%s]\n",
-                            job.getLocation().getWorld().getName(),
-                            job.getLocation().getBlockX(),
-                            job.getLocation().getBlockY(),
-                            job.getLocation().getBlockZ()
-                        )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-                    .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW))
-                    .append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString() + "\n").color(TextColor.YELLOW))
-                    .append(TextComponent.of("Leader: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.getPlayerHolderText(job.getCreator())).color(TextColor.YELLOW))
-                    .append(TextComponent.of(" Claimant: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.getPlayerHolderText(job.getClaimant()) + "\n").color(TextColor.YELLOW))
-                    .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
-                    .build();
-                TextAdapter.sendComponent(sender, text);
-                sender.sendMessage("");
-            });
-        } else {
-            NO_JOBS_AVAILABLE.send(sender);
-        }
+        sendJobList(commandSender, jobs);
     }
 
     @Subcommand("list all")
-    @CommandPermission("epicjobs.command.job.listall")
-    public void onListAll(final CommandSender sender) {
+    @CommandPermission("epicjobs.command.job.list.all")
+    public void onListAll(final CommandSender commandSender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream().limit(20).collect(Collectors.toList());
+        sendJobList(commandSender, jobs);
+    }
+
+    private void sendJobList(CommandSender commandSender, List<Job> jobs) {
         if (jobs.size() >= 1) {
-            sender.sendMessage("");
+            commandSender.sendMessage("");
             jobs.forEach(job -> {
                 final Component text = TextComponent.builder()
                     .content("Job ").append(TextComponent.of("#" + job.getId()).color(TextColor.AQUA)
@@ -165,16 +111,14 @@ public class JobCommand extends BaseCommand {
                             job.getLocation().getBlockY(),
                             job.getLocation().getBlockZ()
                         )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-                    .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW))
-                    .append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString()).color(TextColor.YELLOW))
-                    .append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
+                    .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW)).append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString() + "\n").color(TextColor.YELLOW))
                     .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.shortenDescription(job)).color(TextColor.YELLOW))
                     .build();
-                TextAdapter.sendComponent(sender, text);
-                sender.sendMessage("");
+                TextAdapter.sendComponent(commandSender, text);
+                commandSender.sendMessage("");
             });
         } else {
-            NO_JOBS_AVAILABLE.send(sender);
+            NO_JOBS_AVAILABLE.send(commandSender);
         }
     }
 
