@@ -8,12 +8,20 @@ import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.commands.Commands;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobManager;
+import de.stealwonders.epicjobs.job.JobStatus;
 import de.stealwonders.epicjobs.project.ProjectManager;
 import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import net.kyori.text.TextComponent;
+import net.kyori.text.adapter.bukkit.TextAdapter;
+import net.kyori.text.event.ClickEvent;
+import net.kyori.text.event.HoverEvent;
+import net.kyori.text.format.TextColor;
+import net.kyori.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -22,9 +30,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
@@ -136,14 +146,32 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
-        final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(event.getPlayer().getUniqueId());
+        final Player player = event.getPlayer();
+        final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
         loadPlayerJobs(epicJobsPlayer);
         epicJobsPlayers.add(epicJobsPlayer);
+        if (player.hasPermission("epicjobs.command.job.list.done")) {
+            List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
+            if (jobs.size() >= 1) {
+                sendJoinMessage(player, jobs.size());
+            }
+        }
     }
 
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
         getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer));
+    }
+
+    private void sendJoinMessage(final Player player, final int jobCount) {
+        TextComponent textComponent = TextComponent.builder()
+            .content("There are ").color(TextColor.YELLOW)
+            .append(TextComponent.of(jobCount).color(TextColor.GOLD))
+            .append(TextComponent.of(" job(s) marked as done. Use ").color(TextColor.YELLOW))
+            .append(TextComponent.of("/jobs list done").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Review jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list done")))
+            .append(TextComponent.of(" to review them.").color(TextColor.YELLOW))
+            .build();
+        TextAdapter.sendComponent(player, textComponent);
     }
 
 }
