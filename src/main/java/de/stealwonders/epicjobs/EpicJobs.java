@@ -151,12 +151,12 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         loadPlayerJobs(epicJobsPlayer);
         epicJobsPlayers.add(epicJobsPlayer);
         if (player.hasPermission("epicjobs.command.job.list.done")) {
-            List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
+            final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
             if (jobs.size() >= 1) {
                 sendReviewerJoinMessage(player, jobs.size());
             }
         } else if (player.hasPermission("epicjobs.command.job.claim")) {
-            List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).collect(Collectors.toList());
+            final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).collect(Collectors.toList());
             if (jobs.size() >= 1) {
                 sendPlayerJoinMessage(player, jobs.size());
             }
@@ -169,7 +169,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     }
 
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {
-        TextComponent textComponent = TextComponent.builder()
+        final TextComponent textComponent = TextComponent.builder()
             .content("There are ").color(TextColor.YELLOW)
             .append(TextComponent.of(jobCount).color(TextColor.GOLD))
             .append(TextComponent.of(" job(s) marked as done. Use ").color(TextColor.YELLOW))
@@ -180,7 +180,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     }
 
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
-        TextComponent textComponent = TextComponent.builder()
+        final TextComponent textComponent = TextComponent.builder()
             .content("There are ").color(TextColor.YELLOW)
             .append(TextComponent.of(jobCount).color(TextColor.GOLD))
             .append(TextComponent.of(" job(s) available to be claimed. Use ").color(TextColor.YELLOW))
