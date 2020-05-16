@@ -153,7 +153,12 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         if (player.hasPermission("epicjobs.command.job.list.done")) {
             List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
             if (jobs.size() >= 1) {
-                sendJoinMessage(player, jobs.size());
+                sendReviewerJoinMessage(player, jobs.size());
+            }
+        } else if (player.hasPermission("epicjobs.command.job.claim")) {
+            List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).collect(Collectors.toList());
+            if (jobs.size() >= 1) {
+                sendPlayerJoinMessage(player, jobs.size());
             }
         }
     }
@@ -163,13 +168,24 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer));
     }
 
-    private void sendJoinMessage(final Player player, final int jobCount) {
+    private void sendReviewerJoinMessage(final Player player, final int jobCount) {
         TextComponent textComponent = TextComponent.builder()
             .content("There are ").color(TextColor.YELLOW)
             .append(TextComponent.of(jobCount).color(TextColor.GOLD))
             .append(TextComponent.of(" job(s) marked as done. Use ").color(TextColor.YELLOW))
             .append(TextComponent.of("/jobs list done").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Review jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list done")))
             .append(TextComponent.of(" to review them.").color(TextColor.YELLOW))
+            .build();
+        TextAdapter.sendComponent(player, textComponent);
+    }
+
+    private void sendPlayerJoinMessage(final Player player, final int jobCount) {
+        TextComponent textComponent = TextComponent.builder()
+            .content("There are ").color(TextColor.YELLOW)
+            .append(TextComponent.of(jobCount).color(TextColor.GOLD))
+            .append(TextComponent.of(" job(s) available to be claimed. Use ").color(TextColor.YELLOW))
+            .append(TextComponent.of("/jobs list").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("View jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list")))
+            .append(TextComponent.of(" to find one for yourself.").color(TextColor.YELLOW))
             .build();
         TextAdapter.sendComponent(player, textComponent);
     }
