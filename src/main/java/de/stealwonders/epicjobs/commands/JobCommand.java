@@ -71,6 +71,16 @@ public class JobCommand extends BaseCommand {
         }
     }
 
+    @Subcommand("list near")
+    public void onListNear(final Player player, @Default("32") @co.aikar.commands.annotation.Optional final int radius) {
+        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+            .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
+            .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < radius * radius)
+            .limit(20)
+            .collect(Collectors.toList());
+        sendJobList(player, jobs);
+    }
+
     @Subcommand("list project")
     @CommandCompletion("@project")
     public void onListProject(final CommandSender commandSender, final Project project, @co.aikar.commands.annotation.Optional final JobStatus jobStatus, @co.aikar.commands.annotation.Optional final JobCategory jobCategory) {
