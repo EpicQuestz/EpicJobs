@@ -7,14 +7,12 @@ import co.aikar.commands.annotation.*;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
-import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.event.HoverEvent;
 import net.kyori.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -45,14 +43,14 @@ public class ProjectCommand extends BaseCommand {
             .filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
             .collect(Collectors.toList());
         if (projects.size() >= 1) {
-            List<TextComponent> textComponents = new ArrayList<>();
+            final List<TextComponent> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                TextComponent textComponent = TextComponent.builder(project.getName()).color(TextColor.AQUA)
+                final TextComponent textComponent = TextComponent.builder(project.getName()).color(TextColor.AQUA)
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!")))
                     .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())).build();
                 textComponents.add(textComponent);
             });
-            TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
+            final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
             sender.sendMessage("");
             TextAdapter.sendComponent(sender, message);
             sender.sendMessage("");
@@ -66,9 +64,9 @@ public class ProjectCommand extends BaseCommand {
     public void onListAll(final CommandSender sender) {
         final List<Project> projects = plugin.getProjectManager().getProjects();
         if (projects.size() >= 1) {
-            List<TextComponent> textComponents = new ArrayList<>();
+            final List<TextComponent> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                TextComponent textComponent = TextComponent.builder()
+                final TextComponent textComponent = TextComponent.builder()
                     .append(TextComponent.of(project.getName()).color(TextColor.AQUA)
                     .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!")))
                     .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())))
@@ -76,7 +74,7 @@ public class ProjectCommand extends BaseCommand {
                     .build();
                 textComponents.add(textComponent);
             });
-            TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
+            final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
             sender.sendMessage("");
             TextAdapter.sendComponent(sender, message);
             sender.sendMessage("");
