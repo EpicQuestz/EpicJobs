@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.stealwonders.epicjobs.constants.Messages.*;
 import static de.stealwonders.epicjobs.job.JobStatus.TAKEN;
@@ -72,9 +73,29 @@ public class JobCommand extends BaseCommand {
 
     @Subcommand("list project")
     @CommandCompletion("@project")
-    public void onListProject(final CommandSender commandSender, final Project project) {
+    public void onListProject(final CommandSender commandSender, final Project project, @co.aikar.commands.annotation.Optional final JobStatus jobStatus, @co.aikar.commands.annotation.Optional final JobCategory jobCategory) {
+        Stream<Job> jobStream = plugin.getJobManager().getJobs().stream().filter(job -> job.getProject().equals(project));
+        if (jobStatus != null)
+            jobStream = jobStream.filter(job -> job.getJobStatus().equals(jobStatus));
+        if (jobCategory != null)
+            jobStream = jobStream.filter(job -> job.getJobCategory().equals(jobCategory));
+        final List<Job> jobs = jobStream.limit(20).collect(Collectors.toList());
+        sendJobList(commandSender, jobs);
+    }
+
+    @Subcommand("list status")
+    public void onListProject(final CommandSender commandSender, final JobStatus jobStatus) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-            .filter(job -> job.getProject().equals(project))
+            .filter(job -> job.getJobStatus().equals(jobStatus))
+            .limit(20)
+            .collect(Collectors.toList());
+        sendJobList(commandSender, jobs);
+    }
+
+    @Subcommand("list category")
+    public void onListProject(final CommandSender commandSender, final JobCategory jobCategory) {
+        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+            .filter(job -> job.getJobCategory().equals(jobCategory))
             .limit(20)
             .collect(Collectors.toList());
         sendJobList(commandSender, jobs);
@@ -97,7 +118,7 @@ public class JobCommand extends BaseCommand {
         sendJobList(commandSender, jobs);
     }
 
-    private void sendJobList(CommandSender commandSender, List<Job> jobs) {
+    private void sendJobList(final CommandSender commandSender, final List<Job> jobs) {
         if (jobs.size() >= 1) {
             commandSender.sendMessage("");
             jobs.forEach(job -> {
@@ -354,7 +375,7 @@ public class JobCommand extends BaseCommand {
                         job.setJobStatus(JobStatus.TAKEN);
                         final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
                         if (playerUUIDCacheAPI != null) {
-                            String username = job.getClaimant() != null ? playerUUIDCacheAPI.getPlayerFromNameOrUUID(job.getClaimant().toString()).getName() : "<none>";
+                            final String username = job.getClaimant() != null ? playerUUIDCacheAPI.getPlayerFromNameOrUUID(job.getClaimant().toString()).getName() : "<none>";
                             JOB_REOPEN.send(player, job.getId(), username);
                             return true;
                         }
