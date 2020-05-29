@@ -109,33 +109,31 @@ public class ProjectCommand extends BaseCommand {
             .execute();
     }
 
-    //todo: implement, finalize & test
-
-    @Subcommand("edit")
-    @CommandCompletion("@project *")
+    @Subcommand("edit name")
+    @CommandCompletion("@project @nothing")
     @CommandPermission("epicjobs.command.project.edit")
-    public void onEdit(final Player player, final Project project, final String context, final @Optional String option) {
-        switch (context.toUpperCase()) {
-            case "NAME":
-                project.setName(option);
-                player.sendMessage("Set name of project to " + option);
-                break;
-            case "LOCATION":
-                project.setLocation(player.getLocation());
-                player.sendMessage("The project site has been set to your position");
-                break;
-            case "LEADER":
-                final Player leader = Bukkit.getPlayer(option);
-                if (leader != null) {
-                    project.setLeader(leader);
-                    player.sendMessage("Project leader has been set to " + leader.getName());
-                } else {
-                    PLAYER_NOT_FOUND.send(player, option);
-                }
-                break;
-            default:
-                throw new InvalidCommandArgument();
-        }
+    public void onEditName(final Player player, final Project project, String name) {
+        project.setName(name);
+        player.sendMessage("Set name of project to " + name);
+        plugin.getStorageImplementation().updateProject(project);
+    }
+
+    @Subcommand("edit location")
+    @CommandCompletion("@project")
+    @CommandPermission("epicjobs.command.project.edit")
+    public void onEditLocation(final Player player, final Project project) {
+        project.setLocation(player.getLocation());
+        player.sendMessage("Updated project location to your current");
+        plugin.getStorageImplementation().updateProject(project);
+    }
+
+    @Subcommand("edit leader")
+    @CommandCompletion("@project @players")
+    @CommandPermission("epicjobs.command.project.edit")
+    public void onEditLeader(final Player player, final Project project, Player leader) {
+        project.setLeader(leader);
+        player.sendMessage("Set project leader to " + leader.getName());
+        plugin.getStorageImplementation().updateProject(project);
     }
 
     @Subcommand("teleport|tp")

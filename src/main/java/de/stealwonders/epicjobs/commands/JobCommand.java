@@ -488,7 +488,23 @@ public class JobCommand extends BaseCommand {
         ).execute();
     }
 
-    //todo edit command
+    @Subcommand("edit description")
+    @CommandCompletion("@job @nothing")
+    @CommandPermission("epicjobs.command.job.edit")
+    public void onEditName(final Player player, final Job job, final String description) {
+        job.setDescription(description);
+        player.sendMessage("Set description of job to: " + description);
+        plugin.getStorageImplementation().updateJob(job);
+    }
+
+    @Subcommand("edit location")
+    @CommandCompletion("@job")
+    @CommandPermission("epicjobs.command.job.edit")
+    public void onEditLocation(final Player player, final Job job) {
+        job.setLocation(player.getLocation());
+        player.sendMessage("Set job location to your current on");
+        plugin.getStorageImplementation().updateJob(job);
+    }
 
     @Subcommand("stats")
     @CommandPermission("epicjobs.command.job.stats")
