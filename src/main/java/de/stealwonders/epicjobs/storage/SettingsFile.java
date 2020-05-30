@@ -2,14 +2,12 @@ package de.stealwonders.epicjobs.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
 import de.stealwonders.epicjobs.EpicJobs;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 public class SettingsFile {
 
@@ -43,41 +41,42 @@ public class SettingsFile {
         }
     }
 
-    public void setupHikari(HikariDataSource hikariDataSource, FileConfiguration settings) {
-        String address = settings.getString(MYSQL_INFO + "address");
-        String database = settings.getString(MYSQL_INFO + "database");
-        String username = settings.getString(MYSQL_INFO + "username");
-        String password = settings.getString(MYSQL_INFO + "password");
+    private static final String DATA_SOURCE_CLASS = "org.mariadb.jdbc.MySQLDataSource";
 
-        hikariDataSource.setMaximumPoolSize(10);
-        hikariDataSource.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+    // https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing
+    private static final int MAXIMUM_POOL_SIZE = (Runtime.getRuntime().availableProcessors() * 2) + 1;
+    private static final int MINIMUM_IDLE = Math.min(MAXIMUM_POOL_SIZE, 10);
+
+    private static final long MAX_LIFETIME = TimeUnit.MINUTES.toMillis(30); // 30 Minutes
+    private static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(10); // 10 seconds
+    private static final long LEAK_DETECTION_THRESHOLD = TimeUnit.SECONDS.toMillis(10); // 10 seconds
+
+    public HikariDataSource setupHikari(final HikariDataSource hikariDataSource, final FileConfiguration settings) {
+        final String address = settings.getString(MYSQL_INFO + "address");
+        final String database = settings.getString(MYSQL_INFO + "database");
+        final String username = settings.getString(MYSQL_INFO + "username");
+        final String password = settings.getString(MYSQL_INFO + "password");
+
+        hikariDataSource.setPoolName("EpicJobs");
+
+        hikariDataSource.setDataSourceClassName(DATA_SOURCE_CLASS);
         hikariDataSource.addDataSourceProperty("serverName", address.split(":")[0]);
         hikariDataSource.addDataSourceProperty("port", address.split(":")[1]);
         hikariDataSource.addDataSourceProperty("databaseName", database);
         hikariDataSource.addDataSourceProperty("user", username);
         hikariDataSource.addDataSourceProperty("password", password);
-        hikariDataSource.setMaxLifetime(10* 60 * 1000);
 
-        Connection connection = null;
+        hikariDataSource.setMaximumPoolSize(MAXIMUM_POOL_SIZE);
+        hikariDataSource.setMinimumIdle(MINIMUM_IDLE);
 
-        try {
-            connection = hikariDataSource.getConnection();
+        hikariDataSource.setMaxLifetime(MAX_LIFETIME);
+        hikariDataSource.setConnectionTimeout(CONNECTION_TIMEOUT);
+        hikariDataSource.setLeakDetectionThreshold(LEAK_DETECTION_THRESHOLD);
 
-            //PreparedStatement preparedStatement = connection.prepareStatement(/* todo create tables */);
-            //preparedStatement.execute();
-            //preparedStatement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Bukkit.shutdown();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        // ensure we use unicode (this calls #setProperties, a hack for the mariadb driver)
+        hikariDataSource.addDataSourceProperty("properties", "useUnicode=true;characterEncoding=utf8");
 
+        return hikariDataSource;
     }
+
 }

@@ -13,8 +13,9 @@ public class EpicJobsPlayer {
     private UUID uuid;
     private List<Job> jobs;
 
-    public EpicJobsPlayer(UUID uuid) {
+    public EpicJobsPlayer(final UUID uuid) {
         this.uuid = uuid;
+        this.jobs = new ArrayList<>();
     }
 
     public UUID getUuid() {
@@ -25,18 +26,28 @@ public class EpicJobsPlayer {
         return ImmutableList.copyOf(jobs);
     }
 
-    public void addJob(Job job) {
+    public void addJob(final Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(Job job) {
+    public void removeJob(final Job job) {
         jobs.remove(job);
     }
 
+    public List<Job> getActiveJobs() {
+        final List<Job> jobList = new ArrayList<>();
+        for (final Job job : jobs) {
+            if (job.getJobStatus().equals(JobStatus.TAKEN)) {
+                jobList.add(job);
+            }
+        }
+        return ImmutableList.copyOf(jobList);
+    }
+
     public List<Job> getCompletedJobs() {
-        List<Job> jobList = new ArrayList<>();
-        for (Job job : jobs) {
-            if (job.getJobStatus() == JobStatus.COMPLETE) {
+        final List<Job> jobList = new ArrayList<>();
+        for (final Job job : jobs) {
+            if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
                 jobList.add(job);
             }
         }

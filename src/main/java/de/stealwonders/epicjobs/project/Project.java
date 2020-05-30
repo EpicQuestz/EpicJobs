@@ -19,11 +19,11 @@ public class Project {
     private ProjectStatus projectStatus;
     private List<Job> jobs;
 
-    public Project(int id, String name, Player leader) {
+    public Project(final int id, final String name, final Player leader) {
         this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE);
     }
 
-    public Project(int id, String name, UUID leader, long creationTime, Location location, ProjectStatus projectStatus) {
+    public Project(final int id, final String name, final UUID leader, final long creationTime, final Location location, final ProjectStatus projectStatus) {
         this.id = id;
         this.name = name;
         this.leader = leader;
@@ -41,11 +41,15 @@ public class Project {
         return name;
     }
 
+    public void setName(final String name) {
+        this.name = name;
+    }
+
     public UUID getLeader() {
         return leader;
     }
 
-    public void setLeader(Player leader) {
+    public void setLeader(final Player leader) {
         this.leader = leader.getUniqueId();
     }
 
@@ -57,7 +61,7 @@ public class Project {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(final Location location) {
         this.location = location;
     }
 
@@ -65,7 +69,7 @@ public class Project {
         return projectStatus;
     }
 
-    public void setProjectStatus(ProjectStatus projectStatus) {
+    public void setProjectStatus(final ProjectStatus projectStatus) {
         this.projectStatus = projectStatus;
     }
 
@@ -73,11 +77,16 @@ public class Project {
         return ImmutableList.copyOf(jobs);
     }
 
-    public void addJob(Job job) {
+    public void addJob(final Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(Job job) {
+    public void removeJob(final Job job) {
         jobs.remove(job);
     }
+
+    public void teleport(final Player player) {
+        player.teleportAsync(this.getLocation());
+    }
+
 }

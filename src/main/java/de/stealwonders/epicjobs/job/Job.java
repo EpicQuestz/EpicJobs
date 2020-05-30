@@ -1,6 +1,7 @@
 package de.stealwonders.epicjobs.job;
 
 import de.stealwonders.epicjobs.project.Project;
+import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -18,11 +19,11 @@ public class Job {
     private JobStatus jobStatus;
     private JobCategory jobCategory;
 
-    public Job(int id, Player creator, String description, JobCategory jobCategory, Project project) {
+    public Job(final int id, final Player creator, final String description, final JobCategory jobCategory, final Project project) {
         this(id, creator.getUniqueId(), null, System.currentTimeMillis(), description, project, creator.getLocation(), JobStatus.OPEN, jobCategory);
     }
 
-    public Job(int id, UUID creator, UUID claimant, long creationTime, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
+    public Job(final int id, final UUID creator, final UUID claimant, final long creationTime, final String description, final Project project, final Location location, final JobStatus jobStatus, final JobCategory jobCategory) {
         this.id = id;
         this.creator = creator;
         this.claimant = claimant;
@@ -49,8 +50,8 @@ public class Job {
         return claimant;
     }
 
-    public void setClaimant(Player claimant) {
-        this.claimant = claimant.getUniqueId();
+    public void setClaimant(final UUID claimant) {
+        this.claimant = claimant;
     }
 
     public long getCreationTime() {
@@ -61,7 +62,7 @@ public class Job {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -69,7 +70,7 @@ public class Job {
         return project;
     }
 
-    public void setProject(Project project) {
+    public void setProject(final Project project) {
         this.project = project;
     }
 
@@ -77,7 +78,7 @@ public class Job {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(final Location location) {
         this.location = location;
     }
 
@@ -85,7 +86,7 @@ public class Job {
         return jobStatus;
     }
 
-    public void setJobStatus(JobStatus jobStatus) {
+    public void setJobStatus(final JobStatus jobStatus) {
         this.jobStatus = jobStatus;
     }
 
@@ -93,7 +94,24 @@ public class Job {
         return jobCategory;
     }
 
-    public void setJobCategory(JobCategory jobCategory) {
+    public void setJobCategory(final JobCategory jobCategory) {
         this.jobCategory = jobCategory;
     }
+
+    public void claim(final EpicJobsPlayer player) {
+        this.setClaimant(player.getUuid());
+        this.setJobStatus(JobStatus.TAKEN);
+        player.addJob(this);
+    }
+
+    public void abandon(final EpicJobsPlayer player) {
+        this.setClaimant(null);
+        this.setJobStatus(JobStatus.OPEN);
+        player.removeJob(this);
+    }
+
+    public void teleport(final Player player) {
+        player.teleportAsync(this.getLocation());
+    }
+
 }

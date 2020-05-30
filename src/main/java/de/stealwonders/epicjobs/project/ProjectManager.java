@@ -2,13 +2,9 @@ package de.stealwonders.epicjobs.project;
 
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.utils.Utils;
-import org.bukkit.Location;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class ProjectManager {
 
@@ -16,34 +12,21 @@ public class ProjectManager {
 
     private List<Project> projects;
 
-    private static final String SELECT = "SELECT * FROM project;";
-
-    public ProjectManager(EpicJobs plugin) {
-        System.out.println("----- ProjectManager");
+    public ProjectManager(final EpicJobs plugin) {
         this.plugin = plugin;
-        projects = new ArrayList<>();
-        fetchProjects();
+        this.projects = new ArrayList<>();
+    }
 
-        //todo debuging
-        for (Project project : projects) {
-            System.out.println(project.getId());
-            System.out.println(project.getName());
-            System.out.println(project.getLeader());
-            System.out.println(project.getCreationTime());
-            System.out.println(project.getLocation());
-            System.out.println(project.getProjectStatus());
-
-        }
-
-
+    public void firstLoad() {
+        plugin.getStorageImplementation().loadAllProjects();
     }
 
     public List<Project> getProjects() {
         return ImmutableList.copyOf(projects);
     }
 
-    public Project getProjectById(int id) {
-        for (Project project : projects) {
+    public Project getProjectById(final int id) {
+        for (final Project project : projects) {
             if (project.getId() == id) {
                 return project;
             }
@@ -51,8 +34,8 @@ public class ProjectManager {
         return null;
     }
 
-    public Project getProjectByName(String name) {
-        for (Project project : projects) {
+    public Project getProjectByName(final String name) {
+        for (final Project project : projects) {
             if (project.getName().equalsIgnoreCase(name)) {
                 return project;
             }
@@ -60,71 +43,22 @@ public class ProjectManager {
         return null;
     }
 
-    public void addProject(Project project) {
+    public void addProject(final Project project) {
         projects.add(project);
     }
 
-    public void removeProject(Project project) {
+    public void removeProject(final Project project) {
         projects.remove(project);
     }
 
     public List<Project> getOpenProjects() {
-        List<Project> projectList = new ArrayList<>();
-        for (Project project : projects) {
-            if (project.getProjectStatus() == ProjectStatus.ACTIVE) {
+        final List<Project> projectList = new ArrayList<>();
+        for (final Project project : projects) {
+            if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
                 projectList.add(project);
             }
         }
         return ImmutableList.copyOf(projectList);
     }
 
-    private void fetchProjects() {
-
-        Connection connection = null;
-
-        try {
-            connection = plugin.getHikari().getConnection();
-
-            PreparedStatement preparedStatement = connection.prepareStatement(SELECT);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                UUID uuid = UUID.fromString(resultSet.getString("leader"));
-                Timestamp creationTime = resultSet.getTimestamp("creationtime");
-                Location location = Utils.deserializeLocation(resultSet.getString("location"));
-                ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
-
-                Project project = new Project(id, name, uuid, creationTime.getTime(), location, projectStatus);
-                projects.add(project);
-
-            }
-
-            resultSet.close();
-            preparedStatement.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public int getFreeId() {
-        int maxNumber = 0;
-        for (Project project : projects) {
-            if (project.getId() > maxNumber) {
-                maxNumber = project.getId();
-            }
-        }
-        return maxNumber + 1;
-    }
 }

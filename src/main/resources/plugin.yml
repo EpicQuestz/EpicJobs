@@ -6,7 +6,9 @@ authors: [StealWonders]
 description: Helps manage builder tasks and jobs.
 website: www.stealwonders.de
 
+depend: [PlayerUUIDCache]
+softdepend: [Multiverse-Core]
+
 commands:
-  job:
-    aliases: [jobs]
-    description: The main job command that handles everything.
+  # handled by the Aikar annotation command framework (ACF).
+
