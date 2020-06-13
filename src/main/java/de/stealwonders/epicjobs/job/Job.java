@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public class Job {
 
-    private int id;
-    private UUID creator;
+    private final int id;
+    private final UUID creator;
     private UUID claimant;
-    private long creationTime;
+    private final long creationTime;
     private String description;
     private Project project;
     private Location location;

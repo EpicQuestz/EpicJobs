@@ -2,8 +2,14 @@ package de.stealwonders.epicjobs.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
-import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.HelpCommand;
+import co.aikar.commands.annotation.Optional;
+import co.aikar.commands.annotation.Single;
+import co.aikar.commands.annotation.Subcommand;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
@@ -12,7 +18,6 @@ import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.event.HoverEvent;
 import net.kyori.text.format.TextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,7 +30,7 @@ import static de.stealwonders.epicjobs.constants.Messages.*;
 @CommandAlias("project|projects")
 public class ProjectCommand extends BaseCommand {
 
-    private EpicJobs plugin;
+    private final EpicJobs plugin;
 
     public ProjectCommand(final EpicJobs plugin) {
         this.plugin = plugin;

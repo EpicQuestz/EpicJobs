@@ -1,10 +1,12 @@
 package de.stealwonders.epicjobs.utils;
 
+import de.iani.playerUUIDCache.CachedPlayer;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,10 +39,18 @@ public class Utils {
     public static String getPlayerHolderText(@Nullable final UUID uuid) {
        final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
         if (playerUUIDCacheAPI != null) {
-            return uuid != null ? playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString()).getName() : "<none>";
-        } else {
-            return "Error fetching username!";
+            if (uuid != null) {
+                CachedPlayer cachedPlayer = playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString());
+                if (cachedPlayer != null) {
+                    return cachedPlayer.getName();
+                }
+            }
         }
+        return "§oError fetching username!";
+    }
+
+    public static String color(String msg) {
+        return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
 }
