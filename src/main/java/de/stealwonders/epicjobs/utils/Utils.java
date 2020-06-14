@@ -1,5 +1,7 @@
 package de.stealwonders.epicjobs.utils;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import de.iani.playerUUIDCache.CachedPlayer;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
@@ -8,7 +10,11 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -40,7 +46,7 @@ public class Utils {
        final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
         if (playerUUIDCacheAPI != null) {
             if (uuid != null) {
-                CachedPlayer cachedPlayer = playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString());
+                final CachedPlayer cachedPlayer = playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString());
                 if (cachedPlayer != null) {
                     return cachedPlayer.getName();
                 }
@@ -49,8 +55,22 @@ public class Utils {
         return "§oError fetching username!";
     }
 
-    public static String color(String msg) {
+    public static String color(final String msg) {
         return ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
+    public static ItemStack getSkull(final String base64, final String name) {
+        final ItemStack ITEMSTACK = new ItemStack(Material.PLAYER_HEAD);
+        final ItemMeta itemMeta = ITEMSTACK.getItemMeta();
+        itemMeta.setDisplayName(name);
+        ITEMSTACK.setItemMeta(itemMeta);
+        final SkullMeta skullMeta = (SkullMeta) ITEMSTACK.getItemMeta();
+        final PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID());
+        final ProfileProperty profileProperty = new ProfileProperty("textures", base64);
+        playerProfile.getProperties().add(profileProperty);
+        skullMeta.setPlayerProfile(playerProfile);
+        ITEMSTACK.setItemMeta(skullMeta);
+        return ITEMSTACK;
     }
 
 }

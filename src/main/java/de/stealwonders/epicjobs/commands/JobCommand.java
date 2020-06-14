@@ -14,6 +14,7 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
+import de.stealwonders.epicjobs.constants.SkullHeads;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.job.JobCategory;
 import de.stealwonders.epicjobs.job.JobStatus;
@@ -67,17 +68,17 @@ public class JobCommand extends BaseCommand {
         sendProjectMenu(player);
     }
 
-    private void sendProjectMenu(Player player) {
-        Gui gui = new Gui(3, "Current Projects");
-        PaginatedPane pagination = new PaginatedPane(0, 0, 9, 3);
-        List<GuiItem> guiItems = new ArrayList<>();
-        for (Project project : plugin.getProjectManager().getProjects()) {
-            ItemStack itemStack = new ItemStackBuilder(Material.BOOK)
+    private void sendProjectMenu(final Player player) {
+        final Gui gui = new Gui(3, "Current Projects");
+        final PaginatedPane pagination = new PaginatedPane(0, 0, 9, 3);
+        final List<GuiItem> guiItems = new ArrayList<>();
+        for (final Project project : plugin.getProjectManager().getProjects()) {
+            final ItemStack itemStack = new ItemStackBuilder(Material.BOOK)
                 .withName("§f§l" + project.getName())
                 .withLore("§7Shift-click to teleport")
                 .withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeader()))
                 .build();
-            GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
+            final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
                     case SHIFT_LEFT:
@@ -97,17 +98,17 @@ public class JobCommand extends BaseCommand {
         gui.show(player);
     }
 
-    private void sendJobMenu(Player player, Project project) {
+    private void sendJobMenu(final Player player, final Project project) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
             .filter(job -> job.getProject().equals(project))
             .collect(Collectors.toList());
 
-        Gui gui = new Gui(6, "Available Jobs");
-        PaginatedPane pagination = new PaginatedPane(0, 0, 9, 5);
-        List<GuiItem> guiItems = new ArrayList<>();
-        for (Job job : jobs) {
-            ItemStack itemStack = new ItemStackBuilder(job.getJobCategory().getMaterial())
+        final Gui gui = new Gui(6, "Available Jobs");
+        final PaginatedPane pagination = new PaginatedPane(0, 0, 9, 5);
+        final List<GuiItem> guiItems = new ArrayList<>();
+        for (final Job job : jobs) {
+            final ItemStack itemStack = new ItemStackBuilder(job.getJobCategory().getMaterial())
                 .withName("§f§lJob #" + job.getId())
                 .withLore("§7Shift-click to §lclaim")
                 .withLore("§f§lProject: §f" + job.getProject().getName())
@@ -116,7 +117,7 @@ public class JobCommand extends BaseCommand {
                 .withLore("§f§lCreator: §f" + Utils.getPlayerHolderText(job.getCreator()))
                 .withLore(" ")
                 .build();
-            GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
+            final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
                     case SHIFT_LEFT:
@@ -141,9 +142,15 @@ public class JobCommand extends BaseCommand {
             gui.setTitle("Available Jobs (1/" + pagination.getPages() + ")");
         }
 
-        StaticPane back = new StaticPane(1, 5, 1, 1);
-        StaticPane info = new StaticPane(4, 5, 1, 1);
-        StaticPane forward = new StaticPane(7, 5, 1, 1);
+        final StaticPane mainMenu = new StaticPane(0, 5, 1, 1);
+        final StaticPane back = new StaticPane(2, 5, 1, 1);
+        final StaticPane info = new StaticPane(4, 5, 1, 1);
+        final StaticPane forward = new StaticPane(6, 5, 1, 1);
+
+        mainMenu.addItem(new GuiItem(Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "§f§lBack"), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            sendProjectMenu(player);
+        }), 0, 0);
 
         back.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("Previous Page").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
@@ -188,6 +195,7 @@ public class JobCommand extends BaseCommand {
         forward.setVisible(pagination.getPages() > 1);
 
         gui.addPane(pagination);
+        gui.addPane(mainMenu);
         gui.addPane(back);
         gui.addPane(info);
         gui.addPane(forward);
