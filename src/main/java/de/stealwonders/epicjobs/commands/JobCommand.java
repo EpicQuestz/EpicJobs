@@ -162,7 +162,7 @@ public class JobCommand extends BaseCommand {
             forward.setVisible(true);
 
             if (pagination.getPages() > 1) {
-                gui.setTitle("Available Jobs (" + pagination.getPage() + 1 + "/" + pagination.getPages() + ")");
+                gui.setTitle("Available Jobs (" + (pagination.getPage() + 1) + "/" + pagination.getPages() + ")");
             }
 
             gui.update();
@@ -185,7 +185,7 @@ public class JobCommand extends BaseCommand {
             back.setVisible(true);
 
             if (pagination.getPages() > 1) {
-                gui.setTitle("Available Jobs (" + pagination.getPage() + 1 + "/" + pagination.getPages() + ")");
+                gui.setTitle("Available Jobs (" + (pagination.getPage() + 1) + "/" + pagination.getPages() + ")");
             }
 
             gui.update();
