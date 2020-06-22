@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
@@ -135,9 +136,9 @@ public class ProjectCommand extends BaseCommand {
     @Subcommand("edit leader")
     @CommandCompletion("@project @players")
     @CommandPermission("epicjobs.command.project.edit")
-    public void onEditLeader(final Player player, final Project project, Player leader) {
-        project.setLeader(leader);
-        player.sendMessage("Set project leader to " + leader.getName());
+    public void onEditLeader(final Player player, final Project project, OnlinePlayer leader) {
+        project.setLeader(leader.getPlayer());
+        player.sendMessage("Set project leader to " + leader.getPlayer().getName());
         plugin.getStorageImplementation().updateProject(project);
     }
 
