@@ -210,15 +210,15 @@ public class JobCommand extends BaseCommand {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
             final ItemStack itemStack = new ItemStackBuilder(job.getJobCategory().getMaterial())
-                    .withName("§f§lJob #" + job.getId())
-                    .withLore("§7Shift-click to §labandon")
-                    .withLore("§f§lProject: §f" + job.getProject().getName())
-                    .withLore("§f§lCategory: §f" + job.getJobCategory().getName())
-                    .withLore("§f§lStatus: §f" + job.getJobStatus().name())
-                    .withLineBreakLore(ChatColor.GRAY, job.getDescription())
-                    .withLore("§f§lCreator: §f" + Utils.getPlayerHolderText(job.getCreator()))
-                    .withLore(" ")
-                    .build();
+                .withName("§f§lJob #" + job.getId())
+                .withLore("§7Shift-click to mark §ldone")
+                .withLore("§f§lProject: §f" + job.getProject().getName())
+                .withLore("§f§lCategory: §f" + job.getJobCategory().getName())
+                .withLore("§f§lStatus: §f" + job.getJobStatus().name())
+                .withLineBreakLore(ChatColor.GRAY, job.getDescription())
+                .withLore("§f§lCreator: §f" + Utils.getPlayerHolderText(job.getCreator()))
+                .withLore(" ")
+                .build();
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
@@ -226,7 +226,7 @@ public class JobCommand extends BaseCommand {
                     case SHIFT_RIGHT:
                         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
                         player.getOpenInventory().close();
-                        Bukkit.dispatchCommand(player, "job abandon " + job.getId());
+                        Bukkit.dispatchCommand(player, "job done " + job.getId());
                         break;
                     case LEFT:
                         job.teleport(player);
@@ -272,7 +272,7 @@ public class JobCommand extends BaseCommand {
 
         info.addItem(new GuiItem(new ItemStackBuilder(Material.BOOK)
             .withName("§f§lInformation")
-            .withLore("§7§lAbandon §7job by using shift-click")
+            .withLore("§7To mark a job as §ldone §7shift-click.")
             .withLore("§7To §lteleport §7left-click a job")
             .withLore("§7To §lview information §7right-click a job")
             .build(), inventoryClickEvent -> inventoryClickEvent.setResult(Event.Result.DENY)), 0, 0);
