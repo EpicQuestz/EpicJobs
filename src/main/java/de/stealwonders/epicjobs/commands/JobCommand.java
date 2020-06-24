@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.stealwonders.epicjobs.constants.Messages.*;
-import static de.stealwonders.epicjobs.job.JobStatus.TAKEN;
+import static de.stealwonders.epicjobs.job.JobStatus.*;
 
 @CommandAlias("job|jobs")
 public class JobCommand extends BaseCommand {
@@ -203,6 +203,130 @@ public class JobCommand extends BaseCommand {
         gui.show(player);
     }
 
+    private void sendMyJobs(final Player player, final EpicJobsPlayer epicJobsPlayer, final boolean activeJobs) {
+        final List<Job> jobs = activeJobs ? epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)).collect(Collectors.toList()) : epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(COMPLETE)).collect(Collectors.toList());
+        final Gui gui = new Gui(6, "Your Jobs");
+        final PaginatedPane pagination = new PaginatedPane(0, 0, 9, 5);
+        final List<GuiItem> guiItems = new ArrayList<>();
+        for (final Job job : jobs) {
+            final ItemStack itemStack = new ItemStackBuilder(job.getJobCategory().getMaterial())
+                    .withName("§f§lJob #" + job.getId())
+                    .withLore("§7Shift-click to §labandon")
+                    .withLore("§f§lProject: §f" + job.getProject().getName())
+                    .withLore("§f§lCategory: §f" + job.getJobCategory().getName())
+                    .withLore("§f§lStatus: §f" + job.getJobStatus().name())
+                    .withLineBreakLore(ChatColor.GRAY, job.getDescription())
+                    .withLore("§f§lCreator: §f" + Utils.getPlayerHolderText(job.getCreator()))
+                    .withLore(" ")
+                    .build();
+            final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
+                inventoryClickEvent.setResult(Event.Result.DENY);
+                switch (inventoryClickEvent.getClick()) {
+                    case SHIFT_LEFT:
+                    case SHIFT_RIGHT:
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
+                        player.getOpenInventory().close();
+                        Bukkit.dispatchCommand(player, "job abandon " + job.getId());
+                        break;
+                    case LEFT:
+                        job.teleport(player);
+                        break;
+                    case RIGHT:
+                        player.sendMessage(job.getDescription());
+                        break;
+                }
+            });
+            guiItems.add(guiItem);
+        }
+        pagination.populateWithGuiItems(guiItems);
+
+        if (pagination.getPages() > 1) {
+            gui.setTitle("Available Jobs (1/" + pagination.getPages() + ")");
+        }
+
+        final StaticPane mainMenu = new StaticPane(0, 5, 1, 1);
+        final StaticPane back = new StaticPane(2, 5, 1, 1);
+        final StaticPane info = new StaticPane(4, 5, 1, 1);
+        final StaticPane forward = new StaticPane(6, 5, 1, 1);
+
+        mainMenu.addItem(new GuiItem(Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "§f§lBack"), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            sendStatusMenu(player, epicJobsPlayer);
+        }), 0, 0);
+
+        back.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("Previous Page").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            pagination.setPage(pagination.getPage() - 1);
+
+            if (pagination.getPage() == 0) {
+                back.setVisible(false);
+            }
+            forward.setVisible(true);
+
+            if (pagination.getPages() > 1) {
+                gui.setTitle("Your Jobs (" + (pagination.getPage() + 1) + "/" + pagination.getPages() + ")");
+            }
+
+            gui.update();
+        }), 0, 0);
+
+        info.addItem(new GuiItem(new ItemStackBuilder(Material.BOOK)
+            .withName("§f§lInformation")
+            .withLore("§7§lAbandon §7job by using shift-click")
+            .withLore("§7To §lteleport §7left-click a job")
+            .withLore("§7To §lview information §7right-click a job")
+            .build(), inventoryClickEvent -> inventoryClickEvent.setResult(Event.Result.DENY)), 0, 0);
+
+        forward.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("Next Page").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            pagination.setPage(pagination.getPage() + 1);
+
+            if (pagination.getPage() == pagination.getPages() - 1) {
+                forward.setVisible(false);
+            }
+            back.setVisible(true);
+
+            if (pagination.getPages() > 1) {
+                gui.setTitle("Your Jobs (" + (pagination.getPage() + 1) + "/" + pagination.getPages() + ")");
+            }
+
+            gui.update();
+        }), 0, 0);
+
+        back.setVisible(false);
+        forward.setVisible(pagination.getPages() > 1);
+
+        gui.addPane(pagination);
+        gui.addPane(mainMenu);
+        gui.addPane(back);
+        gui.addPane(info);
+        gui.addPane(forward);
+
+        gui.show(player);
+    }
+
+    private void sendStatusMenu(final Player player, final EpicJobsPlayer epicJobsPlayer) {
+        final Gui gui = new Gui(1, "Select Job Status");
+        final StaticPane activeJobs = new StaticPane(3, 0, 1, 1);
+        final StaticPane completeJobs = new StaticPane(5, 0, 1, 1);
+
+        final GuiItem activeItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("§fActive Jobs").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            sendMyJobs(player, epicJobsPlayer, true);
+        });
+
+        final GuiItem completeItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("§fCompleted Jobs").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            sendMyJobs(player, epicJobsPlayer, false);
+        });
+
+        activeJobs.addItem(activeItem, 0, 0);
+        completeJobs.addItem(completeItem, 0, 0);
+        gui.addPane(activeJobs);
+        gui.addPane(completeJobs);
+        gui.show(player);
+    }
+
     @Subcommand("mine")
     public void onMine(final Player player) {
         onListMine(player);
@@ -211,12 +335,10 @@ public class JobCommand extends BaseCommand {
     @Subcommand("list mine")
     public void onListMine(final Player player) {
         final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
-        if (epicJobsPlayer.isPresent()) {
-            final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
-            comparator.thenComparingInt(Job::getId);
-            final List<Job> jobs = epicJobsPlayer.get().getJobs().stream().sorted(comparator).limit(20).collect(Collectors.toList());
-            sendJobList(player, jobs);
-        }
+        epicJobsPlayer.ifPresent(jobsPlayer -> sendStatusMenu(player, jobsPlayer));
+        //            final Comparator<Job> comparator = Comparator.comparingInt(job -> job.getJobStatus().getWeight());
+        //            comparator.thenComparingInt(Job::getId);
+        //            final List<Job> jobs = epicJobsPlayer.get().getJobs().stream().sorted(comparator).limit(20).collect(Collectors.toList());
     }
 
     @Subcommand("list near")
@@ -263,7 +385,7 @@ public class JobCommand extends BaseCommand {
     @CommandPermission("epicjobs.command.job.list.done")
     public void onListDone(final CommandSender commandSender) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-            .filter(job -> job.getJobStatus().equals(JobStatus.DONE))
+            .filter(job -> job.getJobStatus().equals(DONE))
             .limit(20)
             .collect(Collectors.toList());
         sendJobList(commandSender, jobs);
@@ -402,7 +524,7 @@ public class JobCommand extends BaseCommand {
                 if (epicJobsPlayer.isPresent()) {
                     if (job == null) {
                         if (jobs.size() == 1) {
-                            if (jobs.get(0).getJobStatus().equals(TAKEN) || jobs.get(0).getJobStatus().equals(JobStatus.DONE)) {
+                            if (jobs.get(0).getJobStatus().equals(TAKEN) || jobs.get(0).getJobStatus().equals(DONE)) {
                                 jobEdited = jobs.get(0);
                                 jobEdited.abandon(epicJobsPlayer.get());
                                 ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobs.get(0).getId());
@@ -416,7 +538,7 @@ public class JobCommand extends BaseCommand {
                         }
                     } else {
                         if (jobs.contains(job)) {
-                            if (job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(JobStatus.DONE)) {
+                            if (job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)) {
                                 job.abandon(epicJobsPlayer.get());
                                 ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), job.getId());
                                 jobEdited = job;
@@ -465,7 +587,7 @@ public class JobCommand extends BaseCommand {
                     if (jobs.size() == 1) {
                             jobEdited = jobs.get(0);
                         if (jobEdited.getJobStatus().equals(TAKEN)) {
-                            jobEdited.setJobStatus(JobStatus.DONE);
+                            jobEdited.setJobStatus(DONE);
                             ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.get(0).getId());
                         } else {
                             JOB_HAS_TO_BE_ACTIVE.send(player);
@@ -478,7 +600,7 @@ public class JobCommand extends BaseCommand {
                 } else {
                     if (jobs.contains(job)) {
                         if (job.getJobStatus().equals(TAKEN)) {
-                            job.setJobStatus(JobStatus.DONE);
+                            job.setJobStatus(DONE);
                             ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
                             jobEdited = job;
                         } else {
@@ -501,7 +623,7 @@ public class JobCommand extends BaseCommand {
     public void onComplete(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (job.getJobStatus().equals(JobStatus.DONE)) {
+                if (job.getJobStatus().equals(DONE)) {
                     job.setJobStatus(JobStatus.COMPLETE);
                     JOB_COMPLETED.send(player, job.getId());
                     return true;
