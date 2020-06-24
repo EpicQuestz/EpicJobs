@@ -47,7 +47,7 @@ dependencies {
     compile 'co.aikar:taskchain-bukkit:3.7.2'
     compile 'net.kyori:text-api:3.0.4'
     compile 'net.kyori:text-serializer-gson:3.0.4'
-    compile 'net.kyori:text-adapter-bukkit:3.0.3'
+    compile 'net.kyori:text-adapter-bukkit:3.0.5'
     compile 'com.github.stefvanschie.inventoryframework:IF:0.6.0'
 }
 
