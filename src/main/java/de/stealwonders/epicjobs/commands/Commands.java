@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Commands {
 
-    private PaperCommandManager commandManager;
+    private final PaperCommandManager commandManager;
 
     public Commands(final EpicJobs plugin) {
         this.commandManager = new PaperCommandManager(plugin);
@@ -84,6 +84,7 @@ public class Commands {
     private void registerCommands(final EpicJobs plugin) {
         commandManager.enableUnstableAPI("help");
         commandManager.registerCommand(new JobCommand(plugin));
+        commandManager.registerCommand(new ListAllCommand(plugin));
         commandManager.registerCommand(new ProjectCommand(plugin));
     }
 
