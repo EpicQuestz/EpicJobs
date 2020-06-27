@@ -50,6 +50,8 @@ public class Utils {
                 if (cachedPlayer != null) {
                     return cachedPlayer.getName();
                 }
+            } else {
+                return "§oNone";
             }
         }
         return "§oError fetching username!";
