@@ -48,7 +48,9 @@ public class MenuHelper {
         final StaticPane info = new StaticPane(4, 5, 1, 1);
         final StaticPane forward = new StaticPane(6, 5, 1, 1);
 
-        mainMenu.addItem(mainMenuItem, 0, 0);
+        if (mainMenuItem != null) {
+            mainMenu.addItem(mainMenuItem, 0, 0);
+        }
 
         back.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("Previous Page").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
