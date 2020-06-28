@@ -209,11 +209,11 @@ public class JobCommand extends BaseCommand {
         }
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-                .withName("§f§lInformation")
-                .withLore("§7§lClaim §7job by using shift-click")
-                .withLore("§7§lTeleport §7by using left-click")
-                .withLore("§7To §lview job info §7right-click")
-                .build();
+            .withName("§f§lInformation")
+            .withLore("§7§lClaim §7job by using shift-click")
+            .withLore("§7§lTeleport §7by using left-click")
+            .withLore("§7To §lview job info §7right-click")
+            .build();
 
         final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
