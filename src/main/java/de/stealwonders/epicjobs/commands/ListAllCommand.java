@@ -81,7 +81,6 @@ public class ListAllCommand extends BaseCommand {
                         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
                             .filter(job -> job.getProject().equals(project))
                             .collect(Collectors.toList());
-                        System.out.println("Job size: " + jobs.size());
                         sendJobMenu(player, jobs);
                         break;
                 }
