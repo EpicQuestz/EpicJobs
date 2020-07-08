@@ -139,6 +139,7 @@ public class JobCommand extends BaseCommand {
     public void onListNear(final Player player, @Default("32") @co.aikar.commands.annotation.Optional final int radius) {
         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
+            .filter(job -> job.getLocation().getWorld().equals(player.getWorld()))
             .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < radius * radius)
             .collect(Collectors.toList());
         sendJobMenu(player, "Available Jobs", null, jobs);
