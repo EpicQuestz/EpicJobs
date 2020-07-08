@@ -70,6 +70,7 @@ public class ItemStackBuilder {
             } else {
                 lore.add(chatColor + line.toString());
                 line = new StringBuilder();
+                line.append(words[i]).append(" ");
             }
         }
         meta.setLore(lore);
