@@ -434,11 +434,7 @@ public class JobCommand extends BaseCommand {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(TAKEN)) {
-                    final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
-                    job.setClaimant(null);
-                    if (epicJobsPlayer != null) {
-                        epicJobsPlayer.removeJob(job);
-                    }
+                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
                     return true;
                 } else {
                     JOB_CANT_BE_UNASSIGNED.send(player);
@@ -457,8 +453,7 @@ public class JobCommand extends BaseCommand {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.OPEN)) {
-                    final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(target.getUniqueId()).get();
-                    job.claim(epicJobsPlayer);
+                    plugin.getEpicJobsPlayer(target.getUniqueId()).ifPresent(job::claim);
                     HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
                     HAS_BEEN_ASSIGNED_JOB.send(target, job.getId());
                     return true;
@@ -506,10 +501,7 @@ public class JobCommand extends BaseCommand {
             .sync(() -> {
                 plugin.getJobManager().removeJob(job);
                 job.getProject().removeJob(job);
-                final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant()).get();
-                if (epicJobsPlayer != null) {
-                    epicJobsPlayer.removeJob(job);
-                }
+                plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
                 REMOVING_JOB.sendActionbar(player, job.getId());
             })
             .async(() -> plugin.getStorageImplementation().deleteJob(job))
