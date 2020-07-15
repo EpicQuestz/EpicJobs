@@ -59,20 +59,25 @@ public class ItemStackBuilder {
         if (lore == null) {
             lore = new ArrayList<>();
         }
+
         String[] words = name.split(" ");
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i < words.length; i++) {
-            if (line.length() <= 32) {
-                line.append(words[i]).append(" ");
+        StringBuilder line = new StringBuilder(words[0]);
+        if (words.length > 1) {
+            for (int i = 1; i < words.length; i++) {
+                if (line.length() <= 32) {
+                    line.append(" ").append(words[i]);
+                } else {
+                    lore.add(chatColor + line.toString());
+                    line = new StringBuilder(words[i]);
+                }
                 if (i == words.length - 1) {
                     lore.add(chatColor + line.toString());
                 }
-            } else {
-                lore.add(chatColor + line.toString());
-                line = new StringBuilder();
-                line.append(words[i]).append(" ");
             }
+        } else {
+            lore.add(chatColor + line.toString());
         }
+
         meta.setLore(lore);
         ITEM_STACK.setItemMeta(meta);
         return this;
