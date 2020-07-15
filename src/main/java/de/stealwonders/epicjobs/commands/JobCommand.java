@@ -505,7 +505,7 @@ public class JobCommand extends BaseCommand {
                 REMOVING_JOB.sendActionbar(player, job.getId());
             })
             .async(() -> plugin.getStorageImplementation().deleteJob(job))
-            .syncLast((i) -> SUCCESSFULLY_REMOVED_JOB.send(player)
+            .sync(() -> SUCCESSFULLY_REMOVED_JOB.send(player)
         ).execute();
     }
 
