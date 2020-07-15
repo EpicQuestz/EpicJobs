@@ -499,7 +499,7 @@ public class JobCommand extends BaseCommand {
             .execute();
     }
 
-    @Subcommand("remove")
+    @Subcommand("remove|delete")
     @CommandPermission("epicjobs.command.job.remove")
     public void onRemove(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
