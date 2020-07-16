@@ -229,7 +229,7 @@ public class JobCommand extends BaseCommand {
             .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(job.getDescription()).color(TextColor.YELLOW))
             .build();
         sender.sendMessage("");
-        TextAdapter.sendComponent(sender, text);
+        TextAdapter.sendMessage(sender, text);
         sender.sendMessage("");
     }
 
