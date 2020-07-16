@@ -67,6 +67,16 @@ public class JobCommand extends BaseCommand {
         sendProjectMenu(player);
     }
 
+    @Subcommand("list near")
+    public void onListNear(final Player player, @Default("32") @co.aikar.commands.annotation.Optional final int radius) {
+        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+            .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
+            .filter(job -> job.getLocation().getWorld().equals(player.getWorld()))
+            .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < radius * radius)
+            .collect(Collectors.toList());
+        sendJobMenu(player, "Available Jobs", null, jobs);
+    }
+
     private void sendProjectMenu(final Player player) {
         final GuiItem mainMenuItem = new GuiItem(BACK_BUTTON, inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
@@ -102,79 +112,6 @@ public class JobCommand extends BaseCommand {
         gui.show(player);
     }
 
-    @Subcommand("mine")
-    public void onMine(final Player player) {
-        onListMine(player);
-    }
-
-    @Subcommand("list mine")
-    public void onListMine(final Player player) {
-        final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
-        epicJobsPlayer.ifPresent(jobsPlayer -> sendStatusSelectionMenu(player, jobsPlayer));
-    }
-
-    private void sendStatusSelectionMenu(final Player player, final EpicJobsPlayer epicJobsPlayer) {
-        final GuiItem mainMenuItem = new GuiItem(BACK_BUTTON, inventoryClickEvent -> {
-            inventoryClickEvent.setResult(Event.Result.DENY);
-            sendStatusSelectionMenu(player, epicJobsPlayer);
-        });
-
-        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("§f§lActive Jobs").build(), inventoryClickEvent -> {
-            inventoryClickEvent.setResult(Event.Result.DENY);
-            final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)).collect(Collectors.toList());
-            sendJobMenu(player, "Your Jobs", mainMenuItem, jobs);
-        });
-
-        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("§f§lCompleted Jobs").build(), inventoryClickEvent -> {
-            inventoryClickEvent.setResult(Event.Result.DENY);
-            final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(COMPLETE)).collect(Collectors.toList());
-            sendJobMenu(player, "Your Jobs", mainMenuItem, jobs);
-        });
-
-        final Gui gui = MenuHelper.getStaticSelectionGui("Select Job Status", projectItem, statusItem);
-        gui.show(player);
-    }
-
-    @Subcommand("list near")
-    public void onListNear(final Player player, @Default("32") @co.aikar.commands.annotation.Optional final int radius) {
-        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-            .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
-            .filter(job -> job.getLocation().getWorld().equals(player.getWorld()))
-            .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < radius * radius)
-            .collect(Collectors.toList());
-        sendJobMenu(player, "Available Jobs", null, jobs);
-    }
-
-//    @Subcommand("list project")
-//    @CommandCompletion("@project")
-//    public void onListProject(final CommandSender commandSender, final Project project, @co.aikar.commands.annotation.Optional final JobStatus jobStatus, @co.aikar.commands.annotation.Optional final JobCategory jobCategory) {
-//        Stream<Job> jobStream = plugin.getJobManager().getJobs().stream().filter(job -> job.getProject().equals(project));
-//        if (jobStatus != null)
-//            jobStream = jobStream.filter(job -> job.getJobStatus().equals(jobStatus));
-//        if (jobCategory != null)
-//            jobStream = jobStream.filter(job -> job.getJobCategory().equals(jobCategory));
-//        final List<Job> jobs = jobStream.limit(20).collect(Collectors.toList());
-//        sendJobList(commandSender, jobs);
-//    }
-//
-//    @Subcommand("list status")
-//    public void onListProject(final CommandSender commandSender, final JobStatus jobStatus) {
-//        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-//            .filter(job -> job.getJobStatus().equals(jobStatus))
-//            .limit(20)
-//            .collect(Collectors.toList());
-//        sendJobList(commandSender, jobs);
-//    }
-//
-//    @Subcommand("list category")
-//    public void onListProject(final CommandSender commandSender, final JobCategory jobCategory) {
-//        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-//            .filter(job -> job.getJobCategory().equals(jobCategory))
-//            .limit(20)
-//            .collect(Collectors.toList());
-//        sendJobList(commandSender, jobs);
-//    }
-
     private void sendJobMenu(final Player player, final String title, final GuiItem mainMenuItem, final List<Job> jobs) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
@@ -209,6 +146,69 @@ public class JobCommand extends BaseCommand {
         final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
+    
+    @Subcommand("mine")
+    public void onMine(final Player player) {
+        onListMine(player);
+    }
+
+    @Subcommand("list mine")
+    public void onListMine(final Player player) {
+        final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+        epicJobsPlayer.ifPresent(jobsPlayer -> sendStatusSelectionMenu(player, jobsPlayer));
+    }
+
+    private void sendStatusSelectionMenu(final Player player, final EpicJobsPlayer epicJobsPlayer) {
+        final GuiItem mainMenuItem = new GuiItem(BACK_BUTTON, inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            sendStatusSelectionMenu(player, epicJobsPlayer);
+        });
+
+        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("§f§lActive Jobs").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)).collect(Collectors.toList());
+            sendJobMenu(player, "Your Jobs", mainMenuItem, jobs);
+        });
+
+        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("§f§lCompleted Jobs").build(), inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(COMPLETE)).collect(Collectors.toList());
+            sendJobMenu(player, "Your Jobs", mainMenuItem, jobs);
+        });
+
+        final Gui gui = MenuHelper.getStaticSelectionGui("Select Job Status", projectItem, statusItem);
+        gui.show(player);
+    }
+
+//    @Subcommand("list project")
+//    @CommandCompletion("@project")
+//    public void onListProject(final CommandSender commandSender, final Project project, @co.aikar.commands.annotation.Optional final JobStatus jobStatus, @co.aikar.commands.annotation.Optional final JobCategory jobCategory) {
+//        Stream<Job> jobStream = plugin.getJobManager().getJobs().stream().filter(job -> job.getProject().equals(project));
+//        if (jobStatus != null)
+//            jobStream = jobStream.filter(job -> job.getJobStatus().equals(jobStatus));
+//        if (jobCategory != null)
+//            jobStream = jobStream.filter(job -> job.getJobCategory().equals(jobCategory));
+//        final List<Job> jobs = jobStream.limit(20).collect(Collectors.toList());
+//        sendJobList(commandSender, jobs);
+//    }
+//
+//    @Subcommand("list status")
+//    public void onListProject(final CommandSender commandSender, final JobStatus jobStatus) {
+//        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+//            .filter(job -> job.getJobStatus().equals(jobStatus))
+//            .limit(20)
+//            .collect(Collectors.toList());
+//        sendJobList(commandSender, jobs);
+//    }
+//
+//    @Subcommand("list category")
+//    public void onListProject(final CommandSender commandSender, final JobCategory jobCategory) {
+//        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+//            .filter(job -> job.getJobCategory().equals(jobCategory))
+//            .limit(20)
+//            .collect(Collectors.toList());
+//        sendJobList(commandSender, jobs);
+//    }
 
     @Subcommand("info")
     public void onInfo(final CommandSender sender, final Job job) {
