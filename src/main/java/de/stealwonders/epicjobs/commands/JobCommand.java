@@ -175,16 +175,6 @@ public class JobCommand extends BaseCommand {
 //        sendJobList(commandSender, jobs);
 //    }
 
-    @Subcommand("list done")
-    @CommandPermission("epicjobs.command.job.list.done")
-    public void onListDone(final Player player) {
-        final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-                .filter(job -> job.getJobStatus().equals(DONE))
-                .collect(Collectors.toList());
-        sendJobMenu(player, "Done Jobs", null, jobs);
-        //todo: change action of buttons?
-    }
-
     private void sendJobMenu(final Player player, final String title, final GuiItem mainMenuItem, final List<Job> jobs) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {

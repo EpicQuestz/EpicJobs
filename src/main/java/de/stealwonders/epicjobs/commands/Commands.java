@@ -85,6 +85,7 @@ public class Commands {
         commandManager.enableUnstableAPI("help");
         commandManager.registerCommand(new JobCommand(plugin));
         commandManager.registerCommand(new ListAllCommand(plugin));
+        commandManager.registerCommand(new ListDoneCommand(plugin));
         commandManager.registerCommand(new ProjectCommand(plugin));
     }
 
