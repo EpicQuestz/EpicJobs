@@ -13,8 +13,11 @@ public class JobItemHelper {
 
     public static ItemStack getJobItem(final Job job, final String actionMessage, final InfoType... infoList) {
         final ItemStackBuilder itemStackBuilder = new ItemStackBuilder(job.getJobCategory().getMaterial())
-            .withName("§f§lJob " + job.getId())
-            .withLore(actionMessage);
+            .withName("§f§lJob " + job.getId());
+        String[] actionMessageLines = actionMessage.split("\n");
+        for (String line : actionMessageLines) {
+            itemStackBuilder.withLore(line);
+        }
         for (final InfoType informationType : infoList) {
             switch (informationType) {
                 case PROJECT:

@@ -146,7 +146,7 @@ public class JobCommand extends BaseCommand {
         final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
-    
+
     @Subcommand("mine")
     public void onMine(final Player player) {
         onListMine(player);
@@ -167,16 +167,93 @@ public class JobCommand extends BaseCommand {
         final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("§f§lActive Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)).collect(Collectors.toList());
-            sendJobMenu(player, "Your Jobs", mainMenuItem, jobs);
+            sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
         final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("§f§lCompleted Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(COMPLETE)).collect(Collectors.toList());
-            sendJobMenu(player, "Your Jobs", mainMenuItem, jobs);
+            sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
         final Gui gui = MenuHelper.getStaticSelectionGui("Select Job Status", projectItem, statusItem);
+        gui.show(player);
+    }
+
+    private void sendMyJobMenu(final Player player, final String title, final GuiItem mainMenuItem, final List<Job> jobs) {
+        final List<GuiItem> guiItems = new ArrayList<>();
+        for (final Job job : jobs) {
+            GuiItem guiItem = null;
+            switch (job.getJobStatus()) {
+                case TAKEN: {
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift left-click to mark §ldone\n§7Shift right-click to mark §labandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
+                        inventoryClickEvent.setResult(Event.Result.DENY);
+                        switch (inventoryClickEvent.getClick()) {
+                            case SHIFT_LEFT:
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
+                                player.getOpenInventory().close();
+                                Bukkit.dispatchCommand(player, "job done " + job.getId());
+                            case SHIFT_RIGHT:
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
+                                player.getOpenInventory().close();
+                                Bukkit.dispatchCommand(player, "job abandon " + job.getId());
+                                break;
+                            case LEFT:
+                                job.teleport(player);
+                                break;
+                            case RIGHT:
+                                player.sendMessage(job.getDescription());
+                                break;
+                        }
+                    });
+                } break;
+                case DONE: {
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift right-click to mark §labandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
+                        inventoryClickEvent.setResult(Event.Result.DENY);
+                        switch (inventoryClickEvent.getClick()) {
+                            case SHIFT_LEFT:
+                            case SHIFT_RIGHT:
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
+                                player.getOpenInventory().close();
+                                Bukkit.dispatchCommand(player, "job abandon " + job.getId());
+                                break;
+                            case LEFT:
+                                job.teleport(player);
+                                break;
+                            case RIGHT:
+                                player.sendMessage(job.getDescription());
+                                break;
+                        }
+                    });
+                } break;
+                case COMPLETE: {
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift-click to §lteleport", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
+                        inventoryClickEvent.setResult(Event.Result.DENY);
+                        switch (inventoryClickEvent.getClick()) {
+                            case SHIFT_LEFT:
+                            case SHIFT_RIGHT:
+                                job.teleport(player);
+                                break;
+                            case LEFT:
+                            case RIGHT:
+                                player.sendMessage(job.getDescription());
+                                break;
+                        }
+                    });
+                } break;
+            }
+            guiItems.add(guiItem);
+        }
+
+        final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
+            .withName("§f§lInformation")
+            .withLore("§7None :-)")
+            .build();
+
+        final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
 
