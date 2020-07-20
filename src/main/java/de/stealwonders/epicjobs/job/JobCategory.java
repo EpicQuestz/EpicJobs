@@ -15,7 +15,7 @@ public enum JobCategory {
     private final String name;
     private final Material material;
 
-    JobCategory(String name, Material material) {
+    JobCategory(final String name, final Material material) {
         this.name = name;
         this.material = material;
     }

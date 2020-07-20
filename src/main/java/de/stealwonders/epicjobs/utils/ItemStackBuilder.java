@@ -21,27 +21,27 @@ public class ItemStackBuilder {
 
     private final ItemStack ITEM_STACK;
 
-    public ItemStackBuilder(Material material) {
+    public ItemStackBuilder(final Material material) {
         this.ITEM_STACK = new ItemStack(material);
     }
 
-    public ItemStackBuilder(ItemStack item) {
+    public ItemStackBuilder(final ItemStack item) {
         this.ITEM_STACK = item;
     }
 
-    public ItemStackBuilder withAmount(int amount) {
+    public ItemStackBuilder withAmount(final int amount) {
         ITEM_STACK.setAmount(amount);
         return this;
     }
 
-    public ItemStackBuilder withName(String name) {
+    public ItemStackBuilder withName(final String name) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         meta.setDisplayName(Utils.color(name));
         ITEM_STACK.setItemMeta(meta);
         return this;
     }
 
-    public ItemStackBuilder withLore(String name) {
+    public ItemStackBuilder withLore(final String name) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         List<String> lore = meta.getLore();
         if (lore == null) {
@@ -53,14 +53,14 @@ public class ItemStackBuilder {
         return this;
     }
 
-    public ItemStackBuilder withLineBreakLore(ChatColor chatColor, String name) {
+    public ItemStackBuilder withLineBreakLore(final ChatColor chatColor, final String name) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         List<String> lore = meta.getLore();
         if (lore == null) {
             lore = new ArrayList<>();
         }
 
-        String[] words = name.split(" ");
+        final String[] words = name.split(" ");
         StringBuilder line = new StringBuilder(words[0]);
         if (words.length > 1) {
             for (int i = 1; i < words.length; i++) {
@@ -83,7 +83,7 @@ public class ItemStackBuilder {
         return this;
     }
 
-    public ItemStackBuilder withDurability(int durability) {
+    public ItemStackBuilder withDurability(final int durability) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         final Damageable damageable = (Damageable) meta;
         damageable.setDamage(durability);
@@ -100,7 +100,7 @@ public class ItemStackBuilder {
 
     @SuppressWarnings("deprecation")
     public ItemStackBuilder withSkullOwner(final OfflinePlayer player) {
-        Material type = ITEM_STACK.getType();
+        final Material type = ITEM_STACK.getType();
         if (type == Material.PLAYER_HEAD) {
             final ItemMeta meta = ITEM_STACK.getItemMeta();
             final SkullMeta skullMeta = (SkullMeta) meta;
@@ -114,7 +114,7 @@ public class ItemStackBuilder {
 
     @SuppressWarnings("deprecation")
     public ItemStackBuilder setSkullOwner(final UUID uuid) {
-        Material type = ITEM_STACK.getType();
+        final Material type = ITEM_STACK.getType();
         if (type == Material.PLAYER_HEAD) {
             final ItemMeta meta = ITEM_STACK.getItemMeta();
             final SkullMeta skullMeta = (SkullMeta) meta;
@@ -125,7 +125,7 @@ public class ItemStackBuilder {
         }
     }
 
-    public ItemStackBuilder withModel(int model) {
+    public ItemStackBuilder withModel(final int model) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         meta.setCustomModelData(model);
         ITEM_STACK.setItemMeta(meta);
@@ -133,17 +133,17 @@ public class ItemStackBuilder {
     }
 
 
-    public ItemStackBuilder withEnchantment(Enchantment enchantment, final int level) {
+    public ItemStackBuilder withEnchantment(final Enchantment enchantment, final int level) {
         ITEM_STACK.addUnsafeEnchantment(enchantment, level);
         return this;
     }
 
-    public ItemStackBuilder withEnchantment(Enchantment enchantment) {
+    public ItemStackBuilder withEnchantment(final Enchantment enchantment) {
         ITEM_STACK.addUnsafeEnchantment(enchantment, 1);
         return this;
     }
 
-    public ItemStackBuilder withType(Material material) {
+    public ItemStackBuilder withType(final Material material) {
         ITEM_STACK.setType(material);
         return this;
     }
@@ -156,16 +156,16 @@ public class ItemStackBuilder {
     }
 
     public ItemStackBuilder clearEnchantments() {
-        for (Enchantment enchantment : ITEM_STACK.getEnchantments().keySet()) {
+        for (final Enchantment enchantment : ITEM_STACK.getEnchantments().keySet()) {
             ITEM_STACK.removeEnchantment(enchantment);
         }
         return this;
     }
 
-    public ItemStackBuilder withColor(Color color) {
-        Material type = ITEM_STACK.getType();
+    public ItemStackBuilder withColor(final Color color) {
+        final Material type = ITEM_STACK.getType();
         if (type == Material.LEATHER_BOOTS || type == Material.LEATHER_CHESTPLATE || type == Material.LEATHER_HELMET || type == Material.LEATHER_LEGGINGS) {
-            LeatherArmorMeta meta = (LeatherArmorMeta) ITEM_STACK.getItemMeta();
+            final LeatherArmorMeta meta = (LeatherArmorMeta) ITEM_STACK.getItemMeta();
             meta.setColor(color);
             ITEM_STACK.setItemMeta(meta);
             return this;

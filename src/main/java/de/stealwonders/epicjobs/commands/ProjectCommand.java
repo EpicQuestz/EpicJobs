@@ -118,7 +118,7 @@ public class ProjectCommand extends BaseCommand {
     @Subcommand("edit name")
     @CommandCompletion("@project @nothing")
     @CommandPermission("epicjobs.command.project.edit")
-    public void onEditName(final Player player, final Project project, String name) {
+    public void onEditName(final Player player, final Project project, final String name) {
         project.setName(name);
         player.sendMessage("Set name of project to " + name);
         plugin.getStorageImplementation().updateProject(project);
@@ -136,7 +136,7 @@ public class ProjectCommand extends BaseCommand {
     @Subcommand("edit leader")
     @CommandCompletion("@project @players")
     @CommandPermission("epicjobs.command.project.edit")
-    public void onEditLeader(final Player player, final Project project, OnlinePlayer leader) {
+    public void onEditLeader(final Player player, final Project project, final OnlinePlayer leader) {
         project.setLeader(leader.getPlayer());
         player.sendMessage("Set project leader to " + leader.getPlayer().getName());
         plugin.getStorageImplementation().updateProject(project);
