@@ -8,9 +8,9 @@ import java.util.List;
 
 public class JobManager {
 
-    private EpicJobs plugin;
+    private final EpicJobs plugin;
 
-    private List<Job> jobs;
+    private final List<Job> jobs;
 
     public JobManager(final EpicJobs plugin) {
         this.plugin = plugin;

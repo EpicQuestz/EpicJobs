@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SettingsFile {
 
-    private File file;
-    private YamlConfiguration yamlConfiguration;
+    private final File file;
+    private final YamlConfiguration yamlConfiguration;
 
     private static final String MYSQL_INFO = "mysql.";
 

@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class EpicJobsPlayer {
 
-    private UUID uuid;
-    private List<Job> jobs;
+    private final UUID uuid;
+    private final List<Job> jobs;
 
     public EpicJobsPlayer(final UUID uuid) {
         this.uuid = uuid;

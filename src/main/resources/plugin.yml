@@ -7,7 +7,7 @@ description: Helps manage builder tasks and jobs.
 website: www.stealwonders.de
 
 depend: [PlayerUUIDCache]
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, Hyperverse]
 
 commands:
   # handled by the Aikar annotation command framework (ACF).

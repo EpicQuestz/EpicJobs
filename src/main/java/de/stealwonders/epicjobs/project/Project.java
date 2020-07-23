@@ -11,13 +11,13 @@ import java.util.UUID;
 
 public class Project {
 
-    private int id;
+    private final int id;
     private String name;
     private UUID leader;
-    private long creationTime;
+    private final long creationTime;
     private Location location;
     private ProjectStatus projectStatus;
-    private List<Job> jobs;
+    private final List<Job> jobs;
 
     public Project(final int id, final String name, final Player leader) {
         this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE);
