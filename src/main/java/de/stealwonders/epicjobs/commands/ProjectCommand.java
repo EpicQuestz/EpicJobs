@@ -59,7 +59,7 @@ public class ProjectCommand extends BaseCommand {
             });
             final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
             sender.sendMessage("");
-            TextAdapter.sendComponent(sender, message);
+            TextAdapter.sendMessage(sender, message);
             sender.sendMessage("");
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);
@@ -83,7 +83,7 @@ public class ProjectCommand extends BaseCommand {
             });
             final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
             sender.sendMessage("");
-            TextAdapter.sendComponent(sender, message);
+            TextAdapter.sendMessage(sender, message);
             sender.sendMessage("");
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);

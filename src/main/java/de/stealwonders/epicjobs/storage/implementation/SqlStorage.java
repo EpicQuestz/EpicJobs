@@ -55,7 +55,7 @@ public class SqlStorage implements StorageImplementation {
 //      "FOREIGN KEY (project) REFERENCES project (id);" +
 //      "CREATE INDEX IF NOT EXISTS project ON job (project);";
 
-    private EpicJobs plugin;
+    private final EpicJobs plugin;
 
     public SqlStorage(final EpicJobs plugin) {
         this.plugin = plugin;

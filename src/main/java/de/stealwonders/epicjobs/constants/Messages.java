@@ -76,7 +76,7 @@ public enum Messages {
 //    PROJECT_NAME_NO_SPACES("A project name cannot contain spaces."),
 //    PROJECT_ALREADY_COMPLETE("The project you want to create a job for has already been complete."),
 
-    private String message;
+    private final String message;
 
     Messages(final String message) {
         this.message = message;

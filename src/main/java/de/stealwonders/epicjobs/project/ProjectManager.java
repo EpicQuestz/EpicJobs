@@ -8,9 +8,9 @@ import java.util.List;
 
 public class ProjectManager {
 
-    private EpicJobs plugin;
+    private final EpicJobs plugin;
 
-    private List<Project> projects;
+    private final List<Project> projects;
 
     public ProjectManager(final EpicJobs plugin) {
         this.plugin = plugin;

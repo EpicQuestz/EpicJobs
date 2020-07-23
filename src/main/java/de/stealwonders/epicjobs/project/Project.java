@@ -17,7 +17,7 @@ public class Project {
     private final long creationTime;
     private Location location;
     private ProjectStatus projectStatus;
-    private List<Job> jobs;
+    private final List<Job> jobs;
 
     public Project(final int id, final String name, final Player leader) {
         this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE);
