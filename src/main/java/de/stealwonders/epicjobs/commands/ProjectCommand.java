@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import static de.stealwonders.epicjobs.constants.Messages.*;
 
 @CommandAlias("project|projects")
+@CommandPermission("epicjobs.command.project")
 public class ProjectCommand extends BaseCommand {
 
     private final EpicJobs plugin;

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static de.stealwonders.epicjobs.job.JobStatus.DONE;
 
 @CommandAlias("job|jobs")
+@CommandPermission("epicjobs.command.job")
 public class ListDoneCommand extends BaseCommand {
 
     private final EpicJobs plugin;

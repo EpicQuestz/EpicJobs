@@ -2,6 +2,7 @@ package de.stealwonders.epicjobs.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @CommandAlias("job|jobs")
+@CommandPermission("epicjobs.command.job")
 public class ListAllCommand extends BaseCommand {
 
     private final EpicJobs plugin;
@@ -65,10 +67,10 @@ public class ListAllCommand extends BaseCommand {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Project project : plugin.getProjectManager().getProjects()) {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
-                .withName("§f§l" + project.getName())
-                .withLore("§7Shift-click to teleport")
-                .withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeader()))
-                .build();
+                    .withName("§f§l" + project.getName())
+                    .withLore("§7Shift-click to teleport")
+                    .withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeader()))
+                    .build();
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
@@ -79,8 +81,8 @@ public class ListAllCommand extends BaseCommand {
                     case LEFT:
                     case RIGHT:
                         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-                            .filter(job -> job.getProject().equals(project))
-                            .collect(Collectors.toList());
+                                .filter(job -> job.getProject().equals(project))
+                                .collect(Collectors.toList());
                         sendJobMenu(player, jobs);
                         break;
                 }
@@ -97,8 +99,8 @@ public class ListAllCommand extends BaseCommand {
             final GuiItem guiItem = new GuiItem(new ItemStackBuilder(Material.OAK_SIGN).withName("§f§l" + jobStatus.name()).build(), inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-                    .filter(job -> job.getJobStatus().equals(jobStatus))
-                    .collect(Collectors.toList());
+                        .filter(job -> job.getJobStatus().equals(jobStatus))
+                        .collect(Collectors.toList());
                 sendJobMenu(player, jobs);
             });
             guiItems.add(guiItem);
@@ -113,8 +115,8 @@ public class ListAllCommand extends BaseCommand {
             final GuiItem guiItem = new GuiItem(new ItemStackBuilder(jobCategory.getMaterial()).withName("§f§l" + jobCategory.name()).build(), inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-                    .filter(job -> job.getJobCategory().equals(jobCategory))
-                    .collect(Collectors.toList());
+                        .filter(job -> job.getJobCategory().equals(jobCategory))
+                        .collect(Collectors.toList());
                 sendJobMenu(player, jobs);
             });
             guiItems.add(guiItem);
@@ -149,10 +151,10 @@ public class ListAllCommand extends BaseCommand {
         });
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("§f§lInformation")
-            .withLore("§7§lTeleport §7to job by using shift-click")
-            .withLore("§7Click to §lview job info")
-            .build();
+                .withName("§f§lInformation")
+                .withLore("§7§lTeleport §7to job by using shift-click")
+                .withLore("§7Click to §lview job info")
+                .build();
 
         final Gui gui = MenuHelper.getPaginatedGui("Available Jobs", guiItems, mainMenuItem, infoBook);
         gui.show(player);

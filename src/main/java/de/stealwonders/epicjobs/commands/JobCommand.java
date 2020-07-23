@@ -46,6 +46,7 @@ import static de.stealwonders.epicjobs.constants.Messages.*;
 import static de.stealwonders.epicjobs.job.JobStatus.*;
 
 @CommandAlias("job|jobs")
+@CommandPermission("epicjobs.command.job")
 public class JobCommand extends BaseCommand {
 
     private final EpicJobs plugin;
