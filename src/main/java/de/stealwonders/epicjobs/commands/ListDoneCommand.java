@@ -56,6 +56,8 @@ public class ListDoneCommand extends BaseCommand {
                         Bukkit.dispatchCommand(player, "job reopen " + job.getId());
                         break;
                     case LEFT:
+                        job.teleport(player);
+                        break;
                     case RIGHT:
                         player.sendMessage(job.getDescription());
                         break;
