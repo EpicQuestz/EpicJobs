@@ -116,7 +116,7 @@ public class JobCommand extends BaseCommand {
     private void sendJobMenu(final Player player, final String title, final GuiItem mainMenuItem, final List<Job> jobs) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
-            final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift-click to mark §lclaim", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+            final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift-click to §lclaim", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
