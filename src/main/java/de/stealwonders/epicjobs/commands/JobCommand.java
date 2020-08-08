@@ -195,6 +195,7 @@ public class JobCommand extends BaseCommand {
                                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
                                 player.getOpenInventory().close();
                                 Bukkit.dispatchCommand(player, "job done " + job.getId());
+                                break;
                             case SHIFT_RIGHT:
                                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 0);
                                 player.getOpenInventory().close();
