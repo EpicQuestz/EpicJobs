@@ -21,6 +21,9 @@ public enum Messages {
     ANNOUNCE_JOB_ABANDONMENT("§c%s has abandoned job §b#%s.\n§aIt is available to be claimed again."),
     JOB_CANT_BE_ABANDONED("§cYou can only abandon jobs that are incomplete."),
 
+    // Jobs Teleport
+    PLAYER_JOB_TELEPORT("§eTeleporting to job site #%s"),
+
     // Jobs Done
     ANNOUNCE_JOB_DONE("§a%s has marked job §b#%s§a as done."),
     JOB_HAS_TO_BE_ACTIVE("§cThe job has to be active to be marked done."),
@@ -63,6 +66,9 @@ public enum Messages {
 
     // Project Edit
     PLAYER_NOT_FOUND("§cPlayer %s could not be found."),
+
+    // Project Teleport
+    PLAYER_PROJECT_TELEPORT("§eTeleporting to project site %s"),
 
     // Project Complete
     ANNOUNCE_PROJECT_COMPLETION("§aProject %s has been completed!");

@@ -1,6 +1,7 @@
 package de.stealwonders.epicjobs.project;
 
 import com.google.common.collect.ImmutableList;
+import de.stealwonders.epicjobs.constants.Messages;
 import de.stealwonders.epicjobs.job.Job;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -87,6 +88,7 @@ public class Project {
 
     public void teleport(final Player player) {
         player.teleportAsync(this.getLocation());
+        Messages.PLAYER_PROJECT_TELEPORT.send(player, getName());
     }
 
 }

@@ -1,5 +1,6 @@
 package de.stealwonders.epicjobs.job;
 
+import de.stealwonders.epicjobs.constants.Messages;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.Location;
@@ -112,6 +113,7 @@ public class Job {
 
     public void teleport(final Player player) {
         player.teleportAsync(this.getLocation());
+        Messages.PLAYER_JOB_TELEPORT.send(player, getId());
     }
 
 }
