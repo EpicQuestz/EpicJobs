@@ -14,6 +14,8 @@ import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import me.lucko.helper.internal.HelperImplementationPlugin;
+import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.event.ClickEvent;
@@ -26,7 +28,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashSet;
@@ -36,7 +37,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public final class EpicJobs extends JavaPlugin implements Listener {
+@HelperImplementationPlugin
+public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
     private static PlayerUUIDCacheAPI playerUuidCache;
 
@@ -58,7 +60,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     private Set<EpicJobsPlayer> epicJobsPlayers;
 
     @Override
-    public void onEnable() {
+    protected void enable() {
         // Plugin startup logic
 
         playerUuidCache = getServer().getServicesManager().load(PlayerUUIDCacheAPI.class);
@@ -89,7 +91,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     }
 
     @Override
-    public void onDisable() {
+    protected void disable() {
         // Plugin shutdown logic
 
         storageImplementation.shutdown();
