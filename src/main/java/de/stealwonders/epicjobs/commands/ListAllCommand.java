@@ -156,7 +156,7 @@ public class ListAllCommand extends BaseCommand {
                 .withLore("§7Click to §lview job info")
                 .build();
 
-        final Gui gui = MenuHelper.getPaginatedGui("Available Jobs", guiItems, mainMenuItem, infoBook);
+        final Gui gui = MenuHelper.getPaginatedGui("All Jobs", guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
 

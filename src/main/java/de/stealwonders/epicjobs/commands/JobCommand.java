@@ -84,7 +84,8 @@ public class JobCommand extends BaseCommand {
             sendProjectMenu(player);
         });
         final List<GuiItem> guiItems = new ArrayList<>();
-        for (final Project project : plugin.getProjectManager().getProjects()) {
+        final List<Project> projects = plugin.getProjectManager().getProjects().stream().filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE)).collect(Collectors.toList());
+        for (final Project project : projects) {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
                 .withName("§f§l" + project.getName())
                 .withLore("§7Shift-click to teleport")
