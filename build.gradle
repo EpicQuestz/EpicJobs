@@ -21,10 +21,6 @@ repositories {
         url = 'https://repo.destroystokyo.com/repository/maven-public/'
     }
     maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-    maven {
         name = 'brokko-repo'
         url = 'https://www.iani.de/nexus/content/groups/public'
     }

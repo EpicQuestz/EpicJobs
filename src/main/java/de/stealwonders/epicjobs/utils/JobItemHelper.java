@@ -1,6 +1,6 @@
 package de.stealwonders.epicjobs.utils;
 
-import de.stealwonders.epicjobs.job.Job;
+import de.stealwonders.epicjobs.model.job.Job;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 

@@ -5,7 +5,7 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import de.iani.playerUUIDCache.CachedPlayer;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.job.Job;
+import de.stealwonders.epicjobs.model.job.Job;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

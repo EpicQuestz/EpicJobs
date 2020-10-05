@@ -1,4 +1,4 @@
-package de.stealwonders.epicjobs.job;
+package de.stealwonders.epicjobs.model.job;
 
 public enum JobStatus {
 
@@ -7,7 +7,7 @@ public enum JobStatus {
     DONE (2),
     COMPLETE (3);
 
-    private int weight;
+    private final int weight;
 
     JobStatus(final int weight) {
         this.weight = weight;

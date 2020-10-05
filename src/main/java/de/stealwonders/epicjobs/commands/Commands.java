@@ -5,9 +5,9 @@ import co.aikar.commands.MessageKeys;
 import co.aikar.commands.PaperCommandManager;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.constants.Messages;
-import de.stealwonders.epicjobs.job.Job;
-import de.stealwonders.epicjobs.project.Project;
-import de.stealwonders.epicjobs.project.ProjectStatus;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.project.Project;
+import de.stealwonders.epicjobs.model.project.ProjectStatus;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

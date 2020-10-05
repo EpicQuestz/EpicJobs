@@ -1,4 +1,4 @@
-package de.stealwonders.epicjobs.project;
+package de.stealwonders.epicjobs.model.project;
 
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
@@ -18,7 +18,7 @@ public class ProjectManager {
     }
 
     public void firstLoad() {
-        plugin.getStorageImplementation().loadAllProjects();
+        projects.addAll(plugin.getStorage().loadAllProjects());
     }
 
     public List<Project> getProjects() {

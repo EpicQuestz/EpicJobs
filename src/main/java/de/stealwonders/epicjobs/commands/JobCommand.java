@@ -13,16 +13,17 @@ import com.github.stefvanschie.inventoryframework.GuiItem;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.constants.SkullHeads;
-import de.stealwonders.epicjobs.job.Job;
-import de.stealwonders.epicjobs.job.JobCategory;
-import de.stealwonders.epicjobs.job.JobStatus;
-import de.stealwonders.epicjobs.project.Project;
-import de.stealwonders.epicjobs.project.ProjectStatus;
-import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.job.JobCategory;
+import de.stealwonders.epicjobs.model.job.JobStatus;
+import de.stealwonders.epicjobs.model.project.Project;
+import de.stealwonders.epicjobs.model.project.ProjectStatus;
+import de.stealwonders.epicjobs.user.User;
 import de.stealwonders.epicjobs.utils.ItemStackBuilder;
 import de.stealwonders.epicjobs.utils.JobItemHelper;
 import de.stealwonders.epicjobs.utils.MenuHelper;
 import de.stealwonders.epicjobs.utils.Utils;
+import me.lucko.helper.promise.Promise;
 import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
@@ -43,7 +44,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static de.stealwonders.epicjobs.constants.Messages.*;
-import static de.stealwonders.epicjobs.job.JobStatus.*;
+import static de.stealwonders.epicjobs.model.job.JobStatus.*;
 
 @CommandAlias("job|jobs")
 @CommandPermission("epicjobs.command.job")
@@ -88,7 +89,7 @@ public class JobCommand extends BaseCommand {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
                 .withName("§f§l" + project.getName())
                 .withLore("§7Shift-click to teleport")
-                .withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeader()))
+                .withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeaders().stream().findFirst().get()))
                 .build();
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
@@ -155,25 +156,25 @@ public class JobCommand extends BaseCommand {
 
     @Subcommand("list mine")
     public void onListMine(final Player player) {
-        final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+        final Optional<User> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
         epicJobsPlayer.ifPresent(jobsPlayer -> sendStatusSelectionMenu(player, jobsPlayer));
     }
 
-    private void sendStatusSelectionMenu(final Player player, final EpicJobsPlayer epicJobsPlayer) {
+    private void sendStatusSelectionMenu(final Player player, final User user) {
         final GuiItem mainMenuItem = new GuiItem(BACK_BUTTON, inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
-            sendStatusSelectionMenu(player, epicJobsPlayer);
+            sendStatusSelectionMenu(player, user);
         });
 
         final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("§f§lActive Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
-            final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)).collect(Collectors.toList());
+            final List<Job> jobs = user.getJobs().stream().filter(job -> job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)).collect(Collectors.toList());
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
         final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("§f§lCompleted Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
-            final List<Job> jobs = epicJobsPlayer.getJobs().stream().filter(job -> job.getJobStatus().equals(COMPLETE)).collect(Collectors.toList());
+            final List<Job> jobs = user.getJobs().stream().filter(job -> job.getJobStatus().equals(COMPLETE)).collect(Collectors.toList());
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
@@ -317,7 +318,7 @@ public class JobCommand extends BaseCommand {
     public void onClaim(final Player player, final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+                final Optional<User> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
                 if (job == null) {
                     JOB_DOESNT_EXIST.send(player);
                     return false;
@@ -337,7 +338,7 @@ public class JobCommand extends BaseCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .async(() -> plugin.getStorage().updateJob(job))
             .execute();
     }
 
@@ -346,7 +347,7 @@ public class JobCommand extends BaseCommand {
     public void onAbandon(final Player player, @co.aikar.commands.annotation.Optional final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+                final Optional<User> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
                 final List<Job> jobs = epicJobsPlayer.isPresent() ? epicJobsPlayer.get().getJobs() : new ArrayList<>();
                 Job jobEdited = null;
                 if (epicJobsPlayer.isPresent()) {
@@ -381,7 +382,7 @@ public class JobCommand extends BaseCommand {
                 return jobEdited;
             })
             .abortIfNull()
-            .asyncLast((jobEdited) -> plugin.getStorageImplementation().updateJob(jobEdited))
+            .asyncLast((jobEdited) -> plugin.getStorage().updateJob(jobEdited))
             .execute();
     }
 
@@ -407,8 +408,8 @@ public class JobCommand extends BaseCommand {
     public void onDone(final Player player, @co.aikar.commands.annotation.Optional final Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId()).get();
-                final List<Job> jobs = epicJobsPlayer.getActiveJobs();
+                final User user = plugin.getEpicJobsPlayer(player.getUniqueId()).get();
+                final List<Job> jobs = user.getActiveJobs();
                 Job jobEdited = null;
 
                 if (job == null) {
@@ -441,7 +442,7 @@ public class JobCommand extends BaseCommand {
                 return jobEdited;
             })
             .abortIfNull()
-            .asyncLast((jobedited) -> plugin.getStorageImplementation().updateJob(jobedited))
+            .asyncLast((jobedited) -> plugin.getStorage().updateJob(jobedited))
             .execute();
     }
 
@@ -461,7 +462,7 @@ public class JobCommand extends BaseCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .async(() -> plugin.getStorage().updateJob(job))
             .execute();
     }
 
@@ -475,7 +476,7 @@ public class JobCommand extends BaseCommand {
                     case TAKEN:
                         job.setJobStatus(JobStatus.OPEN);
                         job.setClaimant(null);
-                        final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
+                        final Optional<User> epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
                         epicJobsPlayer.ifPresent(jobsPlayer -> jobsPlayer.removeJob(job));
                         ANNOUNCE_JOB_REOPEN.send(player, player.getName(), job.getId());
                         return true;
@@ -493,7 +494,7 @@ public class JobCommand extends BaseCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .async(() -> plugin.getStorage().updateJob(job))
             .execute();
     }
 
@@ -511,7 +512,7 @@ public class JobCommand extends BaseCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .async(() -> plugin.getStorage().updateJob(job))
             .execute();
     }
 
@@ -532,7 +533,7 @@ public class JobCommand extends BaseCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .async(() -> plugin.getStorage().updateJob(job))
             .execute();
     }
 
@@ -540,6 +541,22 @@ public class JobCommand extends BaseCommand {
     @CommandCompletion("@project * *")
     @CommandPermission("epicjobs.command.job.create")
     public void onCreate(final Player player, final Project project, final JobCategory jobCategory, final String description) {
+        Promise<Boolean> createPromise = Promise.start()
+            .thenApplySync(something -> {
+                if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
+                    CREATING_JOB.sendActionbar(player);
+                    return true;
+                } else {
+                    PROJECT_ALREADY_COMPLETE.send(player);
+                    return false;
+                }
+            });
+
+        createPromise.thenAcceptAsync(shallContinue -> plugin.getStorage().createAndLoadJob(player, description, project, jobCategory));
+
+
+
+
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
@@ -552,7 +569,7 @@ public class JobCommand extends BaseCommand {
             })
             .abortIf(false)
             .asyncFirst(() -> {
-                final Job job = plugin.getStorageImplementation().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
+                final Job job = plugin.getStorage().createAndLoadJob(player, description, project, jobCategory);
                 plugin.getJobManager().addJob(job);
                 return job;
             })
@@ -573,7 +590,7 @@ public class JobCommand extends BaseCommand {
                 plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
                 REMOVING_JOB.sendActionbar(player, job.getId());
             })
-            .async(() -> plugin.getStorageImplementation().deleteJob(job))
+            .async(() -> plugin.getStorage().deleteJob(job))
             .sync(() -> SUCCESSFULLY_REMOVED_JOB.send(player)
         ).execute();
     }
@@ -584,7 +601,7 @@ public class JobCommand extends BaseCommand {
     public void onEditName(final Player player, final Job job, final String description) {
         job.setDescription(description);
         player.sendMessage("Set description of job to: " + description);
-        plugin.getStorageImplementation().updateJob(job);
+        plugin.getStorage().updateJob(job);
     }
 
     @Subcommand("edit location")
@@ -593,14 +610,14 @@ public class JobCommand extends BaseCommand {
     public void onEditLocation(final Player player, final Job job) {
         job.setLocation(player.getLocation());
         player.sendMessage("Set job location to your current on");
-        plugin.getStorageImplementation().updateJob(job);
+        plugin.getStorage().updateJob(job);
     }
 
     @Subcommand("stats")
     @CommandPermission("epicjobs.command.job.stats")
     public void onStats(final Player player, @co.aikar.commands.annotation.Optional final Player target) {
-        final EpicJobsPlayer epicJobsPlayer = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()).get() : plugin.getEpicJobsPlayer(player.getUniqueId()).get();
-        player.sendMessage("Completed jobs: " + epicJobsPlayer.getCompletedJobs().size());
+        final User user = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()).get() : plugin.getEpicJobsPlayer(player.getUniqueId()).get();
+        player.sendMessage("Completed jobs: " + user.getCompletedJobs().size());
     }
 
 }

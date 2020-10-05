@@ -12,8 +12,8 @@ import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.project.Project;
-import de.stealwonders.epicjobs.project.ProjectStatus;
+import de.stealwonders.epicjobs.model.project.Project;
+import de.stealwonders.epicjobs.model.project.ProjectStatus;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.event.ClickEvent;
@@ -105,7 +105,7 @@ public class ProjectCommand extends BaseCommand {
             })
             .abortIf(false)
             .asyncFirst(() -> {
-                final Project project = (leader == null) ? plugin.getStorageImplementation().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorageImplementation().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
+                final Project project = (leader == null) ? plugin.getStorage().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorage().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
                 plugin.getProjectManager().addProject(project);
                 return project;
             })
@@ -122,7 +122,7 @@ public class ProjectCommand extends BaseCommand {
     public void onEditName(final Player player, final Project project, final String name) {
         project.setName(name);
         player.sendMessage("Set name of project to " + name);
-        plugin.getStorageImplementation().updateProject(project);
+        plugin.getStorage().updateProject(project);
     }
 
     @Subcommand("edit location")
@@ -131,7 +131,7 @@ public class ProjectCommand extends BaseCommand {
     public void onEditLocation(final Player player, final Project project) {
         project.setLocation(player.getLocation());
         player.sendMessage("Updated project location to your current");
-        plugin.getStorageImplementation().updateProject(project);
+        plugin.getStorage().updateProject(project);
     }
 
     @Subcommand("edit leader")
@@ -140,7 +140,7 @@ public class ProjectCommand extends BaseCommand {
     public void onEditLeader(final Player player, final Project project, final OnlinePlayer leader) {
         project.setLeader(leader.getPlayer());
         player.sendMessage("Set project leader to " + leader.getPlayer().getName());
-        plugin.getStorageImplementation().updateProject(project);
+        plugin.getStorage().updateProject(project);
     }
 
     @Subcommand("teleport|tp")
@@ -165,7 +165,7 @@ public class ProjectCommand extends BaseCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateProject(project))
+            .async(() -> plugin.getStorage().updateProject(project))
             .execute();
     }
 

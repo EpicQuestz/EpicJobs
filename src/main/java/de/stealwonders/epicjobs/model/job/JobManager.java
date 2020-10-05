@@ -1,4 +1,4 @@
-package de.stealwonders.epicjobs.job;
+package de.stealwonders.epicjobs.model.job;
 
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
@@ -18,7 +18,7 @@ public class JobManager {
     }
 
     public void firstLoad() {
-        plugin.getStorageImplementation().loadAllJobs();
+        jobs.addAll(plugin.getStorage().loadAllJobs());
     }
 
     public List<Job> getJobs() {
@@ -50,16 +50,6 @@ public class JobManager {
             }
         }
         return ImmutableList.copyOf(jobList);
-    }
-
-    public int getFreeId() {
-        int maxNumber = 0;
-        for (final Job job : jobs) {
-            if (job.getId() > maxNumber) {
-                maxNumber = job.getId();
-            }
-        }
-        return maxNumber + 1;
     }
 
 }

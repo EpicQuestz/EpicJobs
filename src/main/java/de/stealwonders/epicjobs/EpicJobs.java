@@ -6,14 +6,14 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.commands.Commands;
-import de.stealwonders.epicjobs.job.Job;
-import de.stealwonders.epicjobs.job.JobManager;
-import de.stealwonders.epicjobs.job.JobStatus;
-import de.stealwonders.epicjobs.project.ProjectManager;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.job.JobManager;
+import de.stealwonders.epicjobs.model.job.JobStatus;
+import de.stealwonders.epicjobs.model.project.ProjectManager;
 import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
-import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import de.stealwonders.epicjobs.user.User;
 import me.lucko.helper.internal.HelperImplementationPlugin;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import net.kyori.text.TextComponent;
@@ -54,10 +54,10 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
     private JobManager jobManager;
 
     private HikariDataSource hikariDataSource;
-    private StorageImplementation storageImplementation;
+    private StorageImplementation storage;
 
     private Commands commands;
-    private Set<EpicJobsPlayer> epicJobsPlayers;
+    private Set<User> users;
 
     @Override
     protected void enable() {
@@ -74,17 +74,17 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
         hikariDataSource = new HikariDataSource();
         settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration());
-        storageImplementation = new SqlStorage(this);
-        storageImplementation.init();
+        storage = new SqlStorage(this);
+        storage.init();
         projectManager.firstLoad();
         jobManager.firstLoad();
 
         commands = new Commands(this);
-        epicJobsPlayers = new HashSet<>();
+        users = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> {
-            final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
-            loadPlayerJobs(epicJobsPlayer);
-            epicJobsPlayers.add(epicJobsPlayer);
+            final User user = new User(player.getUniqueId(), player.getName());
+            loadPlayerJobs(user);
+            users.add(user);
         });
 
         registerListeners();
@@ -94,9 +94,9 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
     protected void disable() {
         // Plugin shutdown logic
 
-        storageImplementation.shutdown();
+        storage.shutdown();
 
-        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer)));
+        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer)));
     }
 
     private void registerListeners() {
@@ -111,28 +111,28 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
         return hikariDataSource;
     }
 
-    public StorageImplementation getStorageImplementation() {
-        return storageImplementation;
+    public StorageImplementation getStorage() {
+        return storage;
     }
 
     public SettingsFile getSettingsFile() {
         return settingsFile;
     }
 
-    public Optional<EpicJobsPlayer> getEpicJobsPlayer(final UUID uuid) {
-        for (final EpicJobsPlayer epicJobsPlayer : epicJobsPlayers) {
-            if (epicJobsPlayer.getUuid().equals(uuid)) {
-                return Optional.of(epicJobsPlayer);
+    public Optional<User> getEpicJobsPlayer(final UUID uuid) {
+        for (final User user : users) {
+            if (user.getUniqueId().equals(uuid)) {
+                return Optional.of(user);
             }
         }
         return Optional.empty();
     }
 
-    private void loadPlayerJobs(final EpicJobsPlayer epicJobsPlayer) {
+    private void loadPlayerJobs(final User user) {
         for (final Job job : jobManager.getJobs()) {
             if (job.getClaimant() != null) {
-                if (job.getClaimant().equals(epicJobsPlayer.getUuid())) {
-                    epicJobsPlayer.addJob(job);
+                if (job.getClaimant().equals(user.getUniqueId())) {
+                    user.addJob(job);
                 }
             }
         }
@@ -149,9 +149,9 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
-        loadPlayerJobs(epicJobsPlayer);
-        epicJobsPlayers.add(epicJobsPlayer);
+        final User user = new User(player.getUniqueId(), player.getName());
+        loadPlayerJobs(user);
+        users.add(user);
         if (player.hasPermission("epicjobs.command.job.list.done")) {
             final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
             if (jobs.size() >= 1) {
@@ -167,7 +167,7 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
-        getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer));
+        getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer));
     }
 
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {

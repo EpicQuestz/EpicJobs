@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Subcommand;
 import com.github.stefvanschie.inventoryframework.Gui;
 import com.github.stefvanschie.inventoryframework.GuiItem;
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.job.Job;
+import de.stealwonders.epicjobs.model.job.Job;
 import de.stealwonders.epicjobs.utils.ItemStackBuilder;
 import de.stealwonders.epicjobs.utils.JobItemHelper;
 import de.stealwonders.epicjobs.utils.MenuHelper;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.stealwonders.epicjobs.job.JobStatus.DONE;
+import static de.stealwonders.epicjobs.model.job.JobStatus.DONE;
 
 @CommandAlias("job|jobs")
 @CommandPermission("epicjobs.command.job")

@@ -1,36 +1,45 @@
 package de.stealwonders.epicjobs.user;
 
 import com.google.common.collect.ImmutableList;
-import de.stealwonders.epicjobs.job.Job;
-import de.stealwonders.epicjobs.job.JobStatus;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.job.JobStatus;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public class EpicJobsPlayer {
+public class User {
 
     private final UUID uuid;
+    private final String name;
     private final List<Job> jobs;
 
-    public EpicJobsPlayer(final UUID uuid) {
+    public User(@Nonnull UUID uuid, @Nullable String name) {
         this.uuid = uuid;
+        this.name = name;
         this.jobs = new ArrayList<>();
     }
 
-    public UUID getUuid() {
+    public UUID getUniqueId() {
         return uuid;
+    }
+
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
     }
 
     public List<Job> getJobs() {
         return ImmutableList.copyOf(jobs);
     }
 
-    public void addJob(final Job job) {
+    public void addJob(@Nonnull Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(final Job job) {
+    public void removeJob(@Nonnull Job job) {
         jobs.remove(job);
     }
 

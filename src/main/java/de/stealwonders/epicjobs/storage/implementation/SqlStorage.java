@@ -1,16 +1,29 @@
 package de.stealwonders.epicjobs.storage.implementation;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.job.Job;
-import de.stealwonders.epicjobs.job.JobCategory;
-import de.stealwonders.epicjobs.job.JobStatus;
-import de.stealwonders.epicjobs.project.Project;
-import de.stealwonders.epicjobs.project.ProjectStatus;
-import de.stealwonders.epicjobs.user.EpicJobsPlayer;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.job.JobCategory;
+import de.stealwonders.epicjobs.model.job.JobStatus;
+import de.stealwonders.epicjobs.model.project.Project;
+import de.stealwonders.epicjobs.model.project.ProjectStatus;
+import de.stealwonders.epicjobs.storage.SchemaReader;
 import de.stealwonders.epicjobs.utils.Utils;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
-import java.sql.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SqlStorage implements StorageImplementation {
@@ -18,42 +31,15 @@ public class SqlStorage implements StorageImplementation {
     private static final String PROJECT_SELECT_ALL = "SELECT * FROM project;";
     private static final String JOB_SELECT_ALL = "SELECT * FROM job;";
 
-    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leader = ?, location = ?, projectstatus = ? WHERE id = ?;";
-    private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
+    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leaders = ?, location = ?, projectstatus = ? WHERE id = ?;";
+    private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, updatetime = NOW(), description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
 
-    private static final String PROJECT_INSERT = "INSERT INTO project(name, leader, location, projectstatus) VALUES (?, ?, ?, ?);";
+    private static final String PROJECT_INSERT = "INSERT INTO project(name, leaders, location, projectstatus) VALUES (?, ?, ?, ?);";
     private static final String JOB_INSERT = "INSERT INTO job(creator, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?);";
     private static final String GET_ID = "SELECT LAST_INSERT_ID() AS 'id';";
 
     private static final String PROJECT_DELETE = "DELETE FROM project WHERE id = ?;";
     private static final String JOB_DELETE = "DELETE FROM job WHERE id = ?;";
-
-    private static final String PROJECT_TABLE_CREATE =
-        "CREATE TABLE IF NOT EXISTS project (" +
-        "id INT(11) COLLATE utf8_bin AUTO_INCREMENT PRIMARY KEY," +
-        "name VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-        "leader VARCHAR(36) COLLATE utf8_bin NOT NULL," +
-        "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL," +
-        "location VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-        "projectstatus enum('ACTIVE', 'COMPLETE') NOT NULL" +
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-//      "CREATE INDEX IF NOT EXISTS id ON project (id);";
-
-    private static final String JOB_TABLE_CREATE =
-        "CREATE TABLE IF NOT EXISTS job (\n" +
-        "id INT(11) AUTO_INCREMENT PRIMARY KEY,\n" +
-        "creator VARCHAR(36) COLLATE utf8_bin NOT NULL,\n" +
-        "claimant VARCHAR(36) COLLATE utf8_bin NULL,\n" +
-        "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
-        "description VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-        "project INT NOT NULL,\n" +
-        "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
-        "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
-        "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-//      "CONSTRAINT job_ibfk_1" +
-//      "FOREIGN KEY (project) REFERENCES project (id);" +
-//      "CREATE INDEX IF NOT EXISTS project ON job (project);";
 
     private final EpicJobs plugin;
 
@@ -69,26 +55,52 @@ public class SqlStorage implements StorageImplementation {
     @Override
     public void init() {
 
-        Connection connection = null;
-
         try {
-            connection = plugin.getHikariDataSource().getConnection();
-
-            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_TABLE_CREATE);
-            preparedStatement.execute();
-
-            preparedStatement = connection.prepareStatement(JOB_TABLE_CREATE);
-            preparedStatement.execute();
-            preparedStatement.close();
-        } catch (final SQLException e) {
+            applySchema();
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (final SQLException e) {
-                    e.printStackTrace();
+        }
+
+//        Connection connection = null;
+//
+//        try {
+//            connection = plugin.getHikariDataSource().getConnection();
+//
+//            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_TABLE_CREATE);
+//            preparedStatement.execute();
+//
+//            preparedStatement = connection.prepareStatement(JOB_TABLE_CREATE);
+//            preparedStatement.execute();
+//            preparedStatement.close();
+//        } catch (final SQLException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (connection != null) {
+//                try {
+//                    connection.close();
+//                } catch (final SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+
+    }
+
+    private void applySchema() throws IOException, SQLException {
+        List<String> statements;
+        try (InputStream inputStream = this.plugin.getResource("database_schema.sql")) {
+            if (inputStream == null) {
+                throw new IOException("Couldn't locate schema file for database.");
+            }
+            statements = new ArrayList<>(SchemaReader.getStatements(inputStream));
+        }
+
+        try (Connection connection = plugin.getHikariDataSource().getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                for (String query : statements) {
+                    statement.addBatch(query);
                 }
+                statement.executeBatch();
             }
         }
     }
@@ -100,12 +112,7 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public EpicJobsPlayer loadPlayer(final UUID uniqueId) {
-        return null;
-    }
-
-    @Override
-    public Project createAndLoadProject(final String name, final UUID leader, final Location location, final ProjectStatus projectStatus) {
+    public Project createAndLoadProject(final String name, final Player leader) {
 
         Project project = null;
         Connection connection = null;
@@ -113,11 +120,15 @@ public class SqlStorage implements StorageImplementation {
         try {
             connection = plugin.getHikariDataSource().getConnection();
 
+//            JsonObject leaders = new JsonObject();
+            JsonArray leaders = new JsonArray();
+            leaders.add(leader.getUniqueId().toString());
+
             PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_INSERT);
             preparedStatement.setString(1, name);
-            preparedStatement.setString(2, leader.toString());
-            preparedStatement.setString(3, Utils.serializeLocation(location));
-            preparedStatement.setString(4, projectStatus.toString());
+            preparedStatement.setString(2, leaders.getAsString());
+            preparedStatement.setString(3, Utils.serializeLocation(leader.getLocation()));
+            preparedStatement.setString(4, ProjectStatus.ACTIVE.toString());
             preparedStatement.execute();
 
             preparedStatement = connection.prepareStatement(GET_ID);
@@ -125,7 +136,7 @@ public class SqlStorage implements StorageImplementation {
 
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                project = new Project(resultSet.getInt("id"), name, leader, System.currentTimeMillis(), location, projectStatus);
+                project = new Project(resultSet.getInt("id"), name, leader);
             }
 
             preparedStatement.close();
@@ -147,14 +158,9 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public Project loadProject(final int id) {
-        return null;
-    }
+    public List<Project> loadAllProjects() {
 
-
-    @Override
-    public void loadAllProjects() {
-
+        List<Project> projects = new ArrayList<>();
         Connection connection = null;
 
         try {
@@ -167,14 +173,23 @@ public class SqlStorage implements StorageImplementation {
             while (resultSet.next()) {
                 final int id = resultSet.getInt("id");
                 final String name = resultSet.getString("name");
-                final UUID uniqueId = UUID.fromString(resultSet.getString("leader"));
+                final String jsonLeaders = resultSet.getString("leaders");
                 final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
+                final Timestamp updateTime = Timestamp.valueOf(resultSet.getString("updatetime"));
                 final Location location = Utils.deserializeLocation(resultSet.getString("location"));
                 final ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
 
+                Gson gson = new Gson();
+                String[] stringLeaders = gson.fromJson(jsonLeaders, String[].class);
+                List<UUID> leaders = new ArrayList<>();
+                for (String string : stringLeaders) {
+                    UUID uuid = UUID.fromString(string);
+                    leaders.add(uuid);
+                }
+
                 if (location != null) {
-                    final Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
-                    getPlugin().getProjectManager().addProject(project);
+                    final Project project = new Project(id, name, leaders, creationTime.getTime(), updateTime.getTime(), location, projectStatus);
+                    projects.add(project);
                 }
             }
 
@@ -192,6 +207,7 @@ public class SqlStorage implements StorageImplementation {
                 }
             }
         }
+        return projects;
     }
 
     @Override
@@ -199,12 +215,15 @@ public class SqlStorage implements StorageImplementation {
 
         Connection connection = null;
 
+        JsonArray leaders = new JsonArray();
+        project.getLeaders().forEach(leader -> leaders.add(leader.toString()));
+
         try {
             connection = plugin.getHikariDataSource().getConnection();
 
             final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE);
             preparedStatement.setString(1, project.getName());
-            preparedStatement.setString(2, project.getLeader().toString());
+            preparedStatement.setString(2, leaders.getAsString());
             preparedStatement.setString(3, Utils.serializeLocation(project.getLocation()));
             preparedStatement.setString(4, project.getProjectStatus().toString());
             preparedStatement.setInt(5, project.getId());
@@ -224,6 +243,7 @@ public class SqlStorage implements StorageImplementation {
         }
     }
 
+    // ---------------- done ---------------------------------------
     @Override
     public void deleteProject(final Project project) {
 
@@ -250,8 +270,9 @@ public class SqlStorage implements StorageImplementation {
         }
     }
 
+    // ---------------- done ---------------------------------------
     @Override
-    public Job createAndLoadJob(final UUID creator, final String description, final Project project, final Location location, final JobStatus jobStatus, final JobCategory jobCategory) {
+    public Job createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory) {
 
         Job job = null;
         Connection connection = null;
@@ -263,8 +284,8 @@ public class SqlStorage implements StorageImplementation {
             preparedStatement.setString(1, creator.toString());
             preparedStatement.setString(2, description);
             preparedStatement.setInt(3, project.getId());
-            preparedStatement.setString(4, Utils.serializeLocation(location));
-            preparedStatement.setString(5, jobStatus.toString());
+            preparedStatement.setString(4, Utils.serializeLocation(creator.getLocation()));
+            preparedStatement.setString(5, JobStatus.OPEN.toString());
             preparedStatement.setString(6, jobCategory.toString());
             preparedStatement.execute();
 
@@ -273,7 +294,7 @@ public class SqlStorage implements StorageImplementation {
 
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                job = new Job(resultSet.getInt("id"), creator, null, System.currentTimeMillis(), description, project, location, jobStatus, jobCategory);
+                job = new Job(resultSet.getInt("id"), creator, description, project, jobCategory);
             }
 
             preparedStatement.close();
@@ -294,14 +315,11 @@ public class SqlStorage implements StorageImplementation {
         return job;
     }
 
+    // ---------------- done ---------------------------------------
     @Override
-    public Job loadJob(final int id) {
-        return null;
-    }
+    public List<Job> loadAllJobs() {
 
-    @Override
-    public void loadAllJobs() {
-
+        List<Job> jobs = new ArrayList<>();
         Connection connection = null;
 
         try {
@@ -317,6 +335,7 @@ public class SqlStorage implements StorageImplementation {
                 final UUID creator = UUID.fromString(resultSet.getString("creator"));
                 final UUID claimant = resultSet.getObject("claimant") != null ? UUID.fromString(resultSet.getString("claimant")) : null;
                 final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
+                final Timestamp updateTime = Timestamp.valueOf(resultSet.getString("updateTime"));
                 final String description = resultSet.getString("description");
                 final Project project = plugin.getProjectManager().getProjectById(resultSet.getInt("project"));
                 final Location location = Utils.deserializeLocation(resultSet.getString("location"));
@@ -324,8 +343,8 @@ public class SqlStorage implements StorageImplementation {
                 final JobCategory jobCategory = JobCategory.valueOf(resultSet.getString("jobcategory"));
 
                 if (location != null) {
-                    final Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
-                    getPlugin().getJobManager().addJob(job);
+                    final Job job = new Job(id, creator, claimant, creationTime.getTime(), updateTime.getTime(), description, project, location, jobStatus, jobCategory);
+                    jobs.add(job);
                 }
 
             }
@@ -344,8 +363,10 @@ public class SqlStorage implements StorageImplementation {
                 }
             }
         }
+        return jobs;
     }
 
+    // ---------------- done ---------------------------------------
     @Override
     public void updateJob(final Job job) {
 
@@ -382,6 +403,7 @@ public class SqlStorage implements StorageImplementation {
         }
     }
 
+    // ---------------- done ---------------------------------------
     @Override
     public void deleteJob(final Job job) {
 

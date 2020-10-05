@@ -1,4 +1,4 @@
-package de.stealwonders.epicjobs.job;
+package de.stealwonders.epicjobs.model.job;
 
 import org.bukkit.Material;
 

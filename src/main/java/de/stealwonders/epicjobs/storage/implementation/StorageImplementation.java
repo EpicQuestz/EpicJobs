@@ -1,15 +1,12 @@
 package de.stealwonders.epicjobs.storage.implementation;
 
 import de.stealwonders.epicjobs.EpicJobs;
-import de.stealwonders.epicjobs.job.Job;
-import de.stealwonders.epicjobs.job.JobCategory;
-import de.stealwonders.epicjobs.job.JobStatus;
-import de.stealwonders.epicjobs.project.Project;
-import de.stealwonders.epicjobs.project.ProjectStatus;
-import de.stealwonders.epicjobs.user.EpicJobsPlayer;
-import org.bukkit.Location;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.job.JobCategory;
+import de.stealwonders.epicjobs.model.project.Project;
+import org.bukkit.entity.Player;
 
-import java.util.UUID;
+import java.util.List;
 
 public interface StorageImplementation {
 
@@ -19,23 +16,21 @@ public interface StorageImplementation {
 
     void shutdown();
 
-    EpicJobsPlayer loadPlayer(UUID uniqueId);
+    Project createAndLoadProject(String name, Player leader);
 
-    Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus);
+//    Project loadProject(int id);
 
-    Project loadProject(int id);
-
-    void loadAllProjects();
+    List<Project> loadAllProjects();
 
     void updateProject(Project project);
 
     void deleteProject(Project project);
 
-    Job createAndLoadJob(UUID creator, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory);
+    Job createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory);
 
-    Job loadJob(int id);
+//    Job loadJob(int id);
 
-    void loadAllJobs();
+    List<Job> loadAllJobs();
 
     void updateJob(Job job);
 
