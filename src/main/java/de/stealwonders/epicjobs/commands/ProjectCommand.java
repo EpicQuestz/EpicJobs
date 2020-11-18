@@ -149,6 +149,47 @@ public class ProjectCommand extends BaseCommand {
         project.teleport(player);
     }
 
+    @Subcommand("pause")
+    @CommandCompletion("@active-project")
+    @CommandPermission("epicjobs.command.project.pause")
+    public void onPause(final Player player, final Project project) {
+        EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (!project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
+                    project.setProjectStatus(ProjectStatus.PAUSED);
+                    player.sendMessage("Paused project " + project.getName());
+                    return true;
+                } else {
+                    player.sendMessage("Project is already paused.");
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateProject(project))
+            .execute();
+    }
+
+    @Subcommand("unpause")
+    @CommandCompletion("@paused-project")
+    @CommandPermission("epicjobs.command.project.unpause")
+    public void onUnpause(final Player player, final Project project) {
+        EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
+                    project.setProjectStatus(ProjectStatus.ACTIVE);
+                    player.sendMessage("Unpaused project " + project.getName());
+                    return true;
+                } else {
+                    player.sendMessage("Project is not paused.");
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateProject(project))
+            .execute();
+    }
+
+
     @Subcommand("complete")
     @CommandCompletion("@active-project")
     @CommandPermission("epicjobs.command.project.complete")

@@ -176,7 +176,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
             .append(TextComponent.of("/jobs list done").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Review jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list done")))
             .append(TextComponent.of(" to review them.").color(TextColor.YELLOW))
             .build();
-        TextAdapter.sendComponent(player, textComponent);
+        TextAdapter.sendMessage(player, textComponent);
     }
 
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
@@ -187,7 +187,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
             .append(TextComponent.of("/jobs list").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("View jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list")))
             .append(TextComponent.of(" to find one for yourself.").color(TextColor.YELLOW))
             .build();
-        TextAdapter.sendComponent(player, textComponent);
+        TextAdapter.sendMessage(player, textComponent);
     }
 
 }

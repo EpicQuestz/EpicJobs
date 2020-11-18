@@ -35,7 +35,7 @@ public class SqlStorage implements StorageImplementation {
         "leader VARCHAR(36) COLLATE utf8_bin NOT NULL," +
         "creationtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL," +
         "location VARCHAR(255) COLLATE utf8_bin NOT NULL," +
-        "projectstatus enum('ACTIVE', 'COMPLETE') NOT NULL" +
+        "projectstatus enum('ACTIVE', 'PAUSED', 'COMPLETE') NOT NULL" +
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 //      "CREATE INDEX IF NOT EXISTS id ON project (id);";
 

@@ -79,6 +79,15 @@ public class Commands {
                 .collect(Collectors.toList());
             return projects;
         });
+
+        commandManager.getCommandCompletions().registerAsyncCompletion("paused-project", c -> {
+            final List<String> projects;
+            projects = plugin.getProjectManager().getProjects().stream()
+                .filter(project -> project.getProjectStatus().equals(ProjectStatus.PAUSED))
+                .map(Project::getName)
+                .collect(Collectors.toList());
+            return projects;
+        });
     }
 
     private void registerCommands(final EpicJobs plugin) {
