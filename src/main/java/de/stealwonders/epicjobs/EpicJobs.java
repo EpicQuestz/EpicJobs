@@ -16,12 +16,12 @@ import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.User;
 import me.lucko.helper.internal.HelperImplementationPlugin;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
-import net.kyori.text.TextComponent;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -171,25 +171,27 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
     }
 
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {
-        final TextComponent textComponent = TextComponent.builder()
-            .content("There are ").color(TextColor.YELLOW)
-            .append(TextComponent.of(jobCount).color(TextColor.GOLD))
-            .append(TextComponent.of(" job(s) marked as done. Use ").color(TextColor.YELLOW))
-            .append(TextComponent.of("/jobs list done").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Review jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list done")))
-            .append(TextComponent.of(" to review them.").color(TextColor.YELLOW))
+        final TextComponent textComponent = Component.text()
+            .content("There are ").color(NamedTextColor.YELLOW)
+            .append(Component.text(jobCount).color(NamedTextColor.GOLD))
+            .append(Component.text(" job(s) marked as done. Use ").color(NamedTextColor.YELLOW))
+            .append(Component.text("/jobs list done").color(NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Review jobs!"))).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/jobs list done")))
+            .append(Component.text(" to review them.").color(NamedTextColor.YELLOW))
             .build();
-        TextAdapter.sendComponent(player, textComponent);
+        player.sendMessage(textComponent);
+//        TextAdapter.sendComponent(player, textComponent);
     }
 
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
-        final TextComponent textComponent = TextComponent.builder()
-            .content("There are ").color(TextColor.YELLOW)
-            .append(TextComponent.of(jobCount).color(TextColor.GOLD))
-            .append(TextComponent.of(" job(s) available to be claimed. Use ").color(TextColor.YELLOW))
-            .append(TextComponent.of("/jobs list").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("View jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list")))
-            .append(TextComponent.of(" to find one for yourself.").color(TextColor.YELLOW))
+        final TextComponent textComponent = Component.text()
+            .content("There are ").color(NamedTextColor.YELLOW)
+            .append(Component.text(jobCount).color(NamedTextColor.GOLD))
+            .append(Component.text(" job(s) available to be claimed. Use ").color(NamedTextColor.YELLOW))
+            .append(Component.text("/jobs list").color(NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("View jobs!"))).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/jobs list")))
+            .append(Component.text(" to find one for yourself.").color(NamedTextColor.YELLOW))
             .build();
-        TextAdapter.sendComponent(player, textComponent);
+        player.sendMessage(textComponent);
+//        TextAdapter.sendComponent(player, textComponent);
     }
 
 }

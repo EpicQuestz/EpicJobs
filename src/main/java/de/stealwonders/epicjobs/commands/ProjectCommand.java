@@ -14,11 +14,11 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.model.project.Project;
 import de.stealwonders.epicjobs.model.project.ProjectStatus;
-import net.kyori.text.TextComponent;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -52,14 +52,14 @@ public class ProjectCommand extends BaseCommand {
         if (projects.size() >= 1) {
             final List<TextComponent> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                final TextComponent textComponent = TextComponent.builder(project.getName()).color(TextColor.AQUA)
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!")))
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())).build();
+                final TextComponent textComponent = Component.text(project.getName()).color(NamedTextColor.AQUA)
+                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport!")))
+                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName()));
                 textComponents.add(textComponent);
             });
-            final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
+            final TextComponent message = Component.join(Component.text(", ").color(NamedTextColor.GOLD), textComponents);
             sender.sendMessage("");
-            TextAdapter.sendMessage(sender, message);
+            sender.sendMessage(message);
             sender.sendMessage("");
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);
@@ -73,17 +73,16 @@ public class ProjectCommand extends BaseCommand {
         if (projects.size() >= 1) {
             final List<TextComponent> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                final TextComponent textComponent = TextComponent.builder()
-                    .append(TextComponent.of(project.getName()).color(TextColor.AQUA)
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!")))
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())))
-                    .append(TextComponent.of(" (" + project.getProjectStatus() + ")").color(TextColor.GOLD))
-                    .build();
+                final TextComponent textComponent = Component.empty()
+                    .append(Component.text(project.getName()).color(NamedTextColor.AQUA)
+                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport!")))
+                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())))
+                    .append(Component.text(" (" + project.getProjectStatus() + ")").color(NamedTextColor.GOLD))
                 textComponents.add(textComponent);
             });
-            final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
+            final TextComponent message = Component.join(Component.text(", ").color(NamedTextColor.GOLD), textComponents);
             sender.sendMessage("");
-            TextAdapter.sendMessage(sender, message);
+            sender.sendMessage(message);
             sender.sendMessage("");
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);

@@ -1,15 +1,12 @@
 plugins {
-    id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'java-library'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 group = pluginGroup
 version = pluginVersion
 
-compileJava.options.encoding = 'UTF-8'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+[ compileJava, compileTestJava ]*.options*.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
@@ -26,23 +23,18 @@ repositories {
     }
 }
 
-compileJava {
-    options.compilerArgs += ["-parameters"]
-    options.fork = true
-    options.forkOptions.executable = 'javac'
-}
-
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'
+    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    compileOnly 'com.google.guava:guava:28.0-jre'
     compileOnly 'de.iani.cubeside:PlayerUUIDCache:1.5.1-SNAPSHOT'
-    compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
-    compile 'com.zaxxer:HikariCP:3.4.2'
+    compile 'com.zaxxer:HikariCP:4.0.3'
     compile 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
+    compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
     compile 'co.aikar:taskchain-bukkit:3.7.2'
-    compile 'net.kyori:text-api:3.0.4'
-    compile 'net.kyori:text-serializer-gson:3.0.4'
-    compile 'net.kyori:text-adapter-bukkit:3.0.5'
-    compile 'com.github.stefvanschie.inventoryframework:IF:0.6.1'
+//    compile 'net.kyori:text-api:3.0.4'
+//    compile 'net.kyori:text-serializer-gson:3.0.4'
+//    compile 'net.kyori:text-adapter-bukkit:3.0.5'
+    compile 'com.github.stefvanschie.inventoryframework:IF:0.9.5'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -51,7 +43,7 @@ shadowJar {
     relocate 'com.zaxxer.hikari', 'de.stealwonders.epicjobs.hikari'
     relocate 'org.mariadb.jdbc', 'de.stealwonders.epicjobs.jdbc'
     relocate 'co.aikar.commands', 'de.stealwonders.epicjobs.acf'
-    relocate 'com.github.stefvanschie.inventoryframework', 'org.empirewar.battlegrounds.inventoryframework'
+    relocate 'com.github.stefvanschie.inventoryframework', 'de.stealwonders.epicjobs.inventoryframework'
 }
 
 build.dependsOn shadowJar

@@ -8,8 +8,8 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Subcommand;
-import com.github.stefvanschie.inventoryframework.Gui;
-import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.constants.SkullHeads;
@@ -24,12 +24,10 @@ import de.stealwonders.epicjobs.utils.JobItemHelper;
 import de.stealwonders.epicjobs.utils.MenuHelper;
 import de.stealwonders.epicjobs.utils.Utils;
 import me.lucko.helper.promise.Promise;
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -110,7 +108,7 @@ public class JobCommand extends BaseCommand {
             });
             guiItems.add(guiItem);
         }
-        final Gui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems);
+        final ChestGui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems);
         gui.show(player);
     }
 
@@ -145,7 +143,7 @@ public class JobCommand extends BaseCommand {
             .withLore("§7To §lview job info §7right-click")
             .build();
 
-        final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
+        final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
 
@@ -178,7 +176,7 @@ public class JobCommand extends BaseCommand {
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
-        final Gui gui = MenuHelper.getStaticSelectionGui("Select Job Status", projectItem, statusItem);
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Status", projectItem, statusItem);
         gui.show(player);
     }
 
@@ -256,7 +254,7 @@ public class JobCommand extends BaseCommand {
             .withLore("§7None :-)")
             .build();
 
-        final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
+        final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
 
@@ -292,24 +290,23 @@ public class JobCommand extends BaseCommand {
 
     @Subcommand("info")
     public void onInfo(final CommandSender sender, final Job job) {
-        final Component text = TextComponent.builder()
-            .content("Job #" + job.getId() + " @ ").color(TextColor.GOLD)
-            .append(TextComponent.builder(
+        final Component text = Component.empty()
+            .content("Job #" + job.getId() + " @ ").color(NamedTextColor.GOLD)
+            .append(Component.text(
                 String.format("[%s x:%s y:%s z:%s]\n",
                     job.getLocation().getWorld().getName(),
                     job.getLocation().getBlockX(),
                     job.getLocation().getBlockY(),
                     job.getLocation().getBlockZ()
-                )).color(TextColor.AQUA).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
-            .append(TextComponent.of("Project: ").color(TextColor.GOLD)).append(TextComponent.of(job.getProject().getName()).color(TextColor.YELLOW))
-            .append(TextComponent.of(" Category: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobCategory().toString()).color(TextColor.YELLOW))
-            .append(TextComponent.of(" Status: ").color(TextColor.GOLD)).append(TextComponent.of(job.getJobStatus().toString() + "\n").color(TextColor.YELLOW))
-            .append(TextComponent.of("Leader: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.getPlayerHolderText(job.getCreator())).color(TextColor.YELLOW))
-            .append(TextComponent.of(" Claimant: ").color(TextColor.GOLD)).append(TextComponent.of(Utils.getPlayerHolderText(job.getClaimant()) + "\n").color(TextColor.YELLOW))
-            .append(TextComponent.of("Description: ").color(TextColor.GOLD)).append(TextComponent.of(job.getDescription()).color(TextColor.YELLOW))
-            .build();
+                )).color(NamedTextColor.AQUA).hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport!"))).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/job teleport " + job.getId())))
+            .append(Component.text("Project: ").color(NamedTextColor.GOLD)).append(Component.text(job.getProject().getName()).color(NamedTextColor.YELLOW))
+            .append(Component.text(" Category: ").color(NamedTextColor.GOLD)).append(Component.text(job.getJobCategory().toString()).color(NamedTextColor.YELLOW))
+            .append(Component.text(" Status: ").color(NamedTextColor.GOLD)).append(Component.text(job.getJobStatus().toString() + "\n").color(NamedTextColor.YELLOW))
+            .append(Component.text("Leader: ").color(NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getCreator())).color(NamedTextColor.YELLOW))
+            .append(Component.text(" Claimant: ").color(NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n").color(NamedTextColor.YELLOW))
+            .append(Component.text("Description: ").color(NamedTextColor.GOLD)).append(Component.text(job.getDescription()).color(NamedTextColor.YELLOW));
         sender.sendMessage("");
-        TextAdapter.sendMessage(sender, text);
+        sender.sendMessage(text);
         sender.sendMessage("");
     }
 
