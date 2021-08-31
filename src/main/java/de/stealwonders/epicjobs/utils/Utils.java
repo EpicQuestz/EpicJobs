@@ -6,6 +6,7 @@ import de.iani.playerUUIDCache.CachedPlayer;
 import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.model.job.Job;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,37 +43,37 @@ public class Utils {
         return StringUtils.abbreviate(job.getDescription(), 100);
     }
 
-    public static String getPlayerHolderText(@Nullable final UUID uuid) {
-       final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
-        if (playerUUIDCacheAPI != null) {
-            if (uuid != null) {
-                final CachedPlayer cachedPlayer = playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString());
-                if (cachedPlayer != null) {
-                    return cachedPlayer.getName();
-                }
-            } else {
-                return "§oNone";
-            }
-        }
-        return "§oError fetching username!";
-    }
+//    public static String getPlayerHolderText(@Nullable final UUID uuid) {
+//       final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
+//        if (playerUUIDCacheAPI != null) {
+//            if (uuid != null) {
+//                final CachedPlayer cachedPlayer = playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString());
+//                if (cachedPlayer != null) {
+//                    return cachedPlayer.getName();
+//                }
+//            } else {
+//                return "§oNone";
+//            }
+//        }
+//        return "§oError fetching username!";
+//    }
 
-    public static String color(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
-    }
+//    public static String color(final String msg) {
+//        return ChatColor.translateAlternateColorCodes('&', msg);
+//    }
 
     public static ItemStack getSkull(final String base64, final String name) {
-        final ItemStack ITEMSTACK = new ItemStack(Material.PLAYER_HEAD);
-        final ItemMeta itemMeta = ITEMSTACK.getItemMeta();
-        itemMeta.setDisplayName(name);
-        ITEMSTACK.setItemMeta(itemMeta);
-        final SkullMeta skullMeta = (SkullMeta) ITEMSTACK.getItemMeta();
+        final ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+        final ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.displayName(Component.text(name));
+        itemStack.setItemMeta(itemMeta);
+        final SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
         final PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID());
         final ProfileProperty profileProperty = new ProfileProperty("textures", base64);
         playerProfile.getProperties().add(profileProperty);
         skullMeta.setPlayerProfile(playerProfile);
-        ITEMSTACK.setItemMeta(skullMeta);
-        return ITEMSTACK;
+        itemStack.setItemMeta(skullMeta);
+        return itemStack;
     }
 
 }

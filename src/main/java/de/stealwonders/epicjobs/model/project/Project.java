@@ -1,12 +1,11 @@
 package de.stealwonders.epicjobs.model.project;
 
-import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.model.StorageEntity;
 import de.stealwonders.epicjobs.model.job.Job;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +19,19 @@ public class Project extends StorageEntity {
     private ProjectStatus projectStatus;
     private final List<Job> jobs;
 
-    public Project(int id, @Nonnull String name, @Nonnull Player leader) {
-        this(id, name, Collections.singletonList(leader.getUniqueId()), System.currentTimeMillis(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE);
+    public Project(final int id, @NonNull final String name, @NonNull final Player leader) {
+        this(id, System.currentTimeMillis(), System.currentTimeMillis(), name, Collections.singletonList(leader.getUniqueId()), leader.getLocation(), ProjectStatus.ACTIVE);
     }
 
-    public Project(int id, @Nonnull String name, @Nonnull List<UUID> leaders, long creationTime, long updateTime, @Nonnull Location location, @Nonnull ProjectStatus projectStatus) {
+    public Project(
+        final int id,
+        final long creationTime,
+        final long updateTime,
+        @NonNull final String name,
+        @NonNull final List<UUID> leaders,
+        @NonNull final Location location,
+        @NonNull final ProjectStatus projectStatus
+    ) {
         super(id, creationTime, updateTime);
         this.name = name;
         this.leaders = leaders;
@@ -45,11 +52,11 @@ public class Project extends StorageEntity {
         return leaders;
     }
 
-    public void addLeader(@Nonnull Player player) {
+    public void addLeader(Player player) {
         leaders.add(player.getUniqueId());
     }
 
-    public void removeLeader(@Nonnull Player player) {
+    public void removeLeader(Player player) {
         leaders.remove(player.getUniqueId());
     }
 
@@ -57,7 +64,7 @@ public class Project extends StorageEntity {
         return location;
     }
 
-    public void setLocation(@Nonnull Location location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -65,25 +72,25 @@ public class Project extends StorageEntity {
         return projectStatus;
     }
 
-    public void setProjectStatus(@Nonnull ProjectStatus projectStatus) {
+    public void setProjectStatus(ProjectStatus projectStatus) {
         this.projectStatus = projectStatus;
     }
 
     public List<Job> getJobs() {
-        return ImmutableList.copyOf(jobs);
+        return jobs;
     }
 
-    public void addJob(@Nonnull Job job) {
+    public void addJob(Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(@Nonnull Job job) {
+    public void removeJob(Job job) {
         jobs.remove(job);
     }
 
-    public void teleport(@Nonnull Player player) {
-        player.teleportAsync(this.getLocation());
-        Messages.PLAYER_PROJECT_TELEPORT.send(player, getName());
-    }
+//    public void teleport(@Nonnull Player player) {
+//        player.teleportAsync(this.getLocation());
+//        Messages.PLAYER_PROJECT_TELEPORT.send(player, getName());
+//    }
 
 }

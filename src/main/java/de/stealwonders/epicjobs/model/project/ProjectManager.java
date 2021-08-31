@@ -2,6 +2,7 @@ package de.stealwonders.epicjobs.model.project;
 
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.List;
 public class ProjectManager {
 
     private final EpicJobs plugin;
-
     private final List<Project> projects;
 
     public ProjectManager(final EpicJobs plugin) {
@@ -17,30 +17,8 @@ public class ProjectManager {
         this.projects = new ArrayList<>();
     }
 
-    public void firstLoad() {
-        projects.addAll(plugin.getStorage().loadAllProjects());
-    }
-
     public List<Project> getProjects() {
         return ImmutableList.copyOf(projects);
-    }
-
-    public Project getProjectById(final int id) {
-        for (final Project project : projects) {
-            if (project.getId() == id) {
-                return project;
-            }
-        }
-        return null;
-    }
-
-    public Project getProjectByName(final String name) {
-        for (final Project project : projects) {
-            if (project.getName().equalsIgnoreCase(name)) {
-                return project;
-            }
-        }
-        return null;
     }
 
     public void addProject(final Project project) {
@@ -51,14 +29,36 @@ public class ProjectManager {
         projects.remove(project);
     }
 
-    public List<Project> getOpenProjects() {
+//    public void firstLoad() {
+//        projects.addAll(plugin.getStorage().loadAllProjects());
+//    }
+
+    public @Nullable Project getProjectById(final int id) {
+        for (final Project project : projects) {
+            if (project.getId() == id) {
+                return project;
+            }
+        }
+        return null;
+    }
+
+    public @Nullable Project getProjectByName(final String name) {
+        for (final Project project : projects) {
+            if (project.getName().equalsIgnoreCase(name)) {
+                return project;
+            }
+        }
+        return null;
+    }
+
+    public List<Project> getProjectByStatus(final ProjectStatus projectStatus) {
         final List<Project> projectList = new ArrayList<>();
         for (final Project project : projects) {
-            if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
+            if (project.getProjectStatus() == projectStatus) {
                 projectList.add(project);
             }
         }
-        return ImmutableList.copyOf(projectList);
+        return projectList;
     }
 
 }

@@ -21,7 +21,7 @@ public class Job extends StorageEntity {
     private JobDifficulty jobDifficulty;
 
     public Job(
-        final int id,
+        final int id, // todo: figure out if we need to pass this everywhere
         @NonNull final Player creator,
         @NonNull final String description,
         @NonNull final Project project,

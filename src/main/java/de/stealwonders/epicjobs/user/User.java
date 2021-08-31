@@ -17,9 +17,9 @@ public class User {
     private final String name;
     private final List<Job> jobs;
 
-    public User(@Nonnull UUID uuid, @Nullable String name) {
+    public User(@Nonnull final UUID uuid, @Nullable final String name) {
         this.uuid = uuid;
-        this.name = name;
+        this.name = name; // todo: figure out why this is nullable!?!?
         this.jobs = new ArrayList<>();
     }
 
@@ -35,11 +35,11 @@ public class User {
         return ImmutableList.copyOf(jobs);
     }
 
-    public void addJob(@Nonnull Job job) {
+    public void addJob(Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(@Nonnull Job job) {
+    public void removeJob(Job job) {
         jobs.remove(job);
     }
 
