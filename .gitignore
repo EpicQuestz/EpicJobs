@@ -1,7 +1,6 @@
 .gradle/
 .idea/
 build/
-gradle/
 libs/
 EpicJobs.iml
 gradlew

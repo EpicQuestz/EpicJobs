@@ -1,31 +1,49 @@
 package de.stealwonders.epicjobs.model.job;
 
-import de.stealwonders.epicjobs.constants.Messages;
 import de.stealwonders.epicjobs.model.StorageEntity;
 import de.stealwonders.epicjobs.model.project.Project;
-import de.stealwonders.epicjobs.user.User;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class Job extends StorageEntity {
 
     private final UUID creator;
-    private UUID claimant;
+    private @Nullable UUID claimant;
     private String description;
     private Project project;
     private Location location;
     private JobStatus jobStatus;
     private JobCategory jobCategory;
+    private JobDifficulty jobDifficulty;
 
-    public Job(int id, @Nonnull Player creator, @Nonnull String description, @Nonnull Project project, @Nonnull JobCategory jobCategory) {
-        this(id, creator.getUniqueId(), null, System.currentTimeMillis(), System.currentTimeMillis(), description, project, creator.getLocation(), JobStatus.OPEN, jobCategory);
+    public Job(
+        final int id,
+        @NonNull final Player creator,
+        @NonNull final String description,
+        @NonNull final Project project,
+        @NonNull final JobCategory jobCategory,
+        @NonNull final JobDifficulty jobDifficulty
+    ) {
+        this(id, System.currentTimeMillis(), System.currentTimeMillis(), creator.getUniqueId(), null, description, project, creator.getLocation(), JobStatus.OPEN, jobCategory, jobDifficulty);
     }
 
-    public Job(int id, @Nonnull UUID creator, @Nullable UUID claimant, long creationTime, long updateTime, @Nonnull String description, @Nonnull Project project, @Nonnull Location location, @Nonnull JobStatus jobStatus, @Nonnull JobCategory jobCategory) {
+    public Job(
+        final int id,
+        final long creationTime,
+        final long updateTime,
+        @NonNull final UUID creator,
+        @Nullable final UUID claimant,
+        @NonNull final String description,
+        @NonNull final Project project,
+        @NonNull final Location location,
+        @NonNull final JobStatus jobStatus,
+        @NonNull final JobCategory jobCategory,
+        @NonNull final JobDifficulty jobDifficulty
+    ) {
         super(id, creationTime, updateTime);
         this.creator = creator;
         this.claimant = claimant;
@@ -34,6 +52,7 @@ public class Job extends StorageEntity {
         this.location = location;
         this.jobStatus = jobStatus;
         this.jobCategory = jobCategory;
+        this.jobDifficulty = jobDifficulty;
         project.addJob(this);
     }
 
@@ -41,11 +60,11 @@ public class Job extends StorageEntity {
         return creator;
     }
 
-    public UUID getClaimant() {
+    public @Nullable UUID getClaimant() {
         return claimant;
     }
 
-    public void setClaimant(UUID claimant) {
+    public void setClaimant(@Nullable UUID claimant) {
         this.claimant = claimant;
     }
 
@@ -89,21 +108,29 @@ public class Job extends StorageEntity {
         this.jobCategory = jobCategory;
     }
 
-    public void claim(@Nonnull User player) {
-        this.setClaimant(player.getUniqueId());
-        this.setJobStatus(JobStatus.TAKEN);
-        player.addJob(this);
+    public JobDifficulty getJobDifficulty() {
+        return jobDifficulty;
     }
 
-    public void abandon(@Nonnull User player) {
-        this.setClaimant(null);
-        this.setJobStatus(JobStatus.OPEN);
-        player.removeJob(this);
+    public void setJobDifficulty(JobDifficulty jobDifficulty) {
+        this.jobDifficulty = jobDifficulty;
     }
 
-    public void teleport(@Nonnull Player player) {
-        player.teleportAsync(this.getLocation());
-        Messages.PLAYER_JOB_TELEPORT.send(player, getId());
-    }
+    //    public void claim(@Nonnull User player) {
+//        this.setClaimant(player.getUniqueId());
+//        this.setJobStatus(JobStatus.TAKEN);
+//        player.addJob(this);
+//    }
+//
+//    public void abandon(@Nonnull User player) {
+//        this.setClaimant(null);
+//        this.setJobStatus(JobStatus.OPEN);
+//        player.removeJob(this);
+//    }
+
+//    public void teleport(@Nonnull Player player) {
+//        player.teleportAsync(this.getLocation());
+//        Messages.PLAYER_JOB_TELEPORT.send(player, getId());
+//    }
 
 }

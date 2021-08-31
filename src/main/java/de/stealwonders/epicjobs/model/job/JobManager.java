@@ -2,6 +2,7 @@ package de.stealwonders.epicjobs.model.job;
 
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.List;
 public class JobManager {
 
     private final EpicJobs plugin;
-
     private final List<Job> jobs;
 
     public JobManager(final EpicJobs plugin) {
@@ -17,21 +17,8 @@ public class JobManager {
         this.jobs = new ArrayList<>();
     }
 
-    public void firstLoad() {
-        jobs.addAll(plugin.getStorage().loadAllJobs());
-    }
-
     public List<Job> getJobs() {
         return ImmutableList.copyOf(jobs);
-    }
-
-    public Job getJobById(final int id) {
-        for (final Job job : jobs) {
-            if (job.getId() == id) {
-                return job;
-            }
-        }
-        return null;
     }
 
     public void addJob(final Job job) {
@@ -42,14 +29,27 @@ public class JobManager {
         jobs.remove(job);
     }
 
-    public List<Job> getOpenJobs() {
+//    public void firstLoad() {
+//        jobs.addAll(plugin.getStorage().loadAllJobs());
+//    }
+
+    public @Nullable Job getJobById(final int id) {
+        for (final Job job : jobs) {
+            if (job.getId() == id) {
+                return job;
+            }
+        }
+        return null;
+    }
+
+    public List<Job> getJobsByStatus(final JobStatus jobStatus) {
         final List<Job> jobList = new ArrayList<>();
         for (final Job job : jobs) {
-            if (job.getJobStatus().equals(JobStatus.OPEN)) {
+            if (job.getJobStatus() == jobStatus) {
                 jobList.add(job);
             }
         }
-        return ImmutableList.copyOf(jobList);
+        return jobList;
     }
 
 }

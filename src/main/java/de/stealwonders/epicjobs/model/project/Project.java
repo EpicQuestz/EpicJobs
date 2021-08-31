@@ -1,7 +1,6 @@
 package de.stealwonders.epicjobs.model.project;
 
 import com.google.common.collect.ImmutableList;
-import de.stealwonders.epicjobs.constants.Messages;
 import de.stealwonders.epicjobs.model.StorageEntity;
 import de.stealwonders.epicjobs.model.job.Job;
 import org.bukkit.Location;

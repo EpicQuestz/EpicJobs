@@ -6,7 +6,7 @@ public abstract class StorageEntity {
     private final long creationTime;
     private long updateTime;
 
-    public StorageEntity(int id, long creationTime, long updateTime) {
+    public StorageEntity(final int id, final long creationTime, final long updateTime) {
         this.id = id;
         this.creationTime = creationTime;
         this.updateTime = updateTime;

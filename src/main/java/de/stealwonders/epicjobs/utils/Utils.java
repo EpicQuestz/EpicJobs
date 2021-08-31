@@ -26,7 +26,7 @@ public class Utils {
         return location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ() + " " + location.getYaw() + " " + location.getPitch();
     }
 
-    public static Location deserializeLocation(final String input) {
+    public static @Nullable Location deserializeLocation(@NonNull final String input) {
         Location location = null;
         final String[] parts = input.split(" ");
         if (parts.length >= 6) {
