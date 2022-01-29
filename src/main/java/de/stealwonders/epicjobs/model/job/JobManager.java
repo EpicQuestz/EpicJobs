@@ -33,7 +33,7 @@ public class JobManager {
 //        jobs.addAll(plugin.getStorage().loadAllJobs());
 //    }
 
-    public @Nullable Job getJobById(final int id) {
+    public @Nullable Job getJobById(final long id) {
         for (final Job job : jobs) {
             if (job.getId() == id) {
                 return job;

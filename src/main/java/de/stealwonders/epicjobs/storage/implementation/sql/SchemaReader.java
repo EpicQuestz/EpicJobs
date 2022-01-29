@@ -1,4 +1,4 @@
-package de.stealwonders.epicjobs.storage;
+package de.stealwonders.epicjobs.storage.implementation.sql;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,10 +10,10 @@ import java.util.List;
 
 public final class SchemaReader {
 
-    public static List<String> getStatements(InputStream is) throws IOException {
-        List<String> queries = new LinkedList<>();
+    public static List<String> getStatements(final InputStream inputStream) throws IOException {
+        final List<String> queries = new LinkedList<>();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -27,7 +27,7 @@ public final class SchemaReader {
                 if (line.endsWith(";")) {
                     sb.deleteCharAt(sb.length() - 1);
 
-                    String result = sb.toString().trim();
+                    final String result = sb.toString().trim();
                     if (!result.isEmpty()) {
                         queries.add(result);
                     }

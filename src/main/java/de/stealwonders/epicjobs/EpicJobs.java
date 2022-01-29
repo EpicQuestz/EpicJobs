@@ -6,9 +6,12 @@ import co.aikar.taskchain.TaskChainFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import de.stealwonders.epicjobs.model.job.JobManager;
 import de.stealwonders.epicjobs.model.project.ProjectManager;
-import de.stealwonders.epicjobs.storage.SettingsFile;
-import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
+import de.stealwonders.epicjobs.storage.Storage;
+import de.stealwonders.epicjobs.storage.StorageCredentials;
+import de.stealwonders.epicjobs.storage.StorageFactory;
+import de.stealwonders.epicjobs.storage.implementation.sql.SqlStorage;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
+import de.stealwonders.epicjobs.storage.implementation.sql.connection.hikari.MariaDbConnectionFactory;
 import de.stealwonders.epicjobs.user.User;
 import me.lucko.helper.internal.HelperImplementationPlugin;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
@@ -23,19 +26,19 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
 //    private static PlayerUUIDCacheAPI playerUuidCache;
 
-    private static TaskChainFactory taskChainFactory;
-
-    public static <T> TaskChain<T> newSharedChain(final String name) {
-        return taskChainFactory.newSharedChain(name);
-    }
-
-    private SettingsFile settingsFile;
+//    private static TaskChainFactory taskChainFactory;
+//
+//    public static <T> TaskChain<T> newSharedChain(final String name) {
+//        return taskChainFactory.newSharedChain(name);
+//    }
 
     private ProjectManager projectManager;
     private JobManager jobManager;
 
-    private HikariDataSource hikariDataSource;
-    private StorageImplementation storage;
+//    private HikariDataSource hikariDataSource;
+//    private StorageImplementation storage;
+
+    private Storage storage;
 
 //    private Commands commands;
     private Set<User> users;
@@ -46,29 +49,34 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
 //        playerUuidCache = getServer().getServicesManager().load(PlayerUUIDCacheAPI.class);
 
-        taskChainFactory = BukkitTaskChainFactory.create(this);
+//        taskChainFactory = BukkitTaskChainFactory.create(this);
 
-        settingsFile = new SettingsFile(this);
+//        settingsFile = new SettingsFile(this);
 
         projectManager = new ProjectManager(this);
         jobManager = new JobManager(this);
 
-        hikariDataSource = new HikariDataSource();
-        settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration());
-        storage = new SqlStorage(this);
-        storage.init();
-        projectManager.firstLoad();
+//        hikariDataSource = new HikariDataSource();
+//        settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration());
+
+        StorageFactory storageFactory = new StorageFactory(this);
+        storage = storageFactory.getInstance();
+
+
+//        projectManager.firstLoad();
 //        jobManager.firstLoad();
 
 //        commands = new Commands(this);
         users = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> {
             final User user = new User(player.getUniqueId(), player.getName());
-            loadPlayerJobs(user);
+//            loadPlayerJobs(user);
             users.add(user);
         });
 
-        registerListeners();
+//        registerListeners();
+
+//        new EpicProfileRepository(sql, "tableName", 2000);
     }
 
     @Override
@@ -77,10 +85,14 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
         storage.shutdown();
 
-        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer)));
+//        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer)));
     }
 
-//    private void registerListeners() {
+    public Storage getStorage() {
+        return storage;
+    }
+
+    //    private void registerListeners() {
 //        Bukkit.getPluginManager().registerEvents(this, this);
 //    }
 //

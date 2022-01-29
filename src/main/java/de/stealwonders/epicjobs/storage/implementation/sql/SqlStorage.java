@@ -1,119 +1,115 @@
-//package de.stealwonders.epicjobs.storage.implementation;
-//
-//import com.google.gson.Gson;
-//import com.google.gson.JsonArray;
-//import de.stealwonders.epicjobs.EpicJobs;
-//import de.stealwonders.epicjobs.model.job.Job;
-//import de.stealwonders.epicjobs.model.job.JobCategory;
-//import de.stealwonders.epicjobs.model.job.JobStatus;
-//import de.stealwonders.epicjobs.model.project.Project;
-//import de.stealwonders.epicjobs.model.project.ProjectStatus;
-//import de.stealwonders.epicjobs.storage.SchemaReader;
-//import de.stealwonders.epicjobs.utils.Utils;
-//import org.bukkit.Location;
-//import org.bukkit.entity.Player;
-//
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.sql.Connection;
-//import java.sql.PreparedStatement;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//import java.sql.Timestamp;
-//import java.sql.Types;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.UUID;
-//
-//public class SqlStorage implements StorageImplementation {
-//
-//    private static final String PROJECT_SELECT_ALL = "SELECT * FROM project;";
-//    private static final String JOB_SELECT_ALL = "SELECT * FROM job;";
-//
-//    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leaders = ?, location = ?, projectstatus = ? WHERE id = ?;";
-//    private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, updatetime = NOW(), description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
-//
-//    private static final String PROJECT_INSERT = "INSERT INTO project(name, leaders, location, projectstatus) VALUES (?, ?, ?, ?);";
-//    private static final String JOB_INSERT = "INSERT INTO job(creator, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?);";
-//    private static final String GET_ID = "SELECT LAST_INSERT_ID() AS 'id';";
-//
-//    private static final String PROJECT_DELETE = "DELETE FROM project WHERE id = ?;";
-//    private static final String JOB_DELETE = "DELETE FROM job WHERE id = ?;";
-//
-//    private final EpicJobs plugin;
-//
-//    public SqlStorage(final EpicJobs plugin) {
-//        this.plugin = plugin;
-//    }
-//
-//    @Override
-//    public EpicJobs getPlugin() {
-//        return plugin;
-//    }
-//
-//    @Override
-//    public void init() {
-//
-//        try {
-//            applySchema();
-//        } catch (IOException | SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-////        Connection connection = null;
-////
-////        try {
-////            connection = plugin.getHikariDataSource().getConnection();
-////
-////            PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_TABLE_CREATE);
-////            preparedStatement.execute();
-////
-////            preparedStatement = connection.prepareStatement(JOB_TABLE_CREATE);
-////            preparedStatement.execute();
-////            preparedStatement.close();
-////        } catch (final SQLException e) {
-////            e.printStackTrace();
-////        } finally {
-////            if (connection != null) {
-////                try {
-////                    connection.close();
-////                } catch (final SQLException e) {
-////                    e.printStackTrace();
-////                }
-////            }
-////        }
-//
-//    }
-//
-//    private void applySchema() throws IOException, SQLException {
-//        List<String> statements;
-//        try (InputStream inputStream = this.plugin.getResource("database_schema.sql")) {
-//            if (inputStream == null) {
-//                throw new IOException("Couldn't locate schema file for database.");
-//            }
-//            statements = new ArrayList<>(SchemaReader.getStatements(inputStream));
-//        }
-//
-//        try (Connection connection = plugin.getHikariDataSource().getConnection()) {
-//            try (Statement statement = connection.createStatement()) {
-//                for (String query : statements) {
-//                    statement.addBatch(query);
-//                }
-//                statement.executeBatch();
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void shutdown() {
-//        plugin.getHikariDataSource().close();
-//        System.out.println("Shutting down SQL data storage...");
-//    }
-//
-//    @Override
-//    public Project createAndLoadProject(final String name, final Player leader) {
-//
+package de.stealwonders.epicjobs.storage.implementation.sql;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import de.stealwonders.epicjobs.EpicJobs;
+import de.stealwonders.epicjobs.model.job.Job;
+import de.stealwonders.epicjobs.model.job.JobCategory;
+import de.stealwonders.epicjobs.model.job.JobDifficulty;
+import de.stealwonders.epicjobs.model.job.JobStatus;
+import de.stealwonders.epicjobs.model.project.Project;
+import de.stealwonders.epicjobs.model.project.ProjectStatus;
+import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
+import de.stealwonders.epicjobs.storage.implementation.sql.SchemaReader;
+import de.stealwonders.epicjobs.storage.implementation.sql.connection.ConnectionFactory;
+import de.stealwonders.epicjobs.utils.Utils;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+
+public class SqlStorage implements StorageImplementation {
+
+    private static final String PROJECT_SELECT_ALL = "SELECT * FROM project;";
+    private static final String JOB_SELECT_ALL = "SELECT * FROM job;";
+
+    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leaders = ?, location = ?, projectstatus = ? WHERE id = ?;";
+    private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, updatetime = NOW(), description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
+
+    private static final String PROJECT_INSERT = "INSERT INTO project(name, leaders, location, projectstatus) VALUES (?, ?, ?, ?);";
+    private static final String JOB_INSERT = "INSERT INTO job(creator, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?);";
+    private static final String GET_ID = "SELECT LAST_INSERT_ID() AS 'id';";
+
+    private static final String PROJECT_DELETE = "DELETE FROM project WHERE id = ?;";
+    private static final String JOB_DELETE = "DELETE FROM job WHERE id = ?;";
+
+    private final EpicJobs plugin;
+    private final ConnectionFactory connectionFactory;
+
+    public SqlStorage(final EpicJobs plugin, final ConnectionFactory connectionFactory) {
+        this.plugin = plugin;
+        this.connectionFactory = connectionFactory;
+    }
+
+    @Override
+    public EpicJobs getPlugin() {
+        return plugin;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return this.connectionFactory.getImplementationName();
+    }
+
+    public ConnectionFactory getConnectionFactory() {
+        return this.connectionFactory;
+    }
+
+    @Override
+    public void init() throws Exception {
+        this.connectionFactory.init(this.plugin);
+        boolean tableExists;
+        try (Connection connection = this.connectionFactory.getConnection()) {
+            tableExists = tableExists(connection, "jobs") && tableExists(connection, "projects");
+        }
+        if (!tableExists) {
+            applySchema();
+        }
+    }
+
+    private void applySchema() throws IOException, SQLException {
+        List<String> statements;
+        try (InputStream inputStream = this.plugin.getResource("database_schema.sql")) {
+            if (inputStream == null) {
+                throw new IOException("Couldn't locate schema file for database");
+            }
+            statements = new ArrayList<>(SchemaReader.getStatements(inputStream));
+        }
+
+        try (Connection connection = this.connectionFactory.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                for (String query : statements) {
+                    statement.addBatch(query);
+                }
+                statement.executeBatch();
+            }
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        try {
+            this.connectionFactory.shutdown();
+        } catch (Exception e) {
+            this.plugin.getLogger().log(Level.SEVERE, "Exception whilst disabling SQL storage", e);
+        }
+    }
+
+    @Override
+    public Project createAndLoadProject(final String name, final Player leader) {
+        return null;
 //        Project project = null;
 //        Connection connection = null;
 //
@@ -155,11 +151,16 @@
 //        }
 //
 //        return project;
-//    }
-//
-//    @Override
-//    public List<Project> loadAllProjects() {
-//
+    }
+
+    @Override
+    public Project loadProject(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Project> loadAllProjects() {
+        return null;
 //        List<Project> projects = new ArrayList<>();
 //        Connection connection = null;
 //
@@ -188,7 +189,7 @@
 //                }
 //
 //                if (location != null) {
-//                    final Project project = new Project(id, name, leaders, creationTime.getTime(), updateTime.getTime(), location, projectStatus);
+//                    final Project project = new Project(id, creationTime.getTime(), updateTime.getTime(), name, leaders, location, projectStatus);
 //                    projects.add(project);
 //                }
 //            }
@@ -208,11 +209,10 @@
 //            }
 //        }
 //        return projects;
-//    }
-//
-//    @Override
-//    public void updateProject(final Project project) {
-//
+    }
+
+    @Override
+    public void saveProject(final Project project) {
 //        Connection connection = null;
 //
 //        JsonArray leaders = new JsonArray();
@@ -241,12 +241,11 @@
 //                }
 //            }
 //        }
-//    }
-//
-//    // ---------------- done ---------------------------------------
-//    @Override
-//    public void deleteProject(final Project project) {
-//
+    }
+
+    @Override
+    public void deleteProject(final Project project) {
+
 //        Connection connection = null;
 //
 //        try {
@@ -268,12 +267,11 @@
 //                }
 //            }
 //        }
-//    }
-//
-//    // ---------------- done ---------------------------------------
-//    @Override
-//    public Job createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory) {
-//
+    }
+
+    @Override
+    public Job createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory, JobDifficulty jobDifficulty) {
+        return null;
 //        Job job = null;
 //        Connection connection = null;
 //
@@ -313,12 +311,16 @@
 //        }
 //
 //        return job;
-//    }
-//
-//    // ---------------- done ---------------------------------------
-//    @Override
-//    public List<Job> loadAllJobs() {
-//
+    }
+
+    @Override
+    public Job loadJob(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Job> loadAllJobs() {
+        return null;
 //        List<Job> jobs = new ArrayList<>();
 //        Connection connection = null;
 //
@@ -341,9 +343,10 @@
 //                final Location location = Utils.deserializeLocation(resultSet.getString("location"));
 //                final JobStatus jobStatus = JobStatus.valueOf(resultSet.getString("jobstatus"));
 //                final JobCategory jobCategory = JobCategory.valueOf(resultSet.getString("jobcategory"));
+//                final JobDifficulty jobDifficulty = JobDifficulty.valueOf(resultSet.getString("jobdifficulty"));
 //
 //                if (location != null) {
-//                    final Job job = new Job(id, creator, claimant, creationTime.getTime(), updateTime.getTime(), description, project, location, jobStatus, jobCategory);
+//                    final Job job = new Job(id, creationTime.getTime(), updateTime.getTime(), creator, claimant, description, project, location, jobStatus, jobCategory, jobDifficulty);
 //                    jobs.add(job);
 //                }
 //
@@ -364,12 +367,11 @@
 //            }
 //        }
 //        return jobs;
-//    }
-//
-//    // ---------------- done ---------------------------------------
-//    @Override
-//    public void updateJob(final Job job) {
-//
+    }
+
+    @Override
+    public void saveJob(final Job job) {
+
 //        Connection connection = null;
 //
 //        try {
@@ -401,12 +403,11 @@
 //                }
 //            }
 //        }
-//    }
-//
-//    // ---------------- done ---------------------------------------
-//    @Override
-//    public void deleteJob(final Job job) {
-//
+    }
+
+    @Override
+    public void deleteJob(final Job job) {
+
 //        Connection connection = null;
 //
 //        try {
@@ -428,6 +429,17 @@
 //                }
 //            }
 //        }
-//    }
-//
-//}
+    }
+
+    private static boolean tableExists(Connection connection, String table) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, "%", null)) {
+            while (resultSet.next()) {
+                if (resultSet.getString(3).equalsIgnoreCase(table)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+}

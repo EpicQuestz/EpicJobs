@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Project extends StorageEntity {
@@ -88,7 +89,31 @@ public class Project extends StorageEntity {
         jobs.remove(job);
     }
 
-//    public void teleport(@Nonnull Player player) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return Objects.equals(name, project.name) && Objects.equals(leaders, project.leaders) && Objects.equals(location, project.location) && projectStatus == project.projectStatus && Objects.equals(jobs, project.jobs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, leaders, location, projectStatus, jobs);
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "name='" + name + '\'' +
+                ", leaders=" + leaders.toString() +
+                ", location=" + location +
+                ", projectStatus=" + projectStatus +
+                ", jobs=" + jobs.toString() +
+                '}';
+    }
+
+    //    public void teleport(@Nonnull Player player) {
 //        player.teleportAsync(this.getLocation());
 //        Messages.PLAYER_PROJECT_TELEPORT.send(player, getName());
 //    }

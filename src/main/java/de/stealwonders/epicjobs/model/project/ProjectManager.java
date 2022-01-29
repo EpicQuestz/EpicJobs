@@ -33,7 +33,7 @@ public class ProjectManager {
 //        projects.addAll(plugin.getStorage().loadAllProjects());
 //    }
 
-    public @Nullable Project getProjectById(final int id) {
+    public @Nullable Project getProjectById(final long id) {
         for (final Project project : projects) {
             if (project.getId() == id) {
                 return project;

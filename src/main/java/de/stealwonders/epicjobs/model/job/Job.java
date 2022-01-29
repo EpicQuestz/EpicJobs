@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Job extends StorageEntity {
@@ -114,6 +115,33 @@ public class Job extends StorageEntity {
 
     public void setJobDifficulty(JobDifficulty jobDifficulty) {
         this.jobDifficulty = jobDifficulty;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Job job = (Job) o;
+        return Objects.equals(creator, job.creator) && Objects.equals(claimant, job.claimant) && Objects.equals(description, job.description) && Objects.equals(project, job.project) && Objects.equals(location, job.location) && jobStatus == job.jobStatus && jobCategory == job.jobCategory && jobDifficulty == job.jobDifficulty;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(creator, claimant, description, project, location, jobStatus, jobCategory, jobDifficulty);
+    }
+
+    @Override
+    public String toString() {
+        return "Job{" +
+                "creator=" + creator +
+                ", claimant=" + claimant +
+                ", description='" + description + '\'' +
+                ", project=" + project +
+                ", location=" + location +
+                ", jobStatus=" + jobStatus +
+                ", jobCategory=" + jobCategory +
+                ", jobDifficulty=" + jobDifficulty +
+                '}';
     }
 
     //    public void claim(@Nonnull User player) {

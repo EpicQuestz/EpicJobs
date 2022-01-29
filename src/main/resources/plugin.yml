@@ -3,11 +3,11 @@ version: '$version'
 main: de.stealwonders.epicjobs.EpicJobs
 api-version: 1.13
 authors: [StealWonders]
-description: Helps manage builder tasks and jobs.
+description: Helps manage builder tasks and jobs
 website: www.stealwonders.de
 
 depend: [PlayerUUIDCache]
-softdepend: [Multiverse-Core, Hyperverse]
+softdepend: [Multiverse-Core, Hyperverse] # load EpicJobs after loading all worlds to resolve locations
 
 commands:
   # handled by the Aikar annotation command framework (ACF).
