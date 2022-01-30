@@ -69,8 +69,8 @@ public class SqlStorage implements StorageImplementation {
     @Override
     public void init() throws Exception {
         connectionFactory.init(plugin);
-        boolean tableExists;
-        try (Connection connection = connectionFactory.getConnection()) {
+        final boolean tableExists;
+        try (final Connection connection = connectionFactory.getConnection()) {
             tableExists = tableExists(connection, "jobs") && tableExists(connection, "projects");
         }
         if (!tableExists) {
@@ -79,17 +79,17 @@ public class SqlStorage implements StorageImplementation {
     }
 
     private void applySchema() throws IOException, SQLException {
-        List<String> statements;
-        try (InputStream inputStream = plugin.getResource("database_schema.sql")) {
+        final List<String> statements;
+        try (final InputStream inputStream = plugin.getResource("database_schema.sql")) {
             if (inputStream == null) {
                 throw new IOException("Couldn't locate schema file for database");
             }
             statements = new ArrayList<>(SchemaReader.getStatements(inputStream));
         }
 
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (Statement statement = connection.createStatement()) {
-                for (String query : statements) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final Statement statement = connection.createStatement()) {
+                for (final String query : statements) {
                     statement.addBatch(query);
                 }
                 statement.executeBatch();
@@ -101,7 +101,7 @@ public class SqlStorage implements StorageImplementation {
     public void shutdown() {
         try {
             connectionFactory.shutdown();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Exception whilst disabling SQL storage", e);
         }
     }
@@ -110,11 +110,11 @@ public class SqlStorage implements StorageImplementation {
     public Project createAndLoadProject(final String name, final Player leader) throws SQLException {
         Project project = null;
 
-        Gson gson = new Gson();
-        String leaders = gson.toJson(List.of(leader.getUniqueId()));
+        final Gson gson = new Gson();
+        final String leaders = gson.toJson(List.of(leader.getUniqueId()));
 
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_INSERT)) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_INSERT)) {
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, leaders);
                 preparedStatement.setString(3, Utils.serializeLocation(leader.getLocation()));
@@ -122,8 +122,8 @@ public class SqlStorage implements StorageImplementation {
                 preparedStatement.execute();
             }
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_ID)) {
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(GET_ID)) {
+                try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         project = new Project(resultSet.getInt("id"), name, leader);
                     }
@@ -136,11 +136,11 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public List<Project> loadAllProjects() throws SQLException {
-        List<Project> projects = new ArrayList<>();
+        final List<Project> projects = new ArrayList<>();
 
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_SELECT_ALL)) {
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_SELECT_ALL)) {
+                try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         final int id = resultSet.getInt("id");
                         final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
@@ -150,11 +150,11 @@ public class SqlStorage implements StorageImplementation {
                         final Location location = Utils.deserializeLocation(resultSet.getString("location"));
                         final ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
 
-                        Gson gson = new Gson();
-                        String[] stringLeaders = gson.fromJson(jsonLeaders, String[].class);
-                        List<UUID> leaders = new ArrayList<>();
-                        for (String string : stringLeaders) {
-                            UUID uuid = UUID.fromString(string);
+                        final Gson gson = new Gson();
+                        final String[] stringLeaders = gson.fromJson(jsonLeaders, String[].class);
+                        final List<UUID> leaders = new ArrayList<>();
+                        for (final String string : stringLeaders) {
+                            final UUID uuid = UUID.fromString(string);
                             leaders.add(uuid);
                         }
 
@@ -172,10 +172,10 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void saveProject(final Project project) throws SQLException {
-        Gson gson = new Gson();
-        String leaders = gson.toJson(List.of(project.getLeaders().stream().map(UUID::toString).collect(Collectors.toList())));
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE)) {
+        final Gson gson = new Gson();
+        final String leaders = gson.toJson(List.of(project.getLeaders().stream().map(UUID::toString).collect(Collectors.toList())));
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE)) {
                 preparedStatement.setString(1, project.getName());
                 preparedStatement.setString(2, leaders);
                 preparedStatement.setString(3, Utils.serializeLocation(project.getLocation()));
@@ -188,8 +188,8 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void deleteProject(final Project project) throws SQLException {
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_DELETE)) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_DELETE)) {
                 preparedStatement.setInt(1, project.getId());
                 preparedStatement.execute();
             }
@@ -197,11 +197,11 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public Job createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory, JobDifficulty jobDifficulty) throws SQLException {
+    public Job createAndLoadJob(final Player creator, final String description, final Project project, final JobCategory jobCategory, final JobDifficulty jobDifficulty) throws SQLException {
         Job job = null;
 
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(JOB_INSERT)) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(JOB_INSERT)) {
                 preparedStatement.setString(1, creator.toString());
                 preparedStatement.setString(2, description);
                 preparedStatement.setInt(3, project.getId());
@@ -212,8 +212,8 @@ public class SqlStorage implements StorageImplementation {
                 preparedStatement.execute();
             }
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_ID)) {
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(GET_ID)) {
+                try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         job = new Job(resultSet.getInt("id"), creator, description, project, jobCategory, jobDifficulty);
                     }
@@ -226,11 +226,11 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public List<Job> loadAllJobs() throws SQLException {
-        List<Job> jobs = new ArrayList<>();
+        final List<Job> jobs = new ArrayList<>();
 
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(JOB_SELECT_ALL)) {
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(JOB_SELECT_ALL)) {
+                try (final ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         final int id = resultSet.getInt("id");
                         final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
@@ -258,8 +258,8 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void saveJob(final Job job) throws SQLException {
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE)) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(JOB_UPDATE)) {
                 if (job.getClaimant() == null) {
                     preparedStatement.setNull(1, Types.VARCHAR);
                 } else {
@@ -279,16 +279,16 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void deleteJob(final Job job) throws SQLException {
-        try (Connection connection = connectionFactory.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(JOB_DELETE)) {
+        try (final Connection connection = connectionFactory.getConnection()) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(JOB_DELETE)) {
                 preparedStatement.setInt(1, job.getId());
                 preparedStatement.execute();
             }
         }
     }
 
-    private static boolean tableExists (Connection connection, String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, "%", null)) {
+    private static boolean tableExists (final Connection connection, final String table) throws SQLException {
+        try (final ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, "%", null)) {
             while (resultSet.next()) {
                 if (resultSet.getString(3).equalsIgnoreCase(table)) {
                     return true;

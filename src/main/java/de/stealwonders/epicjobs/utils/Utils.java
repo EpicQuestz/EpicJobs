@@ -37,9 +37,9 @@ public class Utils {
         return location;
     }
 
-    public static String shortenDescription(@NonNull final Job job) {
-        return StringUtils.abbreviate(job.getDescription(), 100);
-    }
+//    public static String shortenDescription(@NonNull final Job job) {
+//        return StringUtils.abbreviate(job.getDescription(), 100);
+//    }
 
 //    public static String getPlayerHolderText(@Nullable final UUID uuid) {
 //       final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
@@ -60,18 +60,18 @@ public class Utils {
 //        return ChatColor.translateAlternateColorCodes('&', msg);
 //    }
 
-    public static ItemStack getSkull(final String base64, final String name) {
-        final ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
-        final ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.displayName(Component.text(name));
-        itemStack.setItemMeta(itemMeta);
-        final SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        final PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID());
-        final ProfileProperty profileProperty = new ProfileProperty("textures", base64);
-        playerProfile.getProperties().add(profileProperty);
-        skullMeta.setPlayerProfile(playerProfile);
-        itemStack.setItemMeta(skullMeta);
-        return itemStack;
-    }
+//    public static ItemStack getSkull(final String base64, final String name) {
+//        final ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+//        final ItemMeta itemMeta = itemStack.getItemMeta();
+//        itemMeta.displayName(Component.text(name));
+//        itemStack.setItemMeta(itemMeta);
+//        final SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+//        final PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID());
+//        final ProfileProperty profileProperty = new ProfileProperty("textures", base64);
+//        playerProfile.getProperties().add(profileProperty);
+//        skullMeta.setPlayerProfile(playerProfile);
+//        itemStack.setItemMeta(skullMeta);
+//        return itemStack;
+//    }
 
 }

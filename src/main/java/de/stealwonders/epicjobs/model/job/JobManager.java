@@ -33,23 +33,23 @@ public class JobManager {
 //        jobs.addAll(plugin.getStorage().loadAllJobs());
 //    }
 
-    public @Nullable Job getJobById(final long id) {
-        for (final Job job : jobs) {
-            if (job.getId() == id) {
-                return job;
-            }
-        }
-        return null;
-    }
-
-    public List<Job> getJobsByStatus(final JobStatus jobStatus) {
-        final List<Job> jobList = new ArrayList<>();
-        for (final Job job : jobs) {
-            if (job.getJobStatus() == jobStatus) {
-                jobList.add(job);
-            }
-        }
-        return jobList;
-    }
+//    public @Nullable Job getJobById(final long id) {
+//        for (final Job job : jobs) {
+//            if (job.getId() == id) {
+//                return job;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public List<Job> getJobsByStatus(final JobStatus jobStatus) {
+//        final List<Job> jobList = new ArrayList<>();
+//        for (final Job job : jobs) {
+//            if (job.getJobStatus() == jobStatus) {
+//                jobList.add(job);
+//            }
+//        }
+//        return jobList;
+//    }
 
 }

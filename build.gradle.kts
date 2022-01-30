@@ -1,6 +1,6 @@
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow") version("7.0.0")
+    id("com.github.johnrengelman.shadow") version("7.1.0")
 }
 
 java.targetCompatibility = JavaVersion.VERSION_17
@@ -10,9 +10,9 @@ val pluginGroup: String by extra
 val pluginVersion: String by extra
 
 val cloudVersion = "1.6.1"
-val ifVersion = "0.10.3"
+val ifVersion = "0.10.4"
 val taskchainVersion = "3.7.2"
-val paperVersion = "1.17.1-R0.1-SNAPSHOT"
+val paperVersion = "1.18.1-R0.1-SNAPSHOT"
 
 group = pluginGroup
 version = pluginVersion
@@ -33,10 +33,10 @@ dependencies {
     implementation("com.github.stefvanschie.inventoryframework:IF:$ifVersion")
     implementation("co.aikar:taskchain-bukkit:$taskchainVersion")
 
-    implementation("org.checkerframework:checker-qual:3.21.0")
+    implementation("org.checkerframework:checker-qual:3.21.1")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation("com.zaxxer:HikariCP:5.0.0")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.5")
 
@@ -64,7 +64,7 @@ tasks.build {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    options.release.set(16)
+    options.release.set(17)
 }
 
 tasks.processResources {

@@ -1,14 +1,11 @@
 package de.stealwonders.epicjobs.user;
 
-import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.model.job.Job;
-import de.stealwonders.epicjobs.model.job.JobStatus;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class User {
@@ -17,9 +14,13 @@ public class User {
     private final String name;
     private final List<Job> jobs;
 
-    public User(@Nonnull final UUID uuid, @Nullable final String name) {
+    public User(@Nonnull final Player player) {
+        this(player.getUniqueId(), player.getName());
+    }
+
+    public User(@Nonnull final UUID uuid, @Nonnull final String name) {
         this.uuid = uuid;
-        this.name = name; // todo: figure out why this is nullable!?!?
+        this.name = name;
         this.jobs = new ArrayList<>();
     }
 
@@ -27,12 +28,12 @@ public class User {
         return uuid;
     }
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
+    public String getName() {
+        return name;
     }
 
     public List<Job> getJobs() {
-        return ImmutableList.copyOf(jobs);
+        return jobs;
     }
 
     public void addJob(Job job) {
@@ -43,24 +44,41 @@ public class User {
         jobs.remove(job);
     }
 
-    public List<Job> getActiveJobs() {
-        final List<Job> jobList = new ArrayList<>();
-        for (final Job job : jobs) {
-            if (job.getJobStatus().equals(JobStatus.TAKEN)) {
-                jobList.add(job);
-            }
-        }
-        return ImmutableList.copyOf(jobList);
-    }
-
-    public List<Job> getCompletedJobs() {
-        final List<Job> jobList = new ArrayList<>();
-        for (final Job job : jobs) {
-            if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
-                jobList.add(job);
-            }
-        }
-        return ImmutableList.copyOf(jobList);
-    }
+    //
+//    public Optional<String> getName() {
+//        return Optional.ofNullable(name);
+//    }
+//
+//    public List<Job> getJobs() {
+//        return ImmutableList.copyOf(jobs);
+//    }
+//
+//    public void addJob(Job job) {
+//        jobs.add(job);
+//    }
+//
+//    public void removeJob(Job job) {
+//        jobs.remove(job);
+//    }
+//
+//    public List<Job> getActiveJobs() {
+//        final List<Job> jobList = new ArrayList<>();
+//        for (final Job job : jobs) {
+//            if (job.getJobStatus().equals(JobStatus.TAKEN)) {
+//                jobList.add(job);
+//            }
+//        }
+//        return ImmutableList.copyOf(jobList);
+//    }
+//
+//    public List<Job> getCompletedJobs() {
+//        final List<Job> jobList = new ArrayList<>();
+//        for (final Job job : jobs) {
+//            if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
+//                jobList.add(job);
+//            }
+//        }
+//        return ImmutableList.copyOf(jobList);
+//    }
 
 }

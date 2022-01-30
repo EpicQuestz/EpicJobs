@@ -1,6 +1,5 @@
 package de.stealwonders.epicjobs.model.project;
 
-import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -18,7 +17,7 @@ public class ProjectManager {
     }
 
     public List<Project> getProjects() {
-        return ImmutableList.copyOf(projects);
+        return projects;
     }
 
     public void addProject(final Project project) {
@@ -33,7 +32,7 @@ public class ProjectManager {
 //        projects.addAll(plugin.getStorage().loadAllProjects());
 //    }
 
-    public @Nullable Project getProjectById(final long id) {
+    public @Nullable Project getProjectById(final int id) {
         for (final Project project : projects) {
             if (project.getId() == id) {
                 return project;
@@ -42,23 +41,23 @@ public class ProjectManager {
         return null;
     }
 
-    public @Nullable Project getProjectByName(final String name) {
-        for (final Project project : projects) {
-            if (project.getName().equalsIgnoreCase(name)) {
-                return project;
-            }
-        }
-        return null;
-    }
-
-    public List<Project> getProjectByStatus(final ProjectStatus projectStatus) {
-        final List<Project> projectList = new ArrayList<>();
-        for (final Project project : projects) {
-            if (project.getProjectStatus() == projectStatus) {
-                projectList.add(project);
-            }
-        }
-        return projectList;
-    }
+//    public @Nullable Project getProjectByName(final String name) {
+//        for (final Project project : projects) {
+//            if (project.getName().equalsIgnoreCase(name)) {
+//                return project;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public List<Project> getProjectByStatus(final ProjectStatus projectStatus) {
+//        final List<Project> projectList = new ArrayList<>();
+//        for (final Project project : projects) {
+//            if (project.getProjectStatus() == projectStatus) {
+//                projectList.add(project);
+//            }
+//        }
+//        return projectList;
+//    }
 
 }
