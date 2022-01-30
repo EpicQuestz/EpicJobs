@@ -22,7 +22,7 @@ public class Job extends StorageEntity {
     private JobDifficulty jobDifficulty;
 
     public Job(
-        final int id, // todo: figure out if we need to pass this everywhere
+        final int id,
         @NonNull final Player creator,
         @NonNull final String description,
         @NonNull final Project project,
@@ -133,7 +133,8 @@ public class Job extends StorageEntity {
     @Override
     public String toString() {
         return "Job{" +
-                "creator=" + creator +
+                "id=" + super.getId() +
+                ", creator=" + creator +
                 ", claimant=" + claimant +
                 ", description='" + description + '\'' +
                 ", project=" + project +

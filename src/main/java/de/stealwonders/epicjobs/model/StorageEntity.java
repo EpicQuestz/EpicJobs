@@ -2,17 +2,17 @@ package de.stealwonders.epicjobs.model;
 
 public abstract class StorageEntity {
 
-    private final long id;
+    private final int id;
     private final long creationTime;
     private long updateTime;
 
-    public StorageEntity(final long id, final long creationTime, final long updateTime) {
+    public StorageEntity(final int id, final long creationTime, final long updateTime) {
         this.id = id;
         this.creationTime = creationTime;
         this.updateTime = updateTime;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

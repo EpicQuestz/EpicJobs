@@ -2,8 +2,6 @@ package de.stealwonders.epicjobs.utils;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import de.iani.playerUUIDCache.CachedPlayer;
-import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.model.job.Job;
 import net.kyori.adventure.text.Component;

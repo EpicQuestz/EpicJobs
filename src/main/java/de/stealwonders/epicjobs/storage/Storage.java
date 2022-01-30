@@ -26,12 +26,12 @@ public class Storage {
     }
 
     public String getName() {
-        return this.implementation.getImplementationName();
+        return implementation.getImplementationName();
     }
 
     public void init() {
         try {
-            this.implementation.init();
+            implementation.init();
         } catch (Exception e) {
             this.plugin.getLogger().severe("Failed to init storage implementation");
             e.printStackTrace();
@@ -40,9 +40,9 @@ public class Storage {
 
     public void shutdown() {
         try {
-            this.implementation.shutdown();
+            implementation.shutdown();
         } catch (Exception e) {
-            this.plugin.getLogger().severe("Failed to shutdown storage implementation");
+            plugin.getLogger().severe("Failed to shutdown storage implementation");
             e.printStackTrace();
         }
     }
@@ -58,14 +58,16 @@ public class Storage {
         });
     }
 
-    public Promise<Project> loadProject(int id) {
-        return null;
-    }
+//    public Promise<Project> createAndLoadProject(String name, Player leader) {
+//        return Promise.supplyingAsync(() -> {
+//                return implementation.createAndLoadProject(name, leader);
+//        }).supplyException();
+//    }
 
     public Promise<List<Project>> loadAllProjects() {
         return Promise.supplyingAsync(() -> {
             try {
-                return this.implementation.loadAllProjects();
+                return implementation.loadAllProjects();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -76,7 +78,7 @@ public class Storage {
     public Promise<Void> saveProject(Project project) {
         return Promise.start().thenRunAsync(() -> {
             try {
-                this.implementation.saveProject(project);
+                implementation.saveProject(project);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -86,7 +88,7 @@ public class Storage {
     public Promise<Void> deleteProject(Project project) {
         return Promise.start().thenRunAsync(() -> {
             try {
-                this.implementation.deleteProject(project);
+                implementation.deleteProject(project);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -96,7 +98,7 @@ public class Storage {
     public Promise<Job> createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory, JobDifficulty jobDifficulty) {
         return Promise.supplyingAsync(() -> {
             try {
-                return this.implementation.createAndLoadJob(creator, description, project, jobCategory, jobDifficulty);
+                return implementation.createAndLoadJob(creator, description, project, jobCategory, jobDifficulty);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -104,14 +106,10 @@ public class Storage {
         });
     }
 
-    public Promise<Job> loadJob(int id) {
-        return null;
-    }
-
     public Promise<List<Job>> loadAllJobs() {
         return Promise.supplyingAsync(() -> {
             try {
-                return this.implementation.loadAllJobs();
+                return implementation.loadAllJobs();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -122,7 +120,7 @@ public class Storage {
     public Promise<Void> saveJob(Job job) {
         return Promise.start().thenRunAsync(() -> {
             try {
-                this.implementation.saveJob(job);
+                implementation.saveJob(job);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -132,7 +130,7 @@ public class Storage {
     public Promise<Void> deleteJob(Job job) {
         return Promise.start().thenRunAsync(() -> {
             try {
-                this.implementation.deleteJob(job);
+                implementation.deleteJob(job);
             } catch (Exception e) {
                 e.printStackTrace();
             }

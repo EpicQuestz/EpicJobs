@@ -21,8 +21,6 @@ public interface StorageImplementation {
 
     Project createAndLoadProject(String name, Player leader) throws Exception;
 
-    Project loadProject(int id) throws Exception;
-
     List<Project> loadAllProjects() throws Exception;
 
     void saveProject(Project project) throws Exception;
@@ -30,8 +28,6 @@ public interface StorageImplementation {
     void deleteProject(Project project) throws Exception;
 
     Job createAndLoadJob(Player creator, String description, Project project, JobCategory jobCategory, JobDifficulty jobDifficulty) throws Exception;
-
-    Job loadJob(int id) throws Exception;
 
     List<Job> loadAllJobs() throws Exception;
 

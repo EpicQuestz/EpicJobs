@@ -6,9 +6,10 @@ authors: [StealWonders]
 description: Helps manage builder tasks and jobs
 website: www.stealwonders.de
 
-depend: [PlayerUUIDCache]
+#depend: [PlayerUUIDCache]
 softdepend: [Multiverse-Core, Hyperverse] # load EpicJobs after loading all worlds to resolve locations
 
 commands:
   # handled by the Aikar annotation command framework (ACF).
-
+  addproject:
+    description: It works?

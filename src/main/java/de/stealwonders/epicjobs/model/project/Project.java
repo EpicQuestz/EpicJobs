@@ -105,7 +105,8 @@ public class Project extends StorageEntity {
     @Override
     public String toString() {
         return "Project{" +
-                "name='" + name + '\'' +
+                "id=" + super.getId() +
+                ", name='" + name + '\'' +
                 ", leaders=" + leaders.toString() +
                 ", location=" + location +
                 ", projectStatus=" + projectStatus +

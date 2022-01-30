@@ -5,6 +5,7 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import de.stealwonders.epicjobs.model.job.JobManager;
+import de.stealwonders.epicjobs.model.project.Project;
 import de.stealwonders.epicjobs.model.project.ProjectManager;
 import de.stealwonders.epicjobs.storage.Storage;
 import de.stealwonders.epicjobs.storage.StorageCredentials;
@@ -15,8 +16,14 @@ import de.stealwonders.epicjobs.storage.implementation.sql.connection.hikari.Mar
 import de.stealwonders.epicjobs.user.User;
 import me.lucko.helper.internal.HelperImplementationPlugin;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
+import me.lucko.helper.promise.Promise;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -77,6 +84,24 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 //        registerListeners();
 
 //        new EpicProfileRepository(sql, "tableName", 2000);
+
+        this.getCommand("addproject").setExecutor((sender, command, label, args) -> {
+
+            if (sender instanceof Player player) {
+
+                if (args.length != 1) {
+                    player.sendMessage("not enough args");
+                    return false;
+                }
+
+                player.sendMessage("Creating new Project with name " + args[0]);
+                Promise<Project> promise = storage.createAndLoadProject(args[0], player);
+                promise.thenAcceptSync(p -> player.sendMessage(p.toString()));
+            }
+
+            return false;
+        });
+
     }
 
     @Override
@@ -86,6 +111,14 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
         storage.shutdown();
 
 //        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer)));
+    }
+
+    public ProjectManager getProjectManager() {
+        return projectManager;
+    }
+
+    public JobManager getJobManager() {
+        return jobManager;
     }
 
     public Storage getStorage() {
