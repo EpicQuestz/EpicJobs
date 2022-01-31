@@ -1,5 +1,6 @@
 package de.stealwonders.epicjobs;
 
+import de.stealwonders.epicjobs.command.Commands;
 import de.stealwonders.epicjobs.model.job.Job;
 import de.stealwonders.epicjobs.model.job.JobManager;
 import de.stealwonders.epicjobs.model.project.Project;
@@ -36,6 +37,8 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
     private Storage storage;
 
+    private Commands commands;
+
     private Set<User> users;
 
     @Override
@@ -46,16 +49,16 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
 //        taskChainFactory = BukkitTaskChainFactory.create(this);
 
-//        settingsFile = new SettingsFile(this);
-
         projectManager = new ProjectManager(this);
         jobManager = new JobManager(this);
 
         StorageFactory storageFactory = new StorageFactory(this);
         storage = storageFactory.getInstance();
 
-//        projectManager.firstLoad();
-//        jobManager.firstLoad();
+        projectManager.firstLoad();
+        jobManager.firstLoad();
+
+        commands = new Commands(this);
 
         users = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> {
@@ -65,24 +68,6 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
         });
 
         registerListeners();
-
-//        new EpicProfileRepository(sql, "tableName", 2000);
-
-        // ----
-        this.getCommand("addproject").setExecutor((sender, command, label, args) -> {
-            if (sender instanceof Player player) {
-                if (args.length != 1) {
-                    player.sendMessage("not enough args");
-                    return false;
-                }
-                player.sendMessage("Creating new Project with name " + args[0]);
-                Promise<Project> promise = storage.createAndLoadProject(args[0], player);
-                promise.thenAcceptSync(p -> player.sendMessage(p.toString()));
-            }
-            return false;
-        });
-        // ----
-
     }
 
     @Override

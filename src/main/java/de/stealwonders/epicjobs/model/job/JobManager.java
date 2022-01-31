@@ -2,6 +2,8 @@ package de.stealwonders.epicjobs.model.job;
 
 import com.google.common.collect.ImmutableList;
 import de.stealwonders.epicjobs.EpicJobs;
+import de.stealwonders.epicjobs.model.project.Project;
+import me.lucko.helper.promise.Promise;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
@@ -29,9 +31,10 @@ public class JobManager {
         jobs.remove(job);
     }
 
-//    public void firstLoad() {
-//        jobs.addAll(plugin.getStorage().loadAllJobs());
-//    }
+    public void firstLoad() {
+        Promise<List<Job>> promise = plugin.getStorage().loadAllJobs();
+        promise.thenAcceptSync(this.jobs::addAll);
+    }
 
 //    public @Nullable Job getJobById(final long id) {
 //        for (final Job job : jobs) {

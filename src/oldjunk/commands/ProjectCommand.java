@@ -44,50 +44,7 @@
 //        commandHelp.showHelp();
 //    }
 //
-//    @Subcommand("list")
-//    public void onList(final CommandSender sender) {
-//        final List<Project> projects = plugin.getProjectManager().getProjects().stream()
-//            .filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
-//            .collect(Collectors.toList());
-//        if (projects.size() >= 1) {
-//            final List<TextComponent> textComponents = new ArrayList<>();
-//            projects.forEach(project -> {
-//                final TextComponent textComponent = Component.text(project.getName()).color(NamedTextColor.AQUA)
-//                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport!")))
-//                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName()));
-//                textComponents.add(textComponent);
-//            });
-//            final TextComponent message = Component.join(Component.text(", ").color(NamedTextColor.GOLD), textComponents);
-//            sender.sendMessage("");
-//            sender.sendMessage(message);
-//            sender.sendMessage("");
-//        } else {
-//            NO_PROJECTS_AVAILABLE.send(sender);
-//        }
-//    }
-//
-//    @Subcommand("list all")
-//    @CommandPermission("epicjobs.command.project.listall")
-//    public void onListAll(final CommandSender sender) {
-//        final List<Project> projects = plugin.getProjectManager().getProjects();
-//        if (projects.size() >= 1) {
-//            final List<TextComponent> textComponents = new ArrayList<>();
-//            projects.forEach(project -> {
-//                final TextComponent textComponent = Component.empty()
-//                    .append(Component.text(project.getName()).color(NamedTextColor.AQUA)
-//                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to teleport!")))
-//                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())))
-//                    .append(Component.text(" (" + project.getProjectStatus() + ")").color(NamedTextColor.GOLD))
-//                textComponents.add(textComponent);
-//            });
-//            final TextComponent message = Component.join(Component.text(", ").color(NamedTextColor.GOLD), textComponents);
-//            sender.sendMessage("");
-//            sender.sendMessage(message);
-//            sender.sendMessage("");
-//        } else {
-//            NO_PROJECTS_AVAILABLE.send(sender);
-//        }
-//    }
+
 //
 //    @Subcommand("create")
 //    @CommandPermission("epicjobs.command.project.create")
@@ -115,38 +72,12 @@
 //            .execute();
 //    }
 //
-//    @Subcommand("edit name")
-//    @CommandCompletion("@project @nothing")
-//    @CommandPermission("epicjobs.command.project.edit")
-//    public void onEditName(final Player player, final Project project, final String name) {
-//        project.setName(name);
-//        player.sendMessage("Set name of project to " + name);
-//        plugin.getStorage().updateProject(project);
-//    }
+
+
+
+
 //
-//    @Subcommand("edit location")
-//    @CommandCompletion("@project")
-//    @CommandPermission("epicjobs.command.project.edit")
-//    public void onEditLocation(final Player player, final Project project) {
-//        project.setLocation(player.getLocation());
-//        player.sendMessage("Updated project location to your current");
-//        plugin.getStorage().updateProject(project);
-//    }
-//
-//    @Subcommand("edit leader")
-//    @CommandCompletion("@project @players")
-//    @CommandPermission("epicjobs.command.project.edit")
-//    public void onEditLeader(final Player player, final Project project, final OnlinePlayer leader) {
-//        project.setLeader(leader.getPlayer());
-//        player.sendMessage("Set project leader to " + leader.getPlayer().getName());
-//        plugin.getStorage().updateProject(project);
-//    }
-//
-//    @Subcommand("teleport|tp")
-//    @CommandCompletion("@project")
-//    public void onTeleport(final Player player, final Project project) {
-//        project.teleport(player);
-//    }
+
 //
 //    @Subcommand("complete")
 //    @CommandCompletion("@active-project")

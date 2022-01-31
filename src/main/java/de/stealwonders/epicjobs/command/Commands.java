@@ -9,7 +9,15 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
 import de.stealwonders.epicjobs.EpicJobs;
+import de.stealwonders.epicjobs.command.caption.EpicJobsCaptionRegistry;
+import de.stealwonders.epicjobs.command.caption.EpicJobsCaptionRegistryFactory;
 import de.stealwonders.epicjobs.command.commands.CreateProjectCommand;
+import de.stealwonders.epicjobs.command.commands.EditProjectCommand;
+import de.stealwonders.epicjobs.command.commands.ListProjectCommand;
+import de.stealwonders.epicjobs.command.commands.TeleportProjectCommand;
+import de.stealwonders.epicjobs.command.parser.ProjectParser;
+import de.stealwonders.epicjobs.model.project.Project;
+import io.leangen.geantyref.TypeToken;
 import org.bukkit.command.CommandSender;
 
 import java.util.function.Function;
@@ -94,11 +102,14 @@ public class Commands {
 //                                .append(component).build()
 //                ).apply(manager, player -> player);
 
-//        // Register our custom caption registry so we can define exception messages for parsers
-//        final BattlegroundCaptionRegistry<CommandSender> captionRegistry = new BattlegroundCaptionRegistryFactory<CommandSender>().create(); todo: add this?
-//        manager.setCaptionRegistry(captionRegistry);
+        // Register our custom caption registry so we can define exception messages for parsers
+        final EpicJobsCaptionRegistry<CommandSender> captionRegistry = new EpicJobsCaptionRegistryFactory<CommandSender>().create();
+        manager.setCaptionRegistry(captionRegistry);
 
-//        // Register custom Battleground parsers
+        // Register custom Battleground parsers
+        manager.getParserRegistry().registerParserSupplier(TypeToken.get(Project.class), parserParameters ->
+                new ProjectParser<>());
+
 //        manager.getParserRegistry().registerParserSupplier(TypeToken.get(Map.class), parserParameters ->
 //                new MapArgument.MapParser<>());
 //        manager.getParserRegistry().registerParserSupplier(TypeToken.get(Team.class), parserParameters ->
@@ -137,6 +148,9 @@ public class Commands {
 
         // Project Commands
         annotationParser.parse(new CreateProjectCommand(plugin));
+        annotationParser.parse(new EditProjectCommand(plugin));
+        annotationParser.parse(new ListProjectCommand(plugin));
+        annotationParser.parse(new TeleportProjectCommand());
 
     }
 }

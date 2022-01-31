@@ -141,7 +141,7 @@ public class SqlStorage implements StorageImplementation {
         try (final Connection connection = connectionFactory.getConnection()) {
             try (final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_SELECT_ALL)) {
                 try (final ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
+                    while (resultSet.next()) {
                         final int id = resultSet.getInt("id");
                         final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
                         final Timestamp updateTime = Timestamp.valueOf(resultSet.getString("updatetime"));
@@ -231,7 +231,7 @@ public class SqlStorage implements StorageImplementation {
         try (final Connection connection = connectionFactory.getConnection()) {
             try (final PreparedStatement preparedStatement = connection.prepareStatement(JOB_SELECT_ALL)) {
                 try (final ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
+                    while (resultSet.next()) {
                         final int id = resultSet.getInt("id");
                         final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
                         final Timestamp updateTime = Timestamp.valueOf(resultSet.getString("updateTime"));
