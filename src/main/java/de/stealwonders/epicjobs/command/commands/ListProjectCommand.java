@@ -11,6 +11,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -43,10 +45,12 @@ public record ListProjectCommand(EpicJobs plugin) {
 
         List<Component> components = new ArrayList<>();
         projects.forEach(project -> {
-            Component component = MiniMessage.get().parse("<aqua><hover:show_text:\"Click to teleport!\"><click:run_command:/project teleport<project>><project></click></hover></aqua>", "project", project.getName());
+            Component component = MiniMessage.miniMessage().deserialize("<aqua><hover:show_text:\"Click to teleport!\"><click:run_command:/project teleport<project>><project></click></hover></aqua>", Placeholder.unparsed("project", project.getName()));
+            //Component component = MiniMessage.miniMessage().deserialize("<aqua><hover:show_text:\"Click to teleport!\"><click:run_command:/project teleport<project>><project></click></hover></aqua>", "project", project.getName());
             if (verbose) {
                 component = component.append(Component.space());
-                component = component.append(MiniMessage.get().parse("<gold>(<projectstatus>)</gold>", "projectstatus", project.getProjectStatus().toString()));
+                component = component.append(MiniMessage.miniMessage().deserialize("<gold>(<projectstatus>)</gold>", Placeholder.unparsed("projectstatus", project.getProjectStatus().name())));
+                //component = component.append(MiniMessage.get().parse("<gold>(<projectstatus>)</gold>", "projectstatus", project.getProjectStatus().toString()));
             }
             components.add(component);
         });

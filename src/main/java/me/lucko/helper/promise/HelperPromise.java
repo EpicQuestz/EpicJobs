@@ -29,6 +29,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import me.lucko.helper.Schedulers;
 import me.lucko.helper.interfaces.Delegate;
 import me.lucko.helper.internal.LoaderUtils;
 import me.lucko.helper.internal.exception.HelperExceptions;
@@ -99,7 +100,7 @@ final class HelperPromise<V> implements Promise<V> {
                 public void onFailure(@Nonnull Throwable t) {
                     promise.completeExceptionally(t);
                 }
-            });
+            }, Schedulers.async());
 
             return promise;
 

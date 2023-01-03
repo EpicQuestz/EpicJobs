@@ -5,7 +5,7 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.model.job.Job;
 import net.kyori.adventure.text.Component;
-import org.apache.commons.lang.StringUtils;
+//import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

@@ -1,19 +1,19 @@
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow") version("7.1.0")
+    id("com.github.johnrengelman.shadow") version("7.1.2")
 }
 
-java.targetCompatibility = JavaVersion.VERSION_16
-java.sourceCompatibility = JavaVersion.VERSION_16
+java.targetCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 val pluginGroup: String by extra
 val pluginVersion: String by extra
 
-val miniMessage = "4.1.0-SNAPSHOT"
-val cloudVersion = "1.6.1"
-val ifVersion = "0.10.4"
+//val miniMessage = "4.1.0-SNAPSHOT"
+val cloudVersion = "1.8.0"
+val ifVersion = "0.10.8"
 val taskchainVersion = "3.7.2"
-val paperVersion = "1.17.1-R0.1-SNAPSHOT"
+val paperVersion = "1.19.3-R0.1-SNAPSHOT"
 
 group = pluginGroup
 version = pluginVersion
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.kyori:adventure-text-minimessage:$miniMessage")
+    //implementation("net.kyori:adventure-text-minimessage:$miniMessage")
     implementation("cloud.commandframework:cloud-paper:$cloudVersion")
     implementation("cloud.commandframework:cloud-annotations:$cloudVersion")
     implementation("cloud.commandframework:cloud-minecraft-extras:$cloudVersion") {
@@ -35,17 +35,17 @@ dependencies {
     implementation("com.github.stefvanschie.inventoryframework:IF:$ifVersion")
     implementation("co.aikar:taskchain-bukkit:$taskchainVersion")
 
-    implementation("org.checkerframework:checker-qual:3.21.1")
+    implementation("org.checkerframework:checker-qual:3.28.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.3")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.0.5")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.0.6")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
 
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
 tasks.test {
@@ -66,7 +66,7 @@ tasks.build {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    options.release.set(16)
+    options.release.set(17)
 }
 
 tasks.processResources {
