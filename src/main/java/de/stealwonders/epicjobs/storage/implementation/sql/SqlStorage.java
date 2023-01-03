@@ -80,7 +80,7 @@ public class SqlStorage implements StorageImplementation {
 
     private void applySchema() throws IOException, SQLException {
         final List<String> statements;
-        try (final InputStream inputStream = plugin.getResource("database_schema.sql")) {
+        try (final InputStream inputStream = plugin.getResource("schema/mariadb.sql")) {
             if (inputStream == null) {
                 throw new IOException("Couldn't locate schema file for database");
             }
@@ -287,7 +287,7 @@ public class SqlStorage implements StorageImplementation {
         }
     }
 
-    private static boolean tableExists (final Connection connection, final String table) throws SQLException {
+    private static boolean tableExists(final Connection connection, final String table) throws SQLException {
         try (final ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, "%", null)) {
             while (resultSet.next()) {
                 if (resultSet.getString(3).equalsIgnoreCase(table)) {

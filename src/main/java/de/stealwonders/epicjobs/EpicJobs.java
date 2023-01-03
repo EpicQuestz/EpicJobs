@@ -43,7 +43,8 @@ public final class EpicJobs extends ExtendedJavaPlugin implements Listener {
 
     @Override
     protected void enable() {
-        // Plugin startup logic
+        // Create a configuration file if it doesn't exist
+        saveDefaultConfig();
 
 //        playerUuidCache = getServer().getServicesManager().load(PlayerUUIDCacheAPI.class);
 
