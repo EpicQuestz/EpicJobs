@@ -39,7 +39,7 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.0.6")
+    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.7")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
 
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
