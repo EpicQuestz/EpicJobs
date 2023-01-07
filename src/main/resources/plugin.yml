@@ -1,14 +1,9 @@
 name: EpicJobs
-version: @version@
+version: '${version}'
 main: de.stealwonders.epicjobs.EpicJobs
-api-version: 1.13
-authors: [StealWonders]
+api-version: 1.19
+prefix: EpicJobs
+softdepend: [ Multiverse-Core, Hyperverse ]
+authors: [ StealWonders ]
 description: Helps manage builder tasks and jobs.
 website: www.stealwonders.de
-
-depend: [PlayerUUIDCache]
-softdepend: [Multiverse-Core, Hyperverse]
-
-commands:
-  # handled by the Aikar annotation command framework (ACF).
-

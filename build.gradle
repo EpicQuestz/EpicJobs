@@ -1,69 +1,66 @@
 plugins {
-    id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+	id 'java'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group = pluginGroup
-version = pluginVersion
-
-compileJava.options.encoding = 'UTF-8'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+group = 'de.stealwonders'
+version = '2.0-SNAPSHOT'
 
 repositories {
-    mavenCentral()
-    maven {
-        url = "https://repo.aikar.co/content/groups/aikar/"
-    }
-    maven {
-        name = 'destroystokyo-repo'
-        url = 'https://repo.destroystokyo.com/repository/maven-public/'
-    }
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-    maven {
-        name = 'brokko-repo'
-        url = 'https://www.iani.de/nexus/content/groups/public'
-    }
-}
-
-compileJava {
-    options.compilerArgs += ["-parameters"]
-    options.fork = true
-    options.forkOptions.executable = 'javac'
+	mavenCentral()
+	maven {
+		name = 'papermc-repo'
+		url = 'https://repo.papermc.io/repository/maven-public/'
+	}
+	maven {
+		name = 'sonatype'
+		url = 'https://oss.sonatype.org/content/groups/public/'
+	}
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compileOnly 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
-    compileOnly 'com.google.guava:guava:28.0-jre'
-    compileOnly 'de.iani.cubeside:PlayerUUIDCache:1.5.1-SNAPSHOT'
-    compile 'com.zaxxer:HikariCP:3.4.2'
-    compile 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
-    compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'
-    compile 'co.aikar:taskchain-bukkit:3.7.2'
-    compile 'net.kyori:text-api:3.0.4'
-    compile 'net.kyori:text-serializer-gson:3.0.4'
-    compile 'net.kyori:text-adapter-bukkit:3.0.5'
-    compile 'com.github.stefvanschie.inventoryframework:IF:0.6.1'
+	compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
+
+	implementation("cloud.commandframework:cloud-paper:1.8.0") {
+		//exclude("org.checkerframework")
+	}
+	implementation("cloud.commandframework:cloud-annotations:1.8.0") {
+		//exclude("org.checkerframework")
+	}
+	implementation("cloud.commandframework:cloud-minecraft-extras:1.8.0") {
+		//exclude("org.checkerframework")
+		//exclude("net.kyori")
+	}
+	implementation("dev.triumphteam:triumph-gui:3.1.4") {
+		//exclude("net.kyori")
+	}
 }
 
-import org.apache.tools.ant.filters.ReplaceTokens
+def targetJavaVersion = 17
+java {
+	def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+	sourceCompatibility = javaVersion
+	targetCompatibility = javaVersion
+	if (JavaVersion.current() < javaVersion) {
+		toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+		options.release = targetJavaVersion
+	}
+}
 
 shadowJar {
-    relocate 'com.zaxxer.hikari', 'de.stealwonders.epicjobs.hikari'
-    relocate 'org.mariadb.jdbc', 'de.stealwonders.epicjobs.jdbc'
-    relocate 'co.aikar.commands', 'de.stealwonders.epicjobs.acf'
-    relocate 'com.github.stefvanschie.inventoryframework', 'org.empirewar.battlegrounds.inventoryframework'
+	relocate("cloud.commandframework", "de.stealwonders.shadow.cloud.commandframework")
 }
 
-build.dependsOn shadowJar
-
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
+	def props = [version: version]
+	inputs.properties props
+	filteringCharset 'UTF-8'
+	filesMatching('plugin.yml') {
+		expand props
+	}
 }
