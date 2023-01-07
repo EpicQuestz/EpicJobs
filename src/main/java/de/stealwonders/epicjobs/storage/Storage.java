@@ -71,14 +71,4 @@ public class Storage {
 		return jobs;
 	}
 
-	// dummy method
-	public static CompletableFuture<Optional<Project>> project() {
-		return CompletableFuture.supplyAsync(Optional::empty);
-	}
-
-	// dummy method
-	public static CompletableFuture<Optional<Job>> job() {
-		return CompletableFuture.supplyAsync(Optional::empty);
-	}
-
 }

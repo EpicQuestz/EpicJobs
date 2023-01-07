@@ -53,7 +53,7 @@ public record EditProjectCommand(EpicJobs plugin) {
 	}
 
 	@CommandDescription("Edits a projects leaders")
-	@CommandMethod("project|projects edit <project> leader add <leader>")
+	@CommandMethod("project|projects edit <project> leader <leader>")
 	public void onEditLeader(final @NonNull CommandSender commandSender,
 							 @Argument(value = "project", description = "Project") final @NonNull Project project,
 							 @Argument(value = "leader", description = "Leader") final @NonNull OfflinePlayer leader) {

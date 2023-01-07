@@ -10,9 +10,8 @@ import de.stealwonders.epicjobs.model.project.Project;
 import de.stealwonders.epicjobs.model.project.ProjectStatus;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record ListProjectsCommand(EpicJobs plugin) {
+
+	private static final Component NO_PROJECTS = Component.text("There are no jobs to show.").color(NamedTextColor.RED);
 
 	@CommandDescription("List all active projects")
 	@CommandMethod("project|projects list")
@@ -39,21 +40,23 @@ public record ListProjectsCommand(EpicJobs plugin) {
 
 	private void printProjects(CommandSender commandSender, List<Project> projects, boolean verbose) {
 		if (projects.size() < 1) {
-			commandSender.sendMessage(Component.text().content("There are no projects to show.").color(NamedTextColor.RED).build());
+			commandSender.sendMessage(NO_PROJECTS);
 			return;
 		}
 
-		List<Component> components = new ArrayList<>();
+		final List<Component> components = new ArrayList<>();
 		projects.forEach(project -> {
-			Component component = MiniMessage.miniMessage().deserialize("<aqua><hover:show_text:\"Click to teleport!\"><click:run_command:/project teleport<project>><project></click></hover></aqua>", Placeholder.unparsed("project", project.getName()));
+			Component component = Component.text(project.getName()).color(Colors.CARIBBEAN_GREEN)
+					.hoverEvent(Component.text("Click to teleport!").color(Colors.CULTURED_WHITE))
+					.clickEvent(ClickEvent.runCommand("/project teleport " + project.getTag()));
 			if (verbose) {
 				component = component.append(Component.space());
-				component = component.append(MiniMessage.miniMessage().deserialize("<gold>(<projectstatus>)</gold>", Placeholder.unparsed("projectstatus", project.getProjectStatus().name())));
+				component = component.append(Component.text("(" + project.getProjectStatus().name() + ")").color(Colors.HONEY_YELLOW));
 			}
 			components.add(component);
 		});
 
-		Component message = Component.join(JoinConfiguration.separator(Component.text(", ").color(Colors.HONEY_YELLOW)), components);
+		final Component message = Component.join(JoinConfiguration.separator(Component.text(", ").color(Colors.HONEY_YELLOW)), components);
 
 		commandSender.sendMessage("");
 		commandSender.sendMessage(message);

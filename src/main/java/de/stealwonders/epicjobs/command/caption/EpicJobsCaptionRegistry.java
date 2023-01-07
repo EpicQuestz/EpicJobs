@@ -14,11 +14,21 @@ public class EpicJobsCaptionRegistry<C> extends BukkitCaptionRegistry<C> {
 	 */
 	public static final String ARGUMENT_PARSE_FAILURE_PROJECT_NOT_FOUND = "Could not find project '{input}'";
 
+	/**
+	 * Default caption for {@link EpicJobsCaptionKeys#ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND}.
+	 */
+	public static final String ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND = "Could not find job '{input}'";
+
 	protected EpicJobsCaptionRegistry() {
 		super();
 		this.registerMessageFactory(
 				EpicJobsCaptionKeys.ARGUMENT_PARSE_FAILURE_PROJECT_NOT_FOUND,
 				(caption, sender) -> ARGUMENT_PARSE_FAILURE_PROJECT_NOT_FOUND
 		);
+		this.registerMessageFactory(
+				EpicJobsCaptionKeys.ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND,
+				(caption, sender) -> ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND
+		);
 	}
+
 }

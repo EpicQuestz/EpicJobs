@@ -29,8 +29,9 @@ public record CreateProjectCommand(EpicJobs plugin) {
 	@ProxiedBy("createproject")
 	@CommandMethod("project|projects create <tag> [name]")
 	public void onCommand(final @NonNull Player player,
-						  @Argument(value = "tag", description = "Tag") final @NonNull String tag,
+						  @Argument(value = "tag", description = "Tag") @NonNull String tag,
 						  @Argument(value = "name", description = "Name") @Nullable @Greedy String name) {
+		tag = tag.toLowerCase(); // We want the tag to always be lowercase (looks cleaner)
 		if (plugin.getStorage().projectExists(tag)) {
 			player.sendMessage(ALREADY_EXISTS);
 			return;

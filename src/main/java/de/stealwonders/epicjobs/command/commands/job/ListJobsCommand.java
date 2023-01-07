@@ -10,9 +10,8 @@ import de.stealwonders.epicjobs.model.job.Job;
 import de.stealwonders.epicjobs.model.job.JobStatus;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record ListJobsCommand(EpicJobs plugin) {
+
+	private static final Component NO_JOBS = Component.text("There are no jobs to show.").color(NamedTextColor.RED);
 
 	@CommandDescription("List all available jobs")
 	@CommandMethod("job|jobs list")
@@ -39,21 +40,23 @@ public record ListJobsCommand(EpicJobs plugin) {
 
 	private void printJobs(CommandSender commandSender, List<Job> jobs, boolean verbose) {
 		if (jobs.size() < 1) {
-			commandSender.sendMessage(Component.text().content("There are no jobs to show.").color(NamedTextColor.RED).build());
+			commandSender.sendMessage(NO_JOBS);
 			return;
 		}
 
-		List<Component> components = new ArrayList<>();
+		final List<Component> components = new ArrayList<>();
 		jobs.forEach(job -> {
-			Component component = MiniMessage.miniMessage().deserialize("<aqua><hover:show_text:\"Click to teleport!\"><click:run_command:/job teleport<job>><job></click></hover></aqua>");
+			Component component = Component.text("#" + job.getId()).color(Colors.CARIBBEAN_GREEN)
+					.hoverEvent(Component.text("Click to teleport!").color(Colors.CULTURED_WHITE))
+					.clickEvent(ClickEvent.runCommand("/job teleport " + job.getId()));
 			if (verbose) {
 				component = component.append(Component.space());
-				component = component.append(MiniMessage.miniMessage().deserialize("<gold>(<jobstatus>)</gold>", Placeholder.unparsed("jobstatus", job.getJobStatus().name())));
+				component = component.append(Component.text("(" + job.getJobStatus().name() + ")").color(Colors.HONEY_YELLOW));
 			}
 			components.add(component);
 		});
 
-		Component message = Component.join(JoinConfiguration.separator(Component.text(", ").color(Colors.HONEY_YELLOW)), components);
+		final Component message = Component.join(JoinConfiguration.separator(Component.text(", ").color(Colors.HONEY_YELLOW)), components);
 
 		commandSender.sendMessage("");
 		commandSender.sendMessage(message);

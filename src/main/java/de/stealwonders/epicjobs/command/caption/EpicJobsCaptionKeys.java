@@ -14,25 +14,15 @@ public class EpicJobsCaptionKeys {
 
 	private static final Collection<Caption> RECOGNIZED_CAPTIONS = new LinkedList<>();
 
-//    /**
-//     * Variables: None
-//     */
-
-//     /**
-//     * Variables: {input}, {min}, {max}
-//     */
-
 	/**
 	 * Variables: {input}
 	 */
 	public static final Caption ARGUMENT_PARSE_FAILURE_PROJECT_NOT_FOUND = of("argument.parse.failure.project_not_found");
-//    /**
-//     * Variables: {input}, {map}
-//     */
-//    public static final Caption ARGUMENT_PARSE_FAILURE_TEAM_NOT_FOUND = of("argument.parse.failure.team_not_found");
-//    public static final Caption ARGUMENT_PARSE_FAILURE_FLAG_NOT_FOUND = of("argument.parse.failure.flag_not_found");
-//    public static final Caption ARGUMENT_PARSE_FAILURE_SPAWN_NOT_FOUND = of("argument.parse.failure.spawn_not_found");
-//    public static final Caption ARGUMENT_PARSE_FAILURE_GATE_NOT_FOUND = of("argument.parse.failure.gate_not_found");
+
+	/**
+	 * Variables: {input}
+	 */
+	public static final Caption ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND = of("argument.parse.failure.job_not_found");
 
 	private EpicJobsCaptionKeys() { }
 

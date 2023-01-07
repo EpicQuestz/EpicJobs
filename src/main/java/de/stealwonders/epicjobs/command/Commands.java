@@ -12,12 +12,18 @@ import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.command.caption.EpicJobsCaptionRegistry;
 import de.stealwonders.epicjobs.command.caption.EpicJobsCaptionRegistryFactory;
 import de.stealwonders.epicjobs.command.commands.job.CreateJobCommand;
+import de.stealwonders.epicjobs.command.commands.job.EditJobCommand;
+import de.stealwonders.epicjobs.command.commands.job.JobInfoCommand;
+import de.stealwonders.epicjobs.command.commands.job.JobStatusCommands;
 import de.stealwonders.epicjobs.command.commands.job.ListJobsCommand;
+import de.stealwonders.epicjobs.command.commands.job.TeleportJobCommand;
 import de.stealwonders.epicjobs.command.commands.project.CreateProjectCommand;
 import de.stealwonders.epicjobs.command.commands.project.EditProjectCommand;
 import de.stealwonders.epicjobs.command.commands.project.ListProjectsCommand;
 import de.stealwonders.epicjobs.command.commands.project.TeleportProjectCommand;
+import de.stealwonders.epicjobs.command.parser.JobParser;
 import de.stealwonders.epicjobs.command.parser.ProjectParser;
+import de.stealwonders.epicjobs.model.job.Job;
 import de.stealwonders.epicjobs.model.project.Project;
 import io.leangen.geantyref.TypeToken;
 import org.bukkit.command.CommandSender;
@@ -104,10 +110,15 @@ public class Commands {
 
 		// Register custom EpicJobs parsers
 		manager.parserRegistry().registerParserSupplier(TypeToken.get(Project.class), parserParameters -> new ProjectParser<>());
+		manager.parserRegistry().registerParserSupplier(TypeToken.get(Job.class), parserParameters -> new JobParser<>());
 
 		// Job Commands
 		annotationParser.parse(new CreateJobCommand(plugin));
+		annotationParser.parse(new EditJobCommand(plugin));
+		annotationParser.parse(new JobInfoCommand(plugin));
+		annotationParser.parse(new JobStatusCommands(plugin));
 		annotationParser.parse(new ListJobsCommand(plugin));
+		annotationParser.parse(new TeleportJobCommand());
 
 		// Project Commands
 		annotationParser.parse(new CreateProjectCommand(plugin));
