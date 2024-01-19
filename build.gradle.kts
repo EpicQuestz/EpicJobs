@@ -12,7 +12,7 @@ version = "1.2"
 
 val paperVersion = "1.20.4-R0.1-SNAPSHOT"
 val hikariVersion = "5.1.0"
-val mariadbClientVersion = "3.3.2"
+val mariadbClientVersion = "2.7.11"
 
 repositories {
     mavenCentral()
