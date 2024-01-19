@@ -5,7 +5,7 @@ EpicJobs is a task management system created for the EpicQuestz build server. It
 EpicJobs uses Gradle to handle dependencies & building.
 
 #### Requirements
-* Java 8 JDK or newer
+* Java 21 JDK or newer
 * Git
 
 #### Compiling from source
