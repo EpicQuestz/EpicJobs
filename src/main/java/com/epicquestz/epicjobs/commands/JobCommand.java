@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Subcommand;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 //import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
@@ -39,6 +40,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.epicquestz.epicjobs.constants.Messages.*;
@@ -481,10 +483,14 @@ public class JobCommand extends BaseCommand {
                         return true;
                     case DONE:
                         job.setJobStatus(JobStatus.TAKEN);
-                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(job.getClaimant());
-                        JOB_REOPEN.send(player, job.getId(), offlinePlayer.getName());
-                        return true;
-                    default:
+                        final PlayerProfile profile = Bukkit.createProfile(job.getClaimant());
+                        if (profile.completeFromCache()) {
+                            JOB_REOPEN.send(player, job.getId(), profile.getName());
+						} else {
+                            JOB_REOPEN.send(player, job.getId(), "<unknown>");
+                        }
+						return true;
+					default:
                         JOB_NOT_DONE.send(player);
                         return false;
                 }
