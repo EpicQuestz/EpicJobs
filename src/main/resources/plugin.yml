@@ -1,6 +1,6 @@
 name: EpicJobs
 version: '$version'
-main: de.stealwonders.epicjobs.EpicJobs
+main: com.epicquestz.epicjobs.EpicJobs
 api-version: '1.20'
 authors: [StealWonders]
 description: Helps manage builder tasks and jobs.

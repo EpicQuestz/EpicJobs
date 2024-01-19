@@ -7,7 +7,7 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-group = "de.stealwonders"
+group = "com.epicquestz"
 version = "1.2"
 
 val paperVersion = "1.20.4-R0.1-SNAPSHOT"
@@ -41,10 +41,10 @@ tasks {
 //    }
 
     shadowJar {
-        relocate("com.zaxxer.hikari", "de.stealwonders.epicjobs.hikari")
-        relocate("org.mariadb.jdbc", "de.stealwonders.epicjobs.jdbc")
-        relocate("co.aikar.commands", "de.stealwonders.epicjobs.acf")
-        relocate("com.github.stefvanschie.inventoryframework", "org.empirewar.battlegrounds.inventoryframework")
+        relocate("com.zaxxer.hikari", "com.epicquestz.epicjobs.hikari")
+        relocate("org.mariadb.jdbc", "com.epicquestz.epicjobs.jdbc")
+        relocate("co.aikar.commands", "com.epicquestz.epicjobs.acf")
+        relocate("com.github.stefvanschie.inventoryframework", "com.epicquestz.inventoryframework")
     }
 
     build {
