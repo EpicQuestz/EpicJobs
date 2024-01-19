@@ -2,15 +2,13 @@ package com.epicquestz.epicjobs.utils;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import de.iani.playerUUIDCache.CachedPlayer;
-import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
-import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.job.Job;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,18 +41,9 @@ public class Utils {
     }
 
     public static String getPlayerHolderText(@Nullable final UUID uuid) {
-       final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
-        if (playerUUIDCacheAPI != null) {
-            if (uuid != null) {
-                final CachedPlayer cachedPlayer = playerUUIDCacheAPI.getPlayerFromNameOrUUID(uuid.toString());
-                if (cachedPlayer != null) {
-                    return cachedPlayer.getName();
-                }
-            } else {
-                return "§oNone";
-            }
-        }
-        return "§oError fetching username!";
+        if (uuid == null) return "§oNone";
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+        return offlinePlayer.getName();
     }
 
     public static String color(final String msg) {

@@ -25,7 +25,6 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
-    compileOnly("de.iani.cubeside:PlayerUUIDCache:1.5.1-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.mariadb.jdbc:mariadb-java-client:$mariadbClientVersion")
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")

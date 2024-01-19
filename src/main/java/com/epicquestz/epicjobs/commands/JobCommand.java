@@ -10,7 +10,7 @@ import co.aikar.commands.annotation.HelpCommand;
 import co.aikar.commands.annotation.Subcommand;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
-import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
+//import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.constants.SkullHeads;
 import com.epicquestz.epicjobs.job.Job;
@@ -29,6 +29,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -480,12 +481,9 @@ public class JobCommand extends BaseCommand {
                         return true;
                     case DONE:
                         job.setJobStatus(JobStatus.TAKEN);
-                        final PlayerUUIDCacheAPI playerUUIDCacheAPI = EpicJobs.getPlayerUuidCache();
-                        if (playerUUIDCacheAPI != null) {
-                            final String username = job.getClaimant() != null ? playerUUIDCacheAPI.getPlayerFromNameOrUUID(job.getClaimant().toString()).getName() : "<none>";
-                            JOB_REOPEN.send(player, job.getId(), username);
-                            return true;
-                        }
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(job.getClaimant());
+                        JOB_REOPEN.send(player, job.getId(), offlinePlayer.getName());
+                        return true;
                     default:
                         JOB_NOT_DONE.send(player);
                         return false;
