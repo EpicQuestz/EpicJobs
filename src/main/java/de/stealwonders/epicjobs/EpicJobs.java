@@ -14,12 +14,11 @@ import de.stealwonders.epicjobs.storage.SettingsFile;
 import de.stealwonders.epicjobs.storage.implementation.SqlStorage;
 import de.stealwonders.epicjobs.storage.implementation.StorageImplementation;
 import de.stealwonders.epicjobs.user.EpicJobsPlayer;
-import net.kyori.text.TextComponent;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
@@ -151,13 +149,13 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         loadPlayerJobs(epicJobsPlayer);
         epicJobsPlayers.add(epicJobsPlayer);
         if (player.hasPermission("epicjobs.command.job.list.done")) {
-            final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
-            if (jobs.size() >= 1) {
+            final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).toList();
+            if (!jobs.isEmpty()) {
                 sendReviewerJoinMessage(player, jobs.size());
             }
         } else if (player.hasPermission("epicjobs.command.job.claim")) {
-            final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).collect(Collectors.toList());
-            if (jobs.size() >= 1) {
+            final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).toList();
+            if (!jobs.isEmpty()) {
                 sendPlayerJoinMessage(player, jobs.size());
             }
         }
@@ -169,25 +167,25 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     }
 
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {
-        final TextComponent textComponent = TextComponent.builder()
-            .content("There are ").color(TextColor.YELLOW)
-            .append(TextComponent.of(jobCount).color(TextColor.GOLD))
-            .append(TextComponent.of(" job(s) marked as done. Use ").color(TextColor.YELLOW))
-            .append(TextComponent.of("/jobs list done").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Review jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list done")))
-            .append(TextComponent.of(" to review them.").color(TextColor.YELLOW))
+        final Component textComponent = Component.text()
+            .content("There are ").color(NamedTextColor.YELLOW)
+            .append(Component.text(jobCount).color(NamedTextColor.GOLD))
+            .append(Component.text(" job(s) marked as done. Use ").color(NamedTextColor.YELLOW))
+            .append(Component.text("/jobs list done").color(NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list done")))
+            .append(Component.text(" to review them.").color(NamedTextColor.YELLOW))
             .build();
-        TextAdapter.sendMessage(player, textComponent);
+        player.sendMessage(textComponent);
     }
 
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
-        final TextComponent textComponent = TextComponent.builder()
-            .content("There are ").color(TextColor.YELLOW)
-            .append(TextComponent.of(jobCount).color(TextColor.GOLD))
-            .append(TextComponent.of(" job(s) available to be claimed. Use ").color(TextColor.YELLOW))
-            .append(TextComponent.of("/jobs list").color(TextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("View jobs!"))).clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/jobs list")))
-            .append(TextComponent.of(" to find one for yourself.").color(TextColor.YELLOW))
+        final Component textComponent = Component.text()
+            .content("There are ").color(NamedTextColor.YELLOW)
+            .append(Component.text(jobCount).color(NamedTextColor.GOLD))
+            .append(Component.text(" job(s) available to be claimed. Use ").color(NamedTextColor.YELLOW))
+            .append(Component.text("/jobs list").color(NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("View jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list")))
+            .append(Component.text(" to find one for yourself.").color(NamedTextColor.YELLOW))
             .build();
-        TextAdapter.sendMessage(player, textComponent);
+        player.sendMessage(textComponent);
     }
 
 }

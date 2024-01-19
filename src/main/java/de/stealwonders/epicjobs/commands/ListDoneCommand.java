@@ -4,8 +4,8 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
-import com.github.stefvanschie.inventoryframework.Gui;
-import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.job.Job;
 import de.stealwonders.epicjobs.utils.ItemStackBuilder;
@@ -73,7 +73,7 @@ public class ListDoneCommand extends BaseCommand {
             .withLore("§7Click to §lview job info")
             .build();
 
-        final Gui gui = MenuHelper.getPaginatedGui(title, guiItems, null, infoBook);
+        final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, null, infoBook);
         gui.show(player);
     }
 }

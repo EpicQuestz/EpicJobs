@@ -4,8 +4,8 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
-import com.github.stefvanschie.inventoryframework.Gui;
-import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.constants.SkullHeads;
 import de.stealwonders.epicjobs.job.Job;
@@ -59,7 +59,7 @@ public class ListAllCommand extends BaseCommand {
             sendCategoryMenu(player);
         });
 
-        final Gui gui = MenuHelper.getStaticSelectionGui("Select Filter", projectItem, statusItem, categoryItem);
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Filter", projectItem, statusItem, categoryItem);
         gui.show(player);
     }
 
@@ -89,7 +89,7 @@ public class ListAllCommand extends BaseCommand {
             });
             guiItems.add(guiItem);
         }
-        final Gui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems);
+        final ChestGui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems);
         gui.show(player);
     }
 
@@ -105,7 +105,7 @@ public class ListAllCommand extends BaseCommand {
             });
             guiItems.add(guiItem);
         }
-        final Gui gui = MenuHelper.getStaticSelectionGui("Select Job Status", guiItems.toArray(new GuiItem[guiItems.size()]));
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Status", guiItems.toArray(new GuiItem[guiItems.size()]));
         gui.show(player);
     }
 
@@ -121,7 +121,7 @@ public class ListAllCommand extends BaseCommand {
             });
             guiItems.add(guiItem);
         }
-        final Gui gui = MenuHelper.getStaticSelectionGui("Select Job Category", guiItems.toArray(new GuiItem[guiItems.size()]));
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Category", guiItems.toArray(new GuiItem[guiItems.size()]));
         gui.show(player);
     }
 
@@ -156,7 +156,7 @@ public class ListAllCommand extends BaseCommand {
                 .withLore("§7Click to §lview job info")
                 .build();
 
-        final Gui gui = MenuHelper.getPaginatedGui("All Jobs", guiItems, mainMenuItem, infoBook);
+        final ChestGui gui = MenuHelper.getPaginatedGui("All Jobs", guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
 
