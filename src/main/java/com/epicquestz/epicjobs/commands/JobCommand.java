@@ -82,7 +82,7 @@ public class JobCommand extends BaseCommand {
             sendProjectMenu(player);
         });
         final List<GuiItem> guiItems = new ArrayList<>();
-        final List<Project> projects = plugin.getProjectManager().getProjects().stream().filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE)).collect(Collectors.toList());
+        final List<Project> projects = plugin.getProjectManager().getProjects().stream().filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE)).toList();
         for (final Project project : projects) {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
                 .withName("§f§l" + project.getName())
@@ -298,13 +298,13 @@ public class JobCommand extends BaseCommand {
                     job.getLocation().getBlockX(),
                     job.getLocation().getBlockY(),
                     job.getLocation().getBlockZ()
-                )).color(NamedTextColor.AQUA).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!"))).clickEvent(ClickEvent.runCommand("/job teleport " + job.getId())))
-            .append(Component.text("Project: ").color(NamedTextColor.GOLD)).append(Component.text(job.getProject().getName()).color(NamedTextColor.YELLOW))
-            .append(Component.text(" Category: ").color(NamedTextColor.GOLD)).append(Component.text(job.getJobCategory().toString()).color(NamedTextColor.YELLOW))
-            .append(Component.text(" Status: ").color(NamedTextColor.GOLD)).append(Component.text(job.getJobStatus().toString() + "\n").color(NamedTextColor.YELLOW))
-            .append(Component.text("Leader: ").color(NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getCreator())).color(NamedTextColor.YELLOW))
-            .append(Component.text(" Claimant: ").color(NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n").color(NamedTextColor.YELLOW))
-            .append(Component.text("Description: ").color(NamedTextColor.GOLD)).append(Component.text(job.getDescription()).color(NamedTextColor.YELLOW))
+                ), NamedTextColor.AQUA).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!"))).clickEvent(ClickEvent.runCommand("/job teleport " + job.getId())))
+            .append(Component.text("Project: ", NamedTextColor.GOLD)).append(Component.text(job.getProject().getName(), NamedTextColor.YELLOW))
+            .append(Component.text(" Category: ", NamedTextColor.GOLD)).append(Component.text(job.getJobCategory().toString(), NamedTextColor.YELLOW))
+            .append(Component.text(" Status: ", NamedTextColor.GOLD)).append(Component.text(job.getJobStatus().toString() + "\n", NamedTextColor.YELLOW))
+            .append(Component.text("Leader: ", NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getCreator()), NamedTextColor.YELLOW))
+            .append(Component.text(" Claimant: ", NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n", NamedTextColor.YELLOW))
+            .append(Component.text("Description: ", NamedTextColor.GOLD)).append(Component.text(job.getDescription(), NamedTextColor.YELLOW))
             .build();
         sender.sendMessage("");
         sender.sendMessage(text);
@@ -358,7 +358,7 @@ public class JobCommand extends BaseCommand {
                             } else {
                                 JOB_CANT_BE_ABANDONED.send(player);
                             }
-                        } else if (jobs.size() == 0) {
+                        } else if (jobs.isEmpty()) {
                             PLAYER_HAS_NO_JOBS.send(player);
                         } else {
                             PLAYER_HAS_MULITPLE_JOBS.send(player);
@@ -391,7 +391,7 @@ public class JobCommand extends BaseCommand {
             final List<Job> jobs =  plugin.getEpicJobsPlayer(player.getUniqueId()).get().getJobs();
             if (jobs.size() == 1) {
                 jobs.get(0).teleport(player);
-            } else if (jobs.size() == 0) {
+            } else if (jobs.isEmpty()) {
                 PLAYER_HAS_NO_JOBS.send(player);
             } else {
                 PLAYER_HAS_MULITPLE_JOBS.send(player);
@@ -419,7 +419,7 @@ public class JobCommand extends BaseCommand {
                         } else {
                             JOB_HAS_TO_BE_ACTIVE.send(player);
                         }
-                    } else if (jobs.size() == 0) {
+                    } else if (jobs.isEmpty()) {
                         PLAYER_HAS_NO_ACTIVE_JOBS.send(player);
                     } else {
                         PLAYER_HAS_MULITPLE_JOBS.send(player);

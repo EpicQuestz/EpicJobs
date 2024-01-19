@@ -169,10 +169,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {
         final Component textComponent = Component.text()
             .content("There are ").color(NamedTextColor.YELLOW)
-            .append(Component.text(jobCount).color(NamedTextColor.GOLD))
-            .append(Component.text(" job(s) marked as done. Use ").color(NamedTextColor.YELLOW))
-            .append(Component.text("/jobs list done").color(NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list done")))
-            .append(Component.text(" to review them.").color(NamedTextColor.YELLOW))
+            .append(Component.text(jobCount, NamedTextColor.GOLD))
+            .append(Component.text(" job(s) marked as done. Use ", NamedTextColor.YELLOW))
+            .append(Component.text("/jobs list done", NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list done")))
+            .append(Component.text(" to review them.", NamedTextColor.YELLOW))
             .build();
         player.sendMessage(textComponent);
     }
@@ -180,10 +180,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
         final Component textComponent = Component.text()
             .content("There are ").color(NamedTextColor.YELLOW)
-            .append(Component.text(jobCount).color(NamedTextColor.GOLD))
-            .append(Component.text(" job(s) available to be claimed. Use ").color(NamedTextColor.YELLOW))
-            .append(Component.text("/jobs list").color(NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("View jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list")))
-            .append(Component.text(" to find one for yourself.").color(NamedTextColor.YELLOW))
+            .append(Component.text(jobCount, NamedTextColor.GOLD))
+            .append(Component.text(" job(s) available to be claimed. Use ", NamedTextColor.YELLOW))
+            .append(Component.text("/jobs list", NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("View jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list")))
+            .append(Component.text(" to find one for yourself.", NamedTextColor.YELLOW))
             .build();
         player.sendMessage(textComponent);
     }
