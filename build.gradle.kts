@@ -11,6 +11,8 @@ group = "de.stealwonders"
 version = "1.2"
 
 val paperVersion = "1.20.4-R0.1-SNAPSHOT"
+val hikariVersion = "5.1.0"
+val mariadbClientVersion = "3.3.2"
 
 repositories {
     mavenCentral()
@@ -23,16 +25,12 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
-    compileOnly("com.google.guava:guava:28.0-jre")
     compileOnly("de.iani.cubeside:PlayerUUIDCache:1.5.1-SNAPSHOT")
-    implementation("com.zaxxer:HikariCP:3.4.2")
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.6.0")
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
+    implementation("org.mariadb.jdbc:mariadb-java-client:$mariadbClientVersion")
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
     implementation("co.aikar:taskchain-bukkit:3.7.2")
-    implementation("net.kyori:text-api:3.0.4")
-    implementation("net.kyori:text-serializer-gson:3.0.4")
-    implementation("net.kyori:text-adapter-bukkit:3.0.5")
-    implementation("com.github.stefvanschie.inventoryframework:IF:0.6.1")
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.13")
 }
 
 tasks {

@@ -1,7 +1,7 @@
 package de.stealwonders.epicjobs.utils;
 
-import com.github.stefvanschie.inventoryframework.Gui;
-import com.github.stefvanschie.inventoryframework.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.Material;
@@ -12,8 +12,8 @@ import java.util.List;
 
 public class MenuHelper {
 
-    public static Gui getStaticSelectionGui(final String name, final  GuiItem... guiItems) {
-        final Gui gui = new Gui(1, name);
+    public static ChestGui getStaticSelectionGui(final String name, final  GuiItem... guiItems) {
+        final ChestGui gui = new ChestGui(1, name);
         int startPos = guiItems.length > 5 ? 0 : 5 - guiItems.length;
         final int incrementAmount = guiItems.length > 5 ? 1 : 2;
         for (final GuiItem guiItem : guiItems) {
@@ -25,17 +25,17 @@ public class MenuHelper {
         return gui;
     }
 
-    public static Gui getPaginatedSelectionGui(final String name, final List<GuiItem> guiItems) {
-        final Gui gui = new Gui(3, name);
+    public static ChestGui getPaginatedSelectionGui(final String name, final List<GuiItem> guiItems) {
+        final ChestGui gui = new ChestGui(3, name);
         final PaginatedPane pagination = new PaginatedPane(0, 0, 9, 3);
         pagination.populateWithGuiItems(guiItems);
         gui.addPane(pagination);
         return gui;
     }
 
-    public static Gui getPaginatedGui(final String name, final List<GuiItem> guiItems, final GuiItem mainMenuItem, final ItemStack infoBook) {
+    public static ChestGui getPaginatedGui(final String name, final List<GuiItem> guiItems, final GuiItem mainMenuItem, final ItemStack infoBook) {
 
-        final Gui gui = new Gui(6, name);
+        final ChestGui gui = new ChestGui(6, name);
         final PaginatedPane pagination = new PaginatedPane(0, 0, 9, 5);
         pagination.populateWithGuiItems(guiItems);
 

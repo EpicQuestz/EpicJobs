@@ -14,17 +14,16 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import de.stealwonders.epicjobs.EpicJobs;
 import de.stealwonders.epicjobs.project.Project;
 import de.stealwonders.epicjobs.project.ProjectStatus;
-import net.kyori.text.TextComponent;
-import net.kyori.text.adapter.bukkit.TextAdapter;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static de.stealwonders.epicjobs.constants.Messages.*;
 
@@ -48,18 +47,22 @@ public class ProjectCommand extends BaseCommand {
     public void onList(final CommandSender sender) {
         final List<Project> projects = plugin.getProjectManager().getProjects().stream()
             .filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
-            .collect(Collectors.toList());
-        if (projects.size() >= 1) {
-            final List<TextComponent> textComponents = new ArrayList<>();
+            .toList();
+        if (!projects.isEmpty()) {
+            final List<Component> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                final TextComponent textComponent = TextComponent.builder(project.getName()).color(TextColor.AQUA)
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!")))
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())).build();
+                final Component textComponent = Component.text(project.getName()).color(NamedTextColor.AQUA)
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
+                    .clickEvent(ClickEvent.runCommand("/project teleport " + project.getName()));
                 textComponents.add(textComponent);
             });
-            final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
+            final JoinConfiguration joinConfiguration = JoinConfiguration.builder()
+                .separator(Component.text(", ").color(NamedTextColor.GOLD))
+                .lastSeparator(Component.text(" and ").color(NamedTextColor.GOLD))
+                .build();
+            final Component message = Component.join(joinConfiguration, textComponents);
             sender.sendMessage("");
-            TextAdapter.sendMessage(sender, message);
+            sender.sendMessage(message);
             sender.sendMessage("");
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);
@@ -70,20 +73,24 @@ public class ProjectCommand extends BaseCommand {
     @CommandPermission("epicjobs.command.project.listall")
     public void onListAll(final CommandSender sender) {
         final List<Project> projects = plugin.getProjectManager().getProjects();
-        if (projects.size() >= 1) {
-            final List<TextComponent> textComponents = new ArrayList<>();
+        if (!projects.isEmpty()) {
+            final List<Component> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                final TextComponent textComponent = TextComponent.builder()
-                    .append(TextComponent.of(project.getName()).color(TextColor.AQUA)
-                    .hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, TextComponent.of("Click to teleport!")))
-                    .clickEvent(ClickEvent.of(ClickEvent.Action.RUN_COMMAND, "/project teleport " + project.getName())))
-                    .append(TextComponent.of(" (" + project.getProjectStatus() + ")").color(TextColor.GOLD))
+                final Component textComponent = Component.text()
+                    .append(Component.text(project.getName()).color(NamedTextColor.AQUA)
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
+                    .clickEvent(ClickEvent.runCommand("/project teleport " + project.getName())))
+                    .append(Component.text(" (" + project.getProjectStatus() + ")").color(NamedTextColor.GOLD))
                     .build();
                 textComponents.add(textComponent);
             });
-            final TextComponent message = TextComponent.join(TextComponent.of(", ").color(TextColor.GOLD), textComponents);
+            final JoinConfiguration joinConfiguration = JoinConfiguration.builder()
+                    .separator(Component.text(", ").color(NamedTextColor.GOLD))
+                    .lastSeparator(Component.text(" and ").color(NamedTextColor.GOLD))
+                    .build();
+            final Component message = Component.join(joinConfiguration, textComponents);
             sender.sendMessage("");
-            TextAdapter.sendMessage(sender, message);
+            sender.sendMessage(message);
             sender.sendMessage("");
         } else {
             NO_PROJECTS_AVAILABLE.send(sender);
