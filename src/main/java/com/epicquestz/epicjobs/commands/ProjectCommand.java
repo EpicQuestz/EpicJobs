@@ -51,14 +51,14 @@ public class ProjectCommand extends BaseCommand {
         if (!projects.isEmpty()) {
             final List<Component> textComponents = new ArrayList<>();
             projects.forEach(project -> {
-                final Component textComponent = Component.text(project.getName()).color(NamedTextColor.AQUA)
+                final Component textComponent = Component.text(project.getName(), NamedTextColor.AQUA)
                     .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
                     .clickEvent(ClickEvent.runCommand("/project teleport " + project.getName()));
                 textComponents.add(textComponent);
             });
             final JoinConfiguration joinConfiguration = JoinConfiguration.builder()
-                .separator(Component.text(", ").color(NamedTextColor.GOLD))
-                .lastSeparator(Component.text(" and ").color(NamedTextColor.GOLD))
+                .separator(Component.text(", ", NamedTextColor.GOLD))
+                .lastSeparator(Component.text(" and ", NamedTextColor.GOLD))
                 .build();
             final Component message = Component.join(joinConfiguration, textComponents);
             sender.sendMessage("");
@@ -77,16 +77,16 @@ public class ProjectCommand extends BaseCommand {
             final List<Component> textComponents = new ArrayList<>();
             projects.forEach(project -> {
                 final Component textComponent = Component.text()
-                    .append(Component.text(project.getName()).color(NamedTextColor.AQUA)
+                    .append(Component.text(project.getName(), NamedTextColor.AQUA)
                     .hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
                     .clickEvent(ClickEvent.runCommand("/project teleport " + project.getName())))
-                    .append(Component.text(" (" + project.getProjectStatus() + ")").color(NamedTextColor.GOLD))
+                    .append(Component.text(" (" + project.getProjectStatus() + ")", NamedTextColor.GOLD))
                     .build();
                 textComponents.add(textComponent);
             });
             final JoinConfiguration joinConfiguration = JoinConfiguration.builder()
-                    .separator(Component.text(", ").color(NamedTextColor.GOLD))
-                    .lastSeparator(Component.text(" and ").color(NamedTextColor.GOLD))
+                    .separator(Component.text(", ", NamedTextColor.GOLD))
+                    .lastSeparator(Component.text(" and ", NamedTextColor.GOLD))
                     .build();
             final Component message = Component.join(joinConfiguration, textComponents);
             sender.sendMessage("");
