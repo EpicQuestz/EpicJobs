@@ -71,7 +71,10 @@ public enum Messages {
     PLAYER_PROJECT_TELEPORT("§eTeleporting to project site %s"),
 
     // Project Complete
-    ANNOUNCE_PROJECT_COMPLETION("§aProject %s has been completed!");
+    ANNOUNCE_PROJECT_COMPLETION("§aProject %s has been completed!"),
+
+    // Profile
+    MISSING_PROFILE("§cYour EpicJobs profile could not be found. Please contact an administrator.");
 
 //    /*
 //     * Old unused - maybe needed in the future

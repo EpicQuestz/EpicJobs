@@ -9,5 +9,4 @@ website: https://www.epicquestz.com
 softdepend: [Multiverse-Core, Hyperverse]
 
 commands:
-  # handled by the Aikar annotation command framework (ACF).
-
+  # handled by the 'cloud command framework'

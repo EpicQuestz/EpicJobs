@@ -3,8 +3,8 @@ package com.epicquestz.epicjobs;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import com.epicquestz.epicjobs.command.Commands;
 import com.zaxxer.hikari.HikariDataSource;
-import com.epicquestz.epicjobs.commands.Commands;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobManager;
 import com.epicquestz.epicjobs.job.JobStatus;
@@ -34,6 +34,8 @@ import java.util.UUID;
 
 public final class EpicJobs extends JavaPlugin implements Listener {
 
+    private static EpicJobs instance;
+
     private static TaskChainFactory taskChainFactory;
 
     public static <T> TaskChain<T> newSharedChain(final String name) {
@@ -54,6 +56,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        instance = this;
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
@@ -89,6 +92,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer)));
     }
 
+    public static EpicJobs get() {
+        return instance;
+    }
+
     private void registerListeners() {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
@@ -103,6 +110,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     public SettingsFile getSettingsFile() {
         return settingsFile;
+    }
+
+    public Optional<EpicJobsPlayer> getEpicJobsPlayer(final Player player) {
+        return getEpicJobsPlayer(player.getUniqueId());
     }
 
     public Optional<EpicJobsPlayer> getEpicJobsPlayer(final UUID uuid) {
@@ -130,6 +141,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     public JobManager getJobManager() {
         return jobManager;
+    }
+
+    public Commands getCommands() {
+        return commands;
     }
 
     @EventHandler
