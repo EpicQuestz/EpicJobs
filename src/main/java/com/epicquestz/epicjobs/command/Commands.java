@@ -1,13 +1,7 @@
 package com.epicquestz.epicjobs.command;
 
-import cloud.commandframework.SenderMapper;
-import cloud.commandframework.annotations.AnnotationParser;
-import cloud.commandframework.bukkit.CloudBukkitCapabilities;
-import cloud.commandframework.execution.ExecutionCoordinator;
-import cloud.commandframework.paper.PaperCommandManager;
 import com.epicquestz.epicjobs.EpicJobs;
-import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionRegistry;
-import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionRegistryFactory;
+import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionProvider;
 import com.epicquestz.epicjobs.command.commands.TeleportJobCommand;
 import com.epicquestz.epicjobs.command.parser.JobParser;
 import com.epicquestz.epicjobs.command.parser.ProjectParser;
@@ -15,6 +9,11 @@ import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.project.Project;
 import io.leangen.geantyref.TypeToken;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.annotations.AnnotationParser;
+import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.paper.PaperCommandManager;
 
 public class Commands {
 
@@ -26,16 +25,18 @@ public class Commands {
 			SenderMapper.identity()
 		);
 
-		if (manager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+		// Register Brigadier mappings
+		if (manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
 			manager.registerBrigadier();
-		} else if (manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-			// Use Paper async completions API (see Javadoc for why we don't use this with Brigadier)
+		}
+
+		// Register asynchronous completions
+		if (manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
 			manager.registerAsynchronousCompletions();
 		}
 
-		// Register our custom caption registry, so we can define exception messages for parsers
-		final EpicJobsCaptionRegistry<CommandSender> captionRegistry = new EpicJobsCaptionRegistryFactory<CommandSender>().create();
-		manager.captionRegistry(captionRegistry);
+		// Register our custom caption provider, so we can define exception messages for parsers
+		manager.captionRegistry().registerProvider(new EpicJobsCaptionProvider<>());
 
 		// Register custom EpicJobs parsers
 		manager.parserRegistry().registerParserSupplier(TypeToken.get(Project.class), parserParameters -> new ProjectParser<>());

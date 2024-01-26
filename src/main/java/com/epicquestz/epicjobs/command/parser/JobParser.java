@@ -1,15 +1,15 @@
 package com.epicquestz.epicjobs.command.parser;
 
-import cloud.commandframework.arguments.parser.ArgumentParseResult;
-import cloud.commandframework.arguments.parser.ArgumentParser;
-import cloud.commandframework.captions.CaptionVariable;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.context.CommandInput;
-import cloud.commandframework.exceptions.parsing.ParserException;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionKeys;
 import com.epicquestz.epicjobs.job.Job;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.incendo.cloud.caption.CaptionVariable;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.context.CommandInput;
+import org.incendo.cloud.exception.parsing.ParserException;
+import org.incendo.cloud.parser.ArgumentParseResult;
+import org.incendo.cloud.parser.ArgumentParser;
 
 public final class JobParser<C> implements ArgumentParser<C, Job> {
 
@@ -21,14 +21,13 @@ public final class JobParser<C> implements ArgumentParser<C, Job> {
 		final String input = commandInput.peekString();
 		try {
 			final int id = Integer.parseInt(input); // throws NumberFormatException
-			System.out.println("id: " + id);
 			final Job job = EpicJobs.get().getJobManager().getJobById(id);
-			System.out.println("job: " + job);
 
 			if (job == null) {
 				return ArgumentParseResult.failure(new JobParserException(input, commandContext));
 			}
 
+			commandInput.readString();
 			return ArgumentParseResult.success(job);
 		} catch (final NumberFormatException e) {
 			return ArgumentParseResult.failure(new JobParserException(input, commandContext));

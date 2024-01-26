@@ -27,13 +27,13 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.mariadb.jdbc:mariadb-java-client:$mariadbClientVersion")
-    implementation("cloud.commandframework:cloud-paper:$cloudVersion") {
+    implementation("org.incendo:cloud-paper:$cloudVersion") {
         exclude("org.checkerframework")
     }
-    implementation("cloud.commandframework:cloud-annotations:$cloudVersion") {
+    implementation("org.incendo:cloud-annotations:$cloudVersion") {
         exclude("org.checkerframework")
     }
-    implementation("cloud.commandframework:cloud-minecraft-extras:$cloudVersion") {
+    implementation("org.incendo:cloud-minecraft-extras:$cloudVersion") {
         exclude("org.checkerframework")
         exclude("net.kyori")
     }
@@ -46,7 +46,7 @@ tasks {
     shadowJar {
         relocate("com.zaxxer.hikari", "com.epicquestz.epicjobs.hikari")
         relocate("org.mariadb.jdbc", "com.epicquestz.epicjobs.jdbc")
-        relocate("cloud.commandframework", "com.epicquestz.epicjobs.commandframework")
+        relocate("org.incendo", "com.epicquestz.epicjobs.commandframework")
 //        relocate("co.aikar.commands", "com.epicquestz.epicjobs.acf")
         relocate("com.github.stefvanschie.inventoryframework", "com.epicquestz.inventoryframework")
     }

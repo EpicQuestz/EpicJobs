@@ -1,7 +1,7 @@
 package com.epicquestz.epicjobs.command.caption;
 
-import cloud.commandframework.captions.Caption;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.incendo.cloud.caption.Caption;
 
 import java.util.Collection;
 import java.util.Collections;
