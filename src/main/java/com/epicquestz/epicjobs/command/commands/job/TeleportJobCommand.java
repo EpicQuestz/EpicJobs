@@ -1,4 +1,4 @@
-package com.epicquestz.epicjobs.command.commands;
+package com.epicquestz.epicjobs.command.commands.job;
 
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.job.Job;

@@ -10,8 +10,9 @@ import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
+import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 
-public final class ProjectParser<C> implements ArgumentParser<C, Project> {
+public final class ProjectParser<C> implements ArgumentParser<C, Project>, BlockingSuggestionProvider.Strings<C> {
 
 	@Override
 	public @NonNull ArgumentParseResult<@NonNull Project> parse(
@@ -20,8 +21,7 @@ public final class ProjectParser<C> implements ArgumentParser<C, Project> {
 	) {
 		final String input = commandInput.peekString();
 		try {
-			final int id = Integer.parseInt(input); // throws NumberFormatException
-			final Project project = EpicJobs.get().getProjectManager().getProjectById(id);
+			final Project project = EpicJobs.get().getProjectManager().getProjectByName(input);
 
 			if (project == null) {
 				return ArgumentParseResult.failure(new ProjectParserException(input, commandContext));
@@ -33,6 +33,11 @@ public final class ProjectParser<C> implements ArgumentParser<C, Project> {
 			return ArgumentParseResult.failure(new ProjectParserException(input, commandContext));
 		}
 
+	}
+
+	@Override
+	public @NonNull Iterable<@NonNull String> stringSuggestions(@NonNull CommandContext<C> commandContext, @NonNull CommandInput input) {
+		return EpicJobs.get().getProjectManager().getProjects().stream().map(Project::getName)::iterator;
 	}
 
 	private static final class ProjectParserException extends ParserException {

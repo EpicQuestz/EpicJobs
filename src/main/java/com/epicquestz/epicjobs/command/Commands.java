@@ -2,7 +2,12 @@ package com.epicquestz.epicjobs.command;
 
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionProvider;
-import com.epicquestz.epicjobs.command.commands.TeleportJobCommand;
+import com.epicquestz.epicjobs.command.commands.job.JobCommand;
+import com.epicquestz.epicjobs.command.commands.job.JobListAllCommand;
+import com.epicquestz.epicjobs.command.commands.job.JobListDoneCommand;
+import com.epicquestz.epicjobs.command.commands.project.ProjectCommand;
+import com.epicquestz.epicjobs.command.commands.job.TeleportJobCommand;
+import com.epicquestz.epicjobs.command.commands.project.ProjectEditCommand;
 import com.epicquestz.epicjobs.command.parser.JobParser;
 import com.epicquestz.epicjobs.command.parser.ProjectParser;
 import com.epicquestz.epicjobs.job.Job;
@@ -44,7 +49,13 @@ public class Commands {
 
 		// Register Commands
 		final AnnotationParser<CommandSender> annotationParser = new AnnotationParser<>(manager, CommandSender.class);
+		annotationParser.parse(new JobCommand(plugin));
+		annotationParser.parse(new JobListAllCommand(plugin));
+		annotationParser.parse(new JobListDoneCommand(plugin));
 		annotationParser.parse(new TeleportJobCommand(plugin));
+
+		annotationParser.parse(new ProjectCommand(plugin));
+		annotationParser.parse(new ProjectEditCommand(plugin));
 
 	}
 }

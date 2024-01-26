@@ -10,8 +10,9 @@ import org.incendo.cloud.context.CommandInput;
 import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
+import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 
-public final class JobParser<C> implements ArgumentParser<C, Job> {
+public final class JobParser<C> implements ArgumentParser<C, Job>, BlockingSuggestionProvider.Strings<C> {
 
 	@Override
 	public @NonNull ArgumentParseResult<@NonNull Job> parse(
@@ -33,6 +34,11 @@ public final class JobParser<C> implements ArgumentParser<C, Job> {
 			return ArgumentParseResult.failure(new JobParserException(input, commandContext));
 		}
 
+	}
+
+	@Override
+	public @NonNull Iterable<@NonNull String> stringSuggestions(@NonNull CommandContext<C> commandContext, @NonNull CommandInput input) {
+		return EpicJobs.get().getJobManager().getJobs().stream().map(Job::getId).map(String::valueOf)::iterator; // todo: filter by input
 	}
 
 	private static final class JobParserException extends ParserException {
