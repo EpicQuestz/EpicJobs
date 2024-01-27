@@ -9,11 +9,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
-import org.incendo.cloud.annotations.suggestion.Suggestions;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static com.epicquestz.epicjobs.constants.Messages.MISSING_PROFILE;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_MULITPLE_JOBS;

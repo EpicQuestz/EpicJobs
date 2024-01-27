@@ -3,6 +3,7 @@ package com.epicquestz.epicjobs;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
+import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.command.Commands;
 import com.zaxxer.hikari.HikariDataSource;
 import com.epicquestz.epicjobs.job.Job;
@@ -153,12 +154,12 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
         loadPlayerJobs(epicJobsPlayer);
         epicJobsPlayers.add(epicJobsPlayer);
-        if (player.hasPermission("epicjobs.command.job.list.done")) {
+        if (player.hasPermission(CommandPermissions.LIST_DONE_JOBS)) {
             final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).toList();
             if (!jobs.isEmpty()) {
                 sendReviewerJoinMessage(player, jobs.size());
             }
-        } else if (player.hasPermission("epicjobs.command.job.claim")) {
+        } else if (player.hasPermission(CommandPermissions.CLAIM_JOB)) {
             final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).toList();
             if (!jobs.isEmpty()) {
                 sendPlayerJoinMessage(player, jobs.size());

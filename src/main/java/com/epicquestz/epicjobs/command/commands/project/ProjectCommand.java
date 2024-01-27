@@ -120,7 +120,7 @@ public class ProjectCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_RESUME)
 	@Command("project|projects pause <project>")
 	public void onPause(final @NonNull CommandSender sender,
-						@Argument(value = "project", description = "Project") final @NonNull Project project
+						@Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project
 	) {
 		EpicJobs.newSharedChain("EpicJobs")
 			.syncFirst(() -> {
@@ -142,7 +142,7 @@ public class ProjectCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_RESUME)
 	@Command("project|projects resume|unpause <project>")
 	public void onResume(final @NonNull CommandSender sender,
-						 @Argument(value = "project", description = "Project") final @NonNull Project project
+						 @Argument(value = "project", description = "Project", suggestions = "paused-project") final @NonNull Project project
 	) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
@@ -164,7 +164,7 @@ public class ProjectCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_COMPLETE)
 	@Command("project|projects complete <project>")
 	public void onComplete(final @NonNull Player player,
-						   @Argument(value = "project", description = "Project") final @NonNull Project project
+						   @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project
 	) {
 		EpicJobs.newSharedChain("EpicJobs")
 			.syncFirst(() -> {

@@ -2,6 +2,7 @@ package com.epicquestz.epicjobs.command.commands.job;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.constants.SkullHeads;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobCategory;
@@ -34,13 +35,11 @@ import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Default;
 import org.incendo.cloud.annotations.Permission;
-import org.incendo.cloud.annotations.suggestion.Suggestions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMENT;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
@@ -282,45 +281,45 @@ public class JobCommand {
         gui.show(player);
     }
 
-	@CommandDescription("List jobs by project")
-	@Command("job|jobs list|ls project <project> [status] [category]")
-	public void onListProject(final @NonNull CommandSender sender,
-							  @Argument(value = "project", description = "Project") final @NonNull Project project,
-							  @Argument(value = "status", description = "Status") @Default(value = "OPEN") final @Nullable JobStatus jobStatus,
-							  @Argument(value = "category", description = "Category") @Default(value = "ALL") final @Nullable JobCategory jobCategory)
-	{
-		Stream<Job> jobStream = plugin.getJobManager().getJobs().stream().filter(job -> job.getProject().equals(project));
-        if (jobStatus != null)
-            jobStream = jobStream.filter(job -> job.getJobStatus().equals(jobStatus));
-        if (jobCategory != null)
-            jobStream = jobStream.filter(job -> job.getJobCategory().equals(jobCategory));
-        final List<Job> jobs = jobStream.limit(20).toList();
-//        sendJobList(commandSender, jobs);
-	}
-
-	@CommandDescription("List jobs by status")
-	@Command("job|jobs list|ls status <status>")
-	public void onListStatus(final @NonNull CommandSender sender,
-							 @Argument(value = "status", description = "Status") final @NonNull JobStatus jobStatus)
-	{
-		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-			.filter(job -> job.getJobStatus().equals(jobStatus))
-			.limit(20)
-			.toList();
-//		sendJobList(commandSender, jobs);
-	}
-
-	@CommandDescription("List jobs by category")
-	@Command("job|jobs list|ls category <category>")
-	public void onListCategory(final @NonNull CommandSender sender,
-							   @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory)
-	{
-		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-			.filter(job -> job.getJobCategory().equals(jobCategory))
-			.limit(20)
-			.toList();
-//		sendJobList(commandSender, jobs);
-	}
+//	@CommandDescription("List jobs by project")
+//	@Command("job|jobs list|ls project <project> [status] [category]")
+//	public void onListProject(final @NonNull CommandSender sender,
+//							  @Argument(value = "project", description = "Project") final @NonNull Project project,
+//							  @Argument(value = "status", description = "Status") @Default(value = "OPEN") final @Nullable JobStatus jobStatus,
+//							  @Argument(value = "category", description = "Category") @Default(value = "ALL") final @Nullable JobCategory jobCategory)
+//	{
+//		Stream<Job> jobStream = plugin.getJobManager().getJobs().stream().filter(job -> job.getProject().equals(project));
+//        if (jobStatus != null)
+//            jobStream = jobStream.filter(job -> job.getJobStatus().equals(jobStatus));
+//        if (jobCategory != null)
+//            jobStream = jobStream.filter(job -> job.getJobCategory().equals(jobCategory));
+//        final List<Job> jobs = jobStream.limit(20).toList();
+////        sendJobList(commandSender, jobs);
+//	}
+//
+//	@CommandDescription("List jobs by status")
+//	@Command("job|jobs list|ls status <status>")
+//	public void onListStatus(final @NonNull CommandSender sender,
+//							 @Argument(value = "status", description = "Status") final @NonNull JobStatus jobStatus)
+//	{
+//		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+//			.filter(job -> job.getJobStatus().equals(jobStatus))
+//			.limit(20)
+//			.toList();
+////		sendJobList(commandSender, jobs);
+//	}
+//
+//	@CommandDescription("List jobs by category")
+//	@Command("job|jobs list|ls category <category>")
+//	public void onListCategory(final @NonNull CommandSender sender,
+//							   @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory)
+//	{
+//		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
+//			.filter(job -> job.getJobCategory().equals(jobCategory))
+//			.limit(20)
+//			.toList();
+////		sendJobList(commandSender, jobs);
+//	}
 
 	@CommandDescription("Show job info")
 	@Command("job|jobs info <job>")
@@ -348,9 +347,9 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Claim a job")
-	@Command("job|jobs claim|c <job>")
+	@Command("job|jobs claim|c [job]")
 	public void onClaim(final @NonNull Player player,
-						@Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job) {
+						@Argument(value = "job", description = "Job", suggestions = "open-job") final @Nullable Job job) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
@@ -378,9 +377,9 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Abandon a job")
-	@Command("job|jobs abandon <job>")
+	@Command("job|jobs abandon [job]")
 	public void onAbandon(final @NonNull Player player,
-						  @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
+						  @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
@@ -423,12 +422,17 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Mark a job as done")
-	@Command("job|jobs done|d <job>")
+	@Command("job|jobs done|d [job]")
 	public void onDone(final @NonNull Player player,
-					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
+					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId()).get();
+                final Optional<EpicJobsPlayer> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
+				if (optional.isEmpty()) {
+					player.sendMessage("§cCould not find your profile. Please contact an administrator.");
+					return null;
+				}
+                final EpicJobsPlayer epicJobsPlayer = optional.get();
                 final List<Job> jobs = epicJobsPlayer.getActiveJobs();
                 Job jobEdited = null;
 
@@ -467,7 +471,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Mark a job as complete")
-	@Permission("epicjobs.command.job.complete")
+	@Permission(CommandPermissions.COMPLETE_JOB)
 	@Command("job|jobs complete <job>")
 	public void onComplete(final @NonNull Player player,
 						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
@@ -488,7 +492,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Reopen a job")
-	@Permission("epicjobs.command.job.reopen")
+	@Permission(CommandPermissions.REOPEN_JOB)
 	@Command("job|jobs reopen <job>")
 	public void onReopen(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job") final @NonNull Job job) {
@@ -523,7 +527,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Unassign a job")
-	@Permission("epicjobs.command.job.unassign")
+	@Permission(CommandPermissions.UNASSIGN_JOB)
 	@Command("job|jobs unassign <job>")
 	public void onUnassign(final @NonNull Player player,
 						   @Argument(value = "job", description = "Job") final @NonNull Job job) {
@@ -543,7 +547,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Assign a job")
-	@Permission("epicjobs.command.job.assign")
+	@Permission(CommandPermissions.ASSIGN_JOB)
 	@Command("job|jobs assign <job> <player>")
 	public void onAssign(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job,
@@ -566,7 +570,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Create a job")
-	@Permission("epicjobs.command.job.create")
+	@Permission(CommandPermissions.CREATE_JOB)
 	@Command("job|jobs create <project> <category> <description>")
 	public void onCreate(final @NonNull Player player,
 						 @Argument(value = "project", description = "Project") final @NonNull Project project,
@@ -597,7 +601,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Remove a job")
-	@Permission("epicjobs.command.job.remove")
+	@Permission(CommandPermissions.DELETE_JOB)
 	@Command("job|jobs remove|delete <job>")
 	public void onRemove(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job") final @NonNull Job job) {
@@ -614,7 +618,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Job statistics")
-	@Permission("epicjobs.command.job.stats")
+	@Permission(CommandPermissions.SHOW_STATISTICS)
 	@Command("job|jobs stats <player>")
 	public void onStats(final @NonNull Player player,
 						@Argument(value = "player", description = "Player") final @Nullable Player target) {

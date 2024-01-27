@@ -1,6 +1,8 @@
 package com.epicquestz.epicjobs.command.commands;
 
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.project.Project;
+import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -32,6 +34,20 @@ public class SuggestionProvider {
 	public Stream<String> openJobSuggestions() {
 		return plugin.getJobManager().getOpenJobs().stream()
 				.map(job -> String.valueOf(job.getId()));
+	}
+
+	@Suggestions("active-project")
+	public Stream<String> activeProjectSuggestions() {
+		return plugin.getProjectManager().getProjects().stream()
+				.filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
+				.map(Project::getName);
+	}
+
+	@Suggestions("paused-project")
+	public Stream<String> pausedProjectSuggestions() {
+		return plugin.getProjectManager().getProjects().stream()
+				.filter(project -> project.getProjectStatus().equals(ProjectStatus.PAUSED))
+				.map(Project::getName);
 	}
 
 }

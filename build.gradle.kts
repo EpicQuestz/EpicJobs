@@ -14,6 +14,8 @@ val paperVersion = "1.20.4-R0.1-SNAPSHOT"
 val hikariVersion = "5.1.0"
 val mariadbClientVersion = "2.7.11"
 val cloudVersion = "2.0.0-SNAPSHOT"
+val taskchainVersion = "3.7.2"
+val inventoryFrameworkVersion = "0.10.13"
 
 repositories {
     mavenCentral()
@@ -37,9 +39,8 @@ dependencies {
         exclude("org.checkerframework")
         exclude("net.kyori")
     }
-//    implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
-    implementation("co.aikar:taskchain-bukkit:3.7.2")
-    implementation("com.github.stefvanschie.inventoryframework:IF:0.10.13")
+    implementation("co.aikar:taskchain-bukkit:$taskchainVersion")
+    implementation("com.github.stefvanschie.inventoryframework:IF:$inventoryFrameworkVersion")
 }
 
 tasks {
@@ -47,7 +48,6 @@ tasks {
         relocate("com.zaxxer.hikari", "com.epicquestz.epicjobs.hikari")
         relocate("org.mariadb.jdbc", "com.epicquestz.epicjobs.jdbc")
         relocate("org.incendo", "com.epicquestz.epicjobs.commandframework")
-//        relocate("co.aikar.commands", "com.epicquestz.epicjobs.acf")
         relocate("com.github.stefvanschie.inventoryframework", "com.epicquestz.inventoryframework")
     }
 

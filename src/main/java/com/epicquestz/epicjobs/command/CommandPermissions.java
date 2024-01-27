@@ -34,10 +34,24 @@ public class CommandPermissions {
 
 	// Job commands
 	public static final String CREATE_JOB = JOB_COMMAND + SEPARATOR + "create";
-	public static final String LIST_ALL_JOBS = JOB_COMMAND + SEPARATOR + "listall";
+	public static final String DELETE_JOB = JOB_COMMAND + SEPARATOR + "delete";
+
+	public static final String LIST_JOBS = JOB_COMMAND + SEPARATOR + "list";
+	public static final String LIST_ALL_JOBS = LIST_JOBS + SEPARATOR + "all";
+	public static final String LIST_DONE_JOBS = LIST_JOBS + SEPARATOR + "done";
+
+	public static final String CLAIM_JOB = JOB_COMMAND + SEPARATOR + "claim";
+	public static final String COMPLETE_JOB = JOB_COMMAND + SEPARATOR + "complete";
+	public static final String REOPEN_JOB = JOB_COMMAND + SEPARATOR + "reopen";
+	public static final String ASSIGN_JOB = JOB_COMMAND + SEPARATOR + "assign";
+	public static final String UNASSIGN_JOB = JOB_COMMAND + SEPARATOR + "unassign";
+
 
 	private static final String MODIFY_JOB = JOB_COMMAND + SEPARATOR + "modify";
 	public static final String MODIFY_JOB_DESCRIPTION = MODIFY_JOB + SEPARATOR + "description";
 	public static final String MODIFY_JOB_LOCATION = MODIFY_JOB + SEPARATOR + "location";
+
+
+	public static final String SHOW_STATISTICS = COMMAND + SEPARATOR + "statistics";
 
 }

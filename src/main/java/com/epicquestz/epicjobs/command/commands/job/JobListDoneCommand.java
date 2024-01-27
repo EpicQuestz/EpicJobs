@@ -1,6 +1,7 @@
 package com.epicquestz.epicjobs.command.commands.job;
 
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.utils.ItemStackBuilder;
@@ -15,6 +16,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ public class JobListDoneCommand {
 	}
 
 	@CommandDescription("List done jobs")
-//	@Permission() // todo: command.job
+	@Permission(CommandPermissions.LIST_DONE_JOBS)
 	@Command("job|jobs list|ls done")
 	public void onListDone(final Player player) {
 		final List<Job> jobs = plugin.getJobManager().getJobs().stream()

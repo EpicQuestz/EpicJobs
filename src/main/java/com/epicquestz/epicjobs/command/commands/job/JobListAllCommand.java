@@ -1,6 +1,7 @@
 package com.epicquestz.epicjobs.command.commands.job;
 
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.constants.SkullHeads;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobCategory;
@@ -19,6 +20,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ public class JobListAllCommand {
 	}
 
 	@CommandDescription("List all jobs")
+    @Permission(CommandPermissions.LIST_ALL_JOBS)
 	@Command("job|jobs list|ls all")
 	public void onListAll(final Player player) {
 		sendSelectionMenu(player);
