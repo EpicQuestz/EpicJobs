@@ -28,7 +28,7 @@ public class JobEditCommand {
 	@Command("job|jobs edit claimant")
 	public void onEditClaimant(final @NonNull CommandSender sender,
 							   @Argument(value = "job", description = "Job") final @NonNull Job job,
-							   @Argument(value = "claimant", description = "Claimant") final @NonNull OfflinePlayer claimant
+							   @Argument(value = "claimant", description = "Claimant", suggestions = "all-offline-players") final @NonNull OfflinePlayer claimant
 	) {
 		job.setClaimant(claimant.getUniqueId());
 		sender.sendMessage("Set claimant of job to: " + claimant.getName());

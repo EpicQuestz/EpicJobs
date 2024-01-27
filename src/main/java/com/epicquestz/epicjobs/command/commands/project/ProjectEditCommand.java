@@ -38,7 +38,7 @@ public class ProjectEditCommand {
 	@Command("project|projects edit|e leader <project> <leader>")
 	public void onEditLeader(@NonNull CommandSender sender,
 							 @Argument(value = "project", description = "Project") final @NonNull Project project,
-							 @Argument(value = "leader", description = "Leader") final @NonNull OfflinePlayer leader
+							 @Argument(value = "leader", description = "Leader", suggestions = "all-offline-players") final @NonNull OfflinePlayer leader
 	) {
 		project.setLeader(leader.getUniqueId());
 		sender.sendMessage("Set project leader to " + leader.getName());
