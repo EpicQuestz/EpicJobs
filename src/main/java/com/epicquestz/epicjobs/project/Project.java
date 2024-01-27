@@ -54,6 +54,10 @@ public class Project {
         this.leader = leader.getUniqueId();
     }
 
+    public void setLeader(final UUID leader) {
+        this.leader = leader;
+    }
+
     public long getCreationTime() {
         return creationTime;
     }

@@ -1,6 +1,7 @@
 package com.epicquestz.epicjobs.command.commands.job;
 
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.user.EpicJobsPlayer;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class TeleportJobCommand {
 	}
 
 	@CommandDescription("Teleport to a job site")
+	@Permission(CommandPermissions.TELEPORT_JOB)
 	@Command("job|jobs teleport|tp [job]")
 	public void onCommand(final @NonNull Player player,
 						  @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {

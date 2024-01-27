@@ -39,6 +39,7 @@ public class ProjectCommand {
 	}
 
 	@CommandDescription("List projects")
+	@Permission(CommandPermissions.LIST_PROJECTS)
 	@Command("project|projects list|ls")
 	public void onList(final @NonNull CommandSender sender) {
 		final List<Project> projects = plugin.getProjectManager().getProjects().stream()
@@ -109,6 +110,7 @@ public class ProjectCommand {
 	}
 
 	@CommandDescription("Teleport to a project")
+	@Permission(CommandPermissions.TELEPORT_PROJECT)
 	@Command("project|projects teleport|tp <project>")
 	public void onTeleport(final @NonNull Player player,
 						   @Argument(value = "project", description = "Project") final @NonNull Project project
@@ -117,7 +119,7 @@ public class ProjectCommand {
 	}
 
 	@CommandDescription("Pause a project")
-	@Permission(CommandPermissions.MODIFY_PROJECT_RESUME)
+	@Permission(CommandPermissions.PAUSE_PROJECT)
 	@Command("project|projects pause <project>")
 	public void onPause(final @NonNull CommandSender sender,
 						@Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project
@@ -139,7 +141,7 @@ public class ProjectCommand {
 	}
 
 	@CommandDescription("Resume a project")
-	@Permission(CommandPermissions.MODIFY_PROJECT_RESUME)
+	@Permission(CommandPermissions.RESUME_PROJECT)
 	@Command("project|projects resume|unpause <project>")
 	public void onResume(final @NonNull CommandSender sender,
 						 @Argument(value = "project", description = "Project", suggestions = "paused-project") final @NonNull Project project
@@ -161,7 +163,7 @@ public class ProjectCommand {
 	}
 
 	@CommandDescription("Complete a project")
-	@Permission(CommandPermissions.MODIFY_PROJECT_COMPLETE)
+	@Permission(CommandPermissions.COMPLETE_PROJECT)
 	@Command("project|projects complete <project>")
 	public void onComplete(final @NonNull Player player,
 						   @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project

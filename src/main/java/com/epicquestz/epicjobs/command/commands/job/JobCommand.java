@@ -78,6 +78,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("List jobs")
+	@Permission(CommandPermissions.LIST_JOBS)
 	@Command("job|jobs list|ls")
 	public void onList(final @NonNull Player player) {
 		final List<Job> jobs = plugin.getJobManager().getJobs();
@@ -85,6 +86,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("List jobs near you")
+	@Permission(CommandPermissions.LIST_JOBS)
 	@Command("job|jobs list|ls near [radius]")
 	public void onListNear(final @NonNull Player player,
 						   @Argument(value = "radius", description = "Radius") @Default(value = "32") final @NonNull int radius)
@@ -169,12 +171,14 @@ public class JobCommand {
 	}
 
 	@CommandDescription("List your jobs")
+	@Permission(CommandPermissions.LIST_JOBS)
 	@Command("job|jobs mine")
 	public void onMine(final @NonNull Player player) {
 		onListMine(player);
 	}
 
 	@CommandDescription("List your jobs")
+	@Permission(CommandPermissions.LIST_JOBS)
 	@Command("job|jobs list|ls mine")
 	public void onListMine(final @NonNull Player player) {
 		final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
@@ -322,6 +326,7 @@ public class JobCommand {
 //	}
 
 	@CommandDescription("Show job info")
+	@Permission(CommandPermissions.JOB_INFO)
 	@Command("job|jobs info <job>")
 	public void onInfo(final @NonNull CommandSender sender,
 					   @Argument(value = "job", description = "Job") final @NonNull Job job) {
@@ -347,6 +352,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Claim a job")
+	@Permission(CommandPermissions.CLAIM_JOB)
 	@Command("job|jobs claim|c [job]")
 	public void onClaim(final @NonNull Player player,
 						@Argument(value = "job", description = "Job", suggestions = "open-job") final @Nullable Job job) {
@@ -377,6 +383,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Abandon a job")
+	@Permission(CommandPermissions.ABANDON_JOB)
 	@Command("job|jobs abandon [job]")
 	public void onAbandon(final @NonNull Player player,
 						  @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {
@@ -422,6 +429,7 @@ public class JobCommand {
 	}
 
 	@CommandDescription("Mark a job as done")
+	@Permission(CommandPermissions.DONE_JOB)
 	@Command("job|jobs done|d [job]")
 	public void onDone(final @NonNull Player player,
 					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {
@@ -551,7 +559,8 @@ public class JobCommand {
 	@Command("job|jobs assign <job> <player>")
 	public void onAssign(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job,
-						 @Argument(value = "player", description = "Player") final @NonNull Player target) {
+						 @Argument(value = "player", description = "Player") final @NonNull Player target
+	) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.OPEN)) {
@@ -575,8 +584,8 @@ public class JobCommand {
 	public void onCreate(final @NonNull Player player,
 						 @Argument(value = "project", description = "Project") final @NonNull Project project,
 						 @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory,
-						 @Argument(value = "description", description = "Description") final @NonNull String description)
-	{
+						 @Argument(value = "description", description = "Description") final @NonNull String description
+	) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
