@@ -1,5 +1,6 @@
 package com.epicquestz.epicjobs.command.commands.job;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.constants.SkullHeads;
 import com.epicquestz.epicjobs.job.Job;
@@ -32,12 +33,40 @@ import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Default;
+import org.incendo.cloud.annotations.Permission;
+import org.incendo.cloud.annotations.suggestion.Suggestions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMENT;
+import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
+import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
+import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_TAKEN;
+import static com.epicquestz.epicjobs.constants.Messages.CREATING_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.HAS_ASSIGNED_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.HAS_BEEN_ASSIGNED_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_ABANDONED;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_ASSIGNED;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_COMPLETE;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_UNASSIGNED;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_COMPLETED;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_DOESNT_EXIST;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_HAS_TO_BE_ACTIVE;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_NOT_DONE;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_NOT_OPEN;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_REOPEN;
+import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HASNT_CLAIMED_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_MULITPLE_JOBS;
+import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_ACTIVE_JOBS;
+import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_JOBS;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
+import static com.epicquestz.epicjobs.constants.Messages.REMOVING_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_CREATED_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_REMOVED_JOB;
 
 public class JobCommand {
 
@@ -318,285 +347,283 @@ public class JobCommand {
 		sender.sendMessage("");
 	}
 
-//	@Subcommand("claim|c")
-//    @CommandCompletion("@open-job")
-//    public void onClaim(final Player player, final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
-//                if (job == null) {
-//                    JOB_DOESNT_EXIST.send(player);
-//                    return false;
-//                } else {
-//                    if (job.getJobStatus().equals(JobStatus.OPEN)) {
-//                        if (epicJobsPlayer.isPresent()) {
-//                            job.claim(epicJobsPlayer.get());
-//                            ANNOUNCE_JOB_TAKEN.broadcast(player.getName(), job.getId());
-//                            return true;
-//                        } else {
-//                            return false;
-//                        }
-//                    } else {
-//                        JOB_NOT_OPEN.send(player);
-//                        return false;
-//                    }
-//                }
-//            })
-//            .abortIf(false)
-//            .async(() -> plugin.getStorageImplementation().updateJob(job))
-//            .execute();
-//    }
-//
-//    @Subcommand("abandon|a")
-//    @CommandCompletion("@player-job")
-//    public void onAbandon(final Player player, @co.aikar.commands.annotation.Optional final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
-//                final List<Job> jobs = epicJobsPlayer.isPresent() ? epicJobsPlayer.get().getJobs() : new ArrayList<>();
-//                Job jobEdited = null;
-//                if (epicJobsPlayer.isPresent()) {
-//                    if (job == null) {
-//                        if (jobs.size() == 1) {
-//                            if (jobs.get(0).getJobStatus().equals(TAKEN) || jobs.get(0).getJobStatus().equals(DONE)) {
-//                                jobEdited = jobs.get(0);
-//                                jobEdited.abandon(epicJobsPlayer.get());
-//                                ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobs.get(0).getId());
-//                            } else {
-//                                JOB_CANT_BE_ABANDONED.send(player);
-//                            }
-//                        } else if (jobs.isEmpty()) {
-//                            PLAYER_HAS_NO_JOBS.send(player);
-//                        } else {
-//                            PLAYER_HAS_MULITPLE_JOBS.send(player);
-//                        }
-//                    } else {
-//                        if (jobs.contains(job)) {
-//                            if (job.getJobStatus().equals(TAKEN) || job.getJobStatus().equals(DONE)) {
-//                                job.abandon(epicJobsPlayer.get());
-//                                ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), job.getId());
-//                                jobEdited = job;
-//                            } else {
-//                                JOB_CANT_BE_ABANDONED.send(player);
-//                            }
-//                        } else {
-//                            PLAYER_HASNT_CLAIMED_JOB.send(player);
-//                        }
-//                    }
-//                }
-//                return jobEdited;
-//            })
-//            .abortIfNull()
-//            .asyncLast((jobEdited) -> plugin.getStorageImplementation().updateJob(jobEdited))
-//            .execute();
-//    }
-//
+	@CommandDescription("Claim a job")
+	@Command("job|jobs claim|c <job>")
+	public void onClaim(final @NonNull Player player,
+						@Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+                if (job == null) {
+                    JOB_DOESNT_EXIST.send(player);
+                    return false;
+                } else {
+                    if (job.getJobStatus().equals(JobStatus.OPEN)) {
+                        if (epicJobsPlayer.isPresent()) {
+                            job.claim(epicJobsPlayer.get());
+                            ANNOUNCE_JOB_TAKEN.broadcast(player.getName(), job.getId());
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        JOB_NOT_OPEN.send(player);
+                        return false;
+                    }
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .execute();
+	}
 
+	@CommandDescription("Abandon a job")
+	@Command("job|jobs abandon <job>")
+	public void onAbandon(final @NonNull Player player,
+						  @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
+        EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
+                final List<Job> jobs = epicJobsPlayer.isPresent() ? epicJobsPlayer.get().getJobs() : new ArrayList<>();
+                Job jobEdited = null;
+                if (epicJobsPlayer.isPresent()) {
+                    if (job == null) {
+                        if (jobs.size() == 1) {
+                            if (jobs.get(0).getJobStatus().equals(JobStatus.TAKEN) || jobs.get(0).getJobStatus().equals(JobStatus.DONE)) {
+                                jobEdited = jobs.get(0);
+                                jobEdited.abandon(epicJobsPlayer.get());
+                                ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobs.get(0).getId());
+                            } else {
+                                JOB_CANT_BE_ABANDONED.send(player);
+                            }
+                        } else if (jobs.isEmpty()) {
+                            PLAYER_HAS_NO_JOBS.send(player);
+                        } else {
+                            PLAYER_HAS_MULITPLE_JOBS.send(player);
+                        }
+                    } else {
+                        if (jobs.contains(job)) {
+                            if (job.getJobStatus().equals(JobStatus.TAKEN) || job.getJobStatus().equals(JobStatus.DONE)) {
+                                job.abandon(epicJobsPlayer.get());
+                                ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), job.getId());
+                                jobEdited = job;
+                            } else {
+                                JOB_CANT_BE_ABANDONED.send(player);
+                            }
+                        } else {
+                            PLAYER_HASNT_CLAIMED_JOB.send(player);
+                        }
+                    }
+                }
+                return jobEdited;
+            })
+            .abortIfNull()
+            .asyncLast((jobEdited) -> plugin.getStorageImplementation().updateJob(jobEdited))
+            .execute();
+	}
 
+	@CommandDescription("Mark a job as done")
+	@Command("job|jobs done|d <job>")
+	public void onDone(final @NonNull Player player,
+					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId()).get();
+                final List<Job> jobs = epicJobsPlayer.getActiveJobs();
+                Job jobEdited = null;
 
-//
-//    @Subcommand("done")
-//    @CommandCompletion("@player-job")
-//    public void onDone(final Player player, @co.aikar.commands.annotation.Optional final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                final EpicJobsPlayer epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId()).get();
-//                final List<Job> jobs = epicJobsPlayer.getActiveJobs();
-//                Job jobEdited = null;
-//
-//                if (job == null) {
-//                    if (jobs.size() == 1) {
-//                            jobEdited = jobs.get(0);
-//                        if (jobEdited.getJobStatus().equals(TAKEN)) {
-//                            jobEdited.setJobStatus(DONE);
-//                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.get(0).getId());
-//                        } else {
-//                            JOB_HAS_TO_BE_ACTIVE.send(player);
-//                        }
-//                    } else if (jobs.isEmpty()) {
-//                        PLAYER_HAS_NO_ACTIVE_JOBS.send(player);
-//                    } else {
-//                        PLAYER_HAS_MULITPLE_JOBS.send(player);
-//                    }
-//                } else {
-//                    if (jobs.contains(job)) {
-//                        if (job.getJobStatus().equals(TAKEN)) {
-//                            job.setJobStatus(DONE);
-//                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
-//                            jobEdited = job;
-//                        } else {
-//                            JOB_HAS_TO_BE_ACTIVE.send(player);
-//                        }
-//                    } else {
-//                        PLAYER_HASNT_CLAIMED_JOB.send(player);
-//                    }
-//                }
-//                return jobEdited;
-//            })
-//            .abortIfNull()
-//            .asyncLast((jobedited) -> plugin.getStorageImplementation().updateJob(jobedited))
-//            .execute();
-//    }
-//
-//    @Subcommand("complete")
-//    @CommandPermission("epicjobs.command.job.complete")
-//    @CommandCompletion("@player-job")
-//    public void onComplete(final Player player, final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                if (job.getJobStatus().equals(DONE)) {
-//                    job.setJobStatus(JobStatus.COMPLETE);
-//                    JOB_COMPLETED.send(player, job.getId());
-//                    return true;
-//                } else {
-//                    JOB_CANT_BE_COMPLETE.send(player);
-//                    return false;
-//                }
-//            })
-//            .abortIf(false)
-//            .async(() -> plugin.getStorageImplementation().updateJob(job))
-//            .execute();
-//    }
-//
-//    @Subcommand("reopen")
-//    @CommandPermission("epicjobs.command.job.reopen")
-//    public void onReopen(final Player player, final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                switch (job.getJobStatus()) {
-//                    case COMPLETE:
-//                    case TAKEN:
-//                        job.setJobStatus(JobStatus.OPEN);
-//                        job.setClaimant(null);
-//                        final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
-//                        epicJobsPlayer.ifPresent(jobsPlayer -> jobsPlayer.removeJob(job));
-//                        ANNOUNCE_JOB_REOPEN.send(player, player.getName(), job.getId());
-//                        return true;
-//                    case DONE:
-//                        job.setJobStatus(JobStatus.TAKEN);
-//                        final PlayerProfile profile = Bukkit.createProfile(job.getClaimant());
-//                        if (profile.completeFromCache()) {
-//                            JOB_REOPEN.send(player, job.getId(), profile.getName());
-//						} else {
-//                            JOB_REOPEN.send(player, job.getId(), "<unknown>");
-//                        }
-//						return true;
-//					default:
-//                        JOB_NOT_DONE.send(player);
-//                        return false;
-//                }
-//            })
-//            .abortIf(false)
-//            .async(() -> plugin.getStorageImplementation().updateJob(job))
-//            .execute();
-//    }
-//
-//    @Subcommand("unassign")
-//    @CommandPermission("epicjobs.command.job.unassign")
-//    public void onUnassign(final Player player, final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                if (job.getJobStatus().equals(TAKEN)) {
-//                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
-//                    return true;
-//                } else {
-//                    JOB_CANT_BE_UNASSIGNED.send(player);
-//                    return false;
-//                }
-//            })
-//            .abortIf(false)
-//            .async(() -> plugin.getStorageImplementation().updateJob(job))
-//            .execute();
-//    }
-//
-//    @Subcommand("assign")
-//    @CommandPermission("epicjobs.command.job.assign")
-//    @CommandCompletion("@open-job")
-//    public void onAssign(final Player player, final Job job, final Player target) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                if (job.getJobStatus().equals(JobStatus.OPEN)) {
-//                    plugin.getEpicJobsPlayer(target.getUniqueId()).ifPresent(job::claim);
-//                    HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
-//                    HAS_BEEN_ASSIGNED_JOB.send(target, job.getId());
-//                    return true;
-//                } else {
-//                    JOB_CANT_BE_ASSIGNED.send(player);
-//                    return false;
-//                }
-//            })
-//            .abortIf(false)
-//            .async(() -> plugin.getStorageImplementation().updateJob(job))
-//            .execute();
-//    }
-//
-//    @Subcommand("create")
-//    @CommandCompletion("@project * *")
-//    @CommandPermission("epicjobs.command.job.create")
-//    public void onCreate(final Player player, final Project project, final JobCategory jobCategory, final String description) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .syncFirst(() -> {
-//                if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
-//                    CREATING_JOB.sendActionbar(player);
-//                    return true;
-//                } else {
-//                    PROJECT_ALREADY_COMPLETE.send(player);
-//                    return false;
-//                }
-//            })
-//            .abortIf(false)
-//            .asyncFirst(() -> {
-//                final Job job = plugin.getStorageImplementation().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
-//                plugin.getJobManager().addJob(job);
-//                return job;
-//            })
-//            .syncLast((job) -> {
-//                final String message = (job == null) ? "§cError while creating job. Please contact an administrator." : SUCCESSFULLY_CREATED_JOB.toString(job.getId());
-//                player.sendMessage(message);
-//            })
-//            .execute();
-//    }
-//
-//    @Subcommand("remove|delete")
-//    @CommandPermission("epicjobs.command.job.remove")
-//    public void onRemove(final Player player, final Job job) {
-//        EpicJobs.newSharedChain("EpicJobs")
-//            .sync(() -> {
-//                plugin.getJobManager().removeJob(job);
-//                job.getProject().removeJob(job);
-//                plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
-//                REMOVING_JOB.sendActionbar(player, job.getId());
-//            })
-//            .async(() -> plugin.getStorageImplementation().deleteJob(job))
-//            .sync(() -> SUCCESSFULLY_REMOVED_JOB.send(player)
-//        ).execute();
-//    }
-//
-//    @Subcommand("edit description")
-//    @CommandCompletion("@job @nothing")
-//    @CommandPermission("epicjobs.command.job.edit")
-//    public void onEditName(final Player player, final Job job, final String description) {
-//        job.setDescription(description);
-//        player.sendMessage("Set description of job to: " + description);
-//        plugin.getStorageImplementation().updateJob(job);
-//    }
-//
-//    @Subcommand("edit location")
-//    @CommandCompletion("@job")
-//    @CommandPermission("epicjobs.command.job.edit")
-//    public void onEditLocation(final Player player, final Job job) {
-//        job.setLocation(player.getLocation());
-//        player.sendMessage("Set job location to your current on");
-//        plugin.getStorageImplementation().updateJob(job);
-//    }
-//
-//    @Subcommand("stats")
-//    @CommandPermission("epicjobs.command.job.stats")
-//    public void onStats(final Player player, @co.aikar.commands.annotation.Optional final Player target) {
-//        final EpicJobsPlayer epicJobsPlayer = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()).get() : plugin.getEpicJobsPlayer(player.getUniqueId()).get();
-//        player.sendMessage("Completed jobs: " + epicJobsPlayer.getCompletedJobs().size());
-//    }
+                if (job == null) {
+                    if (jobs.size() == 1) {
+                            jobEdited = jobs.get(0);
+                        if (jobEdited.getJobStatus().equals(JobStatus.TAKEN)) {
+                            jobEdited.setJobStatus(JobStatus.DONE);
+                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.get(0).getId());
+                        } else {
+                            JOB_HAS_TO_BE_ACTIVE.send(player);
+                        }
+                    } else if (jobs.isEmpty()) {
+                        PLAYER_HAS_NO_ACTIVE_JOBS.send(player);
+                    } else {
+                        PLAYER_HAS_MULITPLE_JOBS.send(player);
+                    }
+                } else {
+                    if (jobs.contains(job)) {
+                        if (job.getJobStatus().equals(JobStatus.TAKEN)) {
+                            job.setJobStatus(JobStatus.DONE);
+                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
+                            jobEdited = job;
+                        } else {
+                            JOB_HAS_TO_BE_ACTIVE.send(player);
+                        }
+                    } else {
+                        PLAYER_HASNT_CLAIMED_JOB.send(player);
+                    }
+                }
+                return jobEdited;
+            })
+            .abortIfNull()
+            .asyncLast((jobedited) -> plugin.getStorageImplementation().updateJob(jobedited))
+            .execute();
+	}
 
+	@CommandDescription("Mark a job as complete")
+	@Permission("epicjobs.command.job.complete")
+	@Command("job|jobs complete <job>")
+	public void onComplete(final @NonNull Player player,
+						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (job.getJobStatus().equals(JobStatus.DONE)) {
+                    job.setJobStatus(JobStatus.COMPLETE);
+                    JOB_COMPLETED.send(player, job.getId());
+                    return true;
+                } else {
+                    JOB_CANT_BE_COMPLETE.send(player);
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .execute();
+	}
 
+	@CommandDescription("Reopen a job")
+	@Permission("epicjobs.command.job.reopen")
+	@Command("job|jobs reopen <job>")
+	public void onReopen(final @NonNull Player player,
+						 @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                switch (job.getJobStatus()) {
+                    case COMPLETE:
+                    case TAKEN:
+                        job.setJobStatus(JobStatus.OPEN);
+                        job.setClaimant(null);
+                        final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
+                        epicJobsPlayer.ifPresent(jobsPlayer -> jobsPlayer.removeJob(job));
+                        ANNOUNCE_JOB_REOPEN.send(player, player.getName(), job.getId());
+                        return true;
+                    case DONE:
+                        job.setJobStatus(JobStatus.TAKEN);
+                        final PlayerProfile profile = Bukkit.createProfile(job.getClaimant());
+                        if (profile.completeFromCache()) {
+                            JOB_REOPEN.send(player, job.getId(), profile.getName());
+						} else {
+                            JOB_REOPEN.send(player, job.getId(), "<unknown>");
+                        }
+						return true;
+					default:
+                        JOB_NOT_DONE.send(player);
+                        return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .execute();
+	}
+
+	@CommandDescription("Unassign a job")
+	@Permission("epicjobs.command.job.unassign")
+	@Command("job|jobs unassign <job>")
+	public void onUnassign(final @NonNull Player player,
+						   @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (job.getJobStatus().equals(JobStatus.TAKEN)) {
+                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
+                    return true;
+                } else {
+                    JOB_CANT_BE_UNASSIGNED.send(player);
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .execute();
+	}
+
+	@CommandDescription("Assign a job")
+	@Permission("epicjobs.command.job.assign")
+	@Command("job|jobs assign <job> <player>")
+	public void onAssign(final @NonNull Player player,
+						 @Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job,
+						 @Argument(value = "player", description = "Player") final @NonNull Player target) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (job.getJobStatus().equals(JobStatus.OPEN)) {
+                    plugin.getEpicJobsPlayer(target.getUniqueId()).ifPresent(job::claim);
+                    HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
+                    HAS_BEEN_ASSIGNED_JOB.send(target, job.getId());
+                    return true;
+                } else {
+                    JOB_CANT_BE_ASSIGNED.send(player);
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .async(() -> plugin.getStorageImplementation().updateJob(job))
+            .execute();
+	}
+
+	@CommandDescription("Create a job")
+	@Permission("epicjobs.command.job.create")
+	@Command("job|jobs create <project> <category> <description>")
+	public void onCreate(final @NonNull Player player,
+						 @Argument(value = "project", description = "Project") final @NonNull Project project,
+						 @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory,
+						 @Argument(value = "description", description = "Description") final @NonNull String description)
+	{
+		EpicJobs.newSharedChain("EpicJobs")
+            .syncFirst(() -> {
+                if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
+                    CREATING_JOB.sendActionbar(player);
+                    return true;
+                } else {
+                    PROJECT_ALREADY_COMPLETE.send(player);
+                    return false;
+                }
+            })
+            .abortIf(false)
+            .asyncFirst(() -> {
+                final Job job = plugin.getStorageImplementation().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
+                plugin.getJobManager().addJob(job);
+                return job;
+            })
+            .syncLast((job) -> {
+                final String message = (job == null) ? "§cError while creating job. Please contact an administrator." : SUCCESSFULLY_CREATED_JOB.toString(job.getId());
+                player.sendMessage(message);
+            })
+            .execute();
+	}
+
+	@CommandDescription("Remove a job")
+	@Permission("epicjobs.command.job.remove")
+	@Command("job|jobs remove|delete <job>")
+	public void onRemove(final @NonNull Player player,
+						 @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		EpicJobs.newSharedChain("EpicJobs")
+            .sync(() -> {
+                plugin.getJobManager().removeJob(job);
+                job.getProject().removeJob(job);
+                plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
+                REMOVING_JOB.sendActionbar(player, job.getId());
+            })
+            .async(() -> plugin.getStorageImplementation().deleteJob(job))
+            .sync(() -> SUCCESSFULLY_REMOVED_JOB.send(player)
+        ).execute();
+	}
+
+	@CommandDescription("Job statistics")
+	@Permission("epicjobs.command.job.stats")
+	@Command("job|jobs stats <player>")
+	public void onStats(final @NonNull Player player,
+						@Argument(value = "player", description = "Player") final @Nullable Player target) {
+		final Optional<EpicJobsPlayer> optional = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()) : plugin.getEpicJobsPlayer(player.getUniqueId());
+		if (optional.isEmpty()) {
+			player.sendMessage("§cError while loading player data. Please contact an administrator.");
+			return;
+		}
+        player.sendMessage("Completed jobs: " + optional.get().getCompletedJobs().size());
+	}
 
 }

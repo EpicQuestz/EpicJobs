@@ -2,6 +2,7 @@ package com.epicquestz.epicjobs.command;
 
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionProvider;
+import com.epicquestz.epicjobs.command.commands.SuggestionProvider;
 import com.epicquestz.epicjobs.command.commands.job.JobCommand;
 import com.epicquestz.epicjobs.command.commands.job.JobListAllCommand;
 import com.epicquestz.epicjobs.command.commands.job.JobListDoneCommand;
@@ -47,8 +48,10 @@ public class Commands {
 		manager.parserRegistry().registerParserSupplier(TypeToken.get(Project.class), parserParameters -> new ProjectParser<>());
 		manager.parserRegistry().registerParserSupplier(TypeToken.get(Job.class), parserParameters -> new JobParser<>());
 
-		// Register Commands
+		// Register and parse commands and suggestions
 		final AnnotationParser<CommandSender> annotationParser = new AnnotationParser<>(manager, CommandSender.class);
+		annotationParser.parse(new SuggestionProvider(plugin)); // suggestions must be parsed first
+
 		annotationParser.parse(new JobCommand(plugin));
 		annotationParser.parse(new JobListAllCommand(plugin));
 		annotationParser.parse(new JobListDoneCommand(plugin));

@@ -56,15 +56,4 @@ public class TeleportJobCommand {
 		PLAYER_HAS_MULITPLE_JOBS.send(player);
 	}
 
-	@Suggestions("player-job")
-	public Stream<String> playerJobSuggestions(final @NonNull Player player) {
-		final Optional<EpicJobsPlayer> optionalProfile = plugin.getEpicJobsPlayer(player);
-		if (optionalProfile.isEmpty()) {
-			return Stream.empty();
-		}
-
-		return optionalProfile.get().getJobs().stream()
-			.map(job -> String.valueOf(job.getId()));
-	}
-
 }
