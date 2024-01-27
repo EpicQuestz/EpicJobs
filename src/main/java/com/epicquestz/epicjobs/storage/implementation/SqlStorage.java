@@ -10,7 +10,12 @@ import com.epicquestz.epicjobs.user.EpicJobsPlayer;
 import com.epicquestz.epicjobs.utils.Utils;
 import org.bukkit.Location;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.UUID;
 
 public class SqlStorage implements StorageImplementation {
