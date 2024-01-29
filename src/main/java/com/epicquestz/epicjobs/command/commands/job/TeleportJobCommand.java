@@ -3,7 +3,7 @@ package com.epicquestz.epicjobs.command.commands.job;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.job.Job;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -37,7 +37,7 @@ public class TeleportJobCommand {
 			return;
 		}
 
-		final Optional<EpicJobsPlayer> optionalProfile = plugin.getEpicJobsPlayer(player);
+		final Optional<User> optionalProfile = plugin.getEpicJobsPlayer(player);
 		if (optionalProfile.isEmpty()) {
 			MISSING_PROFILE.send(player);
 			return;

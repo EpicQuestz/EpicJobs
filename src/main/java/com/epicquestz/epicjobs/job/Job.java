@@ -2,7 +2,7 @@ package com.epicquestz.epicjobs.job;
 
 import com.epicquestz.epicjobs.constants.Messages;
 import com.epicquestz.epicjobs.project.Project;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -99,13 +99,13 @@ public class Job {
         this.jobCategory = jobCategory;
     }
 
-    public void claim(final EpicJobsPlayer player) {
+    public void claim(final User player) {
         this.setClaimant(player.getUuid());
         this.setJobStatus(JobStatus.TAKEN);
         player.addJob(this);
     }
 
-    public void abandon(final EpicJobsPlayer player) {
+    public void abandon(final User player) {
         this.setClaimant(null);
         this.setJobStatus(JobStatus.OPEN);
         player.removeJob(this);

@@ -6,7 +6,7 @@ import com.epicquestz.epicjobs.job.JobCategory;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import com.epicquestz.epicjobs.utils.Utils;
 import org.bukkit.Location;
 
@@ -105,7 +105,7 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public EpicJobsPlayer loadPlayer(final UUID uniqueId) {
+    public User loadPlayer(final UUID uniqueId) {
         return null;
     }
 

@@ -18,7 +18,7 @@ public class JobManager {
     }
 
     public void firstLoad() {
-        plugin.getStorageImplementation().loadAllJobs();
+        plugin.getStorage().loadAllJobs();
     }
 
     public List<Job> getJobs() {

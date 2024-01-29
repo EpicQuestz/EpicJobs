@@ -33,7 +33,7 @@ public class JobEditCommand {
 	) {
 		job.setClaimant(claimant.getUniqueId());
 		sender.sendMessage("Set claimant of job to: " + claimant.getName());
-		plugin.getStorageImplementation().updateJob(job);
+		plugin.getStorage().updateJob(job);
 	}
 
 
@@ -46,7 +46,7 @@ public class JobEditCommand {
 	) {
 		job.setDescription(description);
 		sender.sendMessage("Set description of job to: " + description);
-        plugin.getStorageImplementation().updateJob(job);
+        plugin.getStorage().updateJob(job);
 	}
 
 	@CommandDescription("Edit a job's project")
@@ -58,7 +58,7 @@ public class JobEditCommand {
 	) {
 		job.setProject(project);
 		sender.sendMessage("Set project of job to: " + project.getName());
-		plugin.getStorageImplementation().updateJob(job);
+		plugin.getStorage().updateJob(job);
 	}
 
 	@CommandDescription("Edit a job's location")
@@ -69,7 +69,7 @@ public class JobEditCommand {
 	) {
 		job.setLocation(player.getLocation());
 		player.sendMessage("Set job location to your current on");
-		plugin.getStorageImplementation().updateJob(job);
+		plugin.getStorage().updateJob(job);
 	}
 
 	@CommandDescription("Edit a job's status")
@@ -81,7 +81,7 @@ public class JobEditCommand {
 	) {
 		job.setJobStatus(status);
 		sender.sendMessage("Set job status to: " + status.name());
-		plugin.getStorageImplementation().updateJob(job);
+		plugin.getStorage().updateJob(job);
 	}
 
 	@CommandDescription("Edit a job's category")
@@ -93,7 +93,7 @@ public class JobEditCommand {
 	) {
 		job.setJobCategory(category);
 		sender.sendMessage("Set job category to: " + category);
-		plugin.getStorageImplementation().updateJob(job);
+		plugin.getStorage().updateJob(job);
 	}
 
 }

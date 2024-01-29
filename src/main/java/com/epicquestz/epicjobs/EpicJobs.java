@@ -13,7 +13,7 @@ import com.epicquestz.epicjobs.project.ProjectManager;
 import com.epicquestz.epicjobs.storage.SettingsFile;
 import com.epicquestz.epicjobs.storage.implementation.SqlStorage;
 import com.epicquestz.epicjobs.storage.implementation.StorageImplementation;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -49,10 +49,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     private JobManager jobManager;
 
     private HikariDataSource hikariDataSource;
-    private StorageImplementation storageImplementation;
+    private StorageImplementation storage;
 
     private Commands commands;
-    private Set<EpicJobsPlayer> epicJobsPlayers;
+    private Set<User> users;
 
     @Override
     public void onEnable() {
@@ -68,17 +68,17 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
         hikariDataSource = new HikariDataSource();
         settingsFile.setupHikari(hikariDataSource, settingsFile.getConfiguration());
-        storageImplementation = new SqlStorage(this);
-        storageImplementation.init();
+        storage = new SqlStorage(this);
+        storage.init();
         projectManager.firstLoad();
         jobManager.firstLoad();
 
         commands = new Commands(this);
-        epicJobsPlayers = new HashSet<>();
+        users = new HashSet<>();
         Bukkit.getOnlinePlayers().forEach(player -> {
-            final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
-            loadPlayerJobs(epicJobsPlayer);
-            epicJobsPlayers.add(epicJobsPlayer);
+            final User user = new User(player.getUniqueId());
+            loadPlayerJobs(user);
+            users.add(user);
         });
 
         registerListeners();
@@ -88,9 +88,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     public void onDisable() {
         // Plugin shutdown logic
 
-        storageImplementation.shutdown();
+        storage.shutdown();
 
-        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer)));
+        Bukkit.getOnlinePlayers().forEach(player -> getEpicJobsPlayer(player.getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer)));
     }
 
     public static EpicJobs get() {
@@ -105,32 +105,32 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         return hikariDataSource;
     }
 
-    public StorageImplementation getStorageImplementation() {
-        return storageImplementation;
+    public StorageImplementation getStorage() {
+        return storage;
     }
 
     public SettingsFile getSettingsFile() {
         return settingsFile;
     }
 
-    public Optional<EpicJobsPlayer> getEpicJobsPlayer(final Player player) {
+    public Optional<User> getEpicJobsPlayer(final Player player) {
         return getEpicJobsPlayer(player.getUniqueId());
     }
 
-    public Optional<EpicJobsPlayer> getEpicJobsPlayer(final UUID uuid) {
-        for (final EpicJobsPlayer epicJobsPlayer : epicJobsPlayers) {
-            if (epicJobsPlayer.getUuid().equals(uuid)) {
-                return Optional.of(epicJobsPlayer);
+    public Optional<User> getEpicJobsPlayer(final UUID uuid) {
+        for (final User user : users) {
+            if (user.getUuid().equals(uuid)) {
+                return Optional.of(user);
             }
         }
         return Optional.empty();
     }
 
-    private void loadPlayerJobs(final EpicJobsPlayer epicJobsPlayer) {
+    private void loadPlayerJobs(final User user) {
         for (final Job job : jobManager.getJobs()) {
             if (job.getClaimant() != null) {
-                if (job.getClaimant().equals(epicJobsPlayer.getUuid())) {
-                    epicJobsPlayer.addJob(job);
+                if (job.getClaimant().equals(user.getUuid())) {
+                    user.addJob(job);
                 }
             }
         }
@@ -151,9 +151,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final EpicJobsPlayer epicJobsPlayer = new EpicJobsPlayer(player.getUniqueId());
-        loadPlayerJobs(epicJobsPlayer);
-        epicJobsPlayers.add(epicJobsPlayer);
+        final User user = new User(player.getUniqueId());
+        loadPlayerJobs(user);
+        users.add(user);
         if (player.hasPermission(CommandPermissions.LIST_DONE_JOBS)) {
             final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).toList();
             if (!jobs.isEmpty()) {
@@ -169,7 +169,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
-        getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayers.remove(epicJobsPlayer));
+        getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer));
     }
 
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {
