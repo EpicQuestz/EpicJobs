@@ -6,7 +6,7 @@ import com.epicquestz.epicjobs.job.JobCategory;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import org.bukkit.Location;
 
 import java.util.UUID;
@@ -19,7 +19,7 @@ public interface StorageImplementation {
 
     void shutdown();
 
-    EpicJobsPlayer loadPlayer(UUID uniqueId);
+    User loadPlayer(UUID uniqueId);
 
     Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus);
 

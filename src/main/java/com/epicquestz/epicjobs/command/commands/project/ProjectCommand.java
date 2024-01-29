@@ -98,7 +98,7 @@ public class ProjectCommand {
             })
             .abortIf(false)
             .asyncFirst(() -> {
-                final Project project = (leader == null) ? plugin.getStorageImplementation().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorageImplementation().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
+                final Project project = (leader == null) ? plugin.getStorage().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorage().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
                 plugin.getProjectManager().addProject(project);
                 return project;
             })
@@ -136,7 +136,7 @@ public class ProjectCommand {
 				}
 			})
 			.abortIf(false)
-			.async(() -> plugin.getStorageImplementation().updateProject(project))
+			.async(() -> plugin.getStorage().updateProject(project))
 			.execute();
 	}
 
@@ -158,7 +158,7 @@ public class ProjectCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorageImplementation().updateProject(project))
+            .async(() -> plugin.getStorage().updateProject(project))
             .execute();
 	}
 
@@ -180,7 +180,7 @@ public class ProjectCommand {
 				}
 			})
 			.abortIf(false)
-			.async(() -> plugin.getStorageImplementation().updateProject(project))
+			.async(() -> plugin.getStorage().updateProject(project))
 			.execute();
 	}
 

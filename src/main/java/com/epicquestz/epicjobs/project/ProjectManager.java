@@ -18,7 +18,7 @@ public class ProjectManager {
     }
 
     public void firstLoad() {
-        plugin.getStorageImplementation().loadAllProjects();
+        plugin.getStorage().loadAllProjects();
     }
 
     public List<Project> getProjects() {
