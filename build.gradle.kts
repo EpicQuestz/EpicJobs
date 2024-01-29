@@ -8,7 +8,7 @@ java {
 }
 
 group = "com.epicquestz"
-version = "1.3"
+version = "1.4"
 
 val paperVersion = "1.20.4-R0.1-SNAPSHOT"
 val hikariVersion = "5.1.0"
