@@ -96,7 +96,7 @@ public class JobCommand {
             .filter(job -> job.getLocation().getWorld().equals(player.getWorld()))
             .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < radius * radius)
             .collect(Collectors.toList());
-        sendJobMenu(player, "Available jobs in range " + radius + " around you", null, jobs);
+        sendJobMenu(player, "Available jobs (range " + radius + ")", null, jobs);
 	}
 
 	private void sendProjectMenu(final Player player) {
