@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface StorageImplementation {
 
-    EpicJobs getPlugin();
+    EpicJobs plugin();
 
     void init();
 
