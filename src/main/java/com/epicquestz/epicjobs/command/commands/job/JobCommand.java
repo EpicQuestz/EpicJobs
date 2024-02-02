@@ -30,6 +30,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.incendo.cloud.annotation.specifier.Greedy;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -584,7 +585,7 @@ public class JobCommand {
 	public void onCreate(final @NonNull Player player,
 						 @Argument(value = "project", description = "Project") final @NonNull Project project,
 						 @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory,
-						 @Argument(value = "description", description = "Description") final @NonNull String description
+						 @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
 	) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
