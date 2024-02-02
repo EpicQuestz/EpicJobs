@@ -629,10 +629,20 @@ public class JobCommand {
 
 	@CommandDescription("Job statistics")
 	@Permission(CommandPermissions.SHOW_STATISTICS)
-	@Command("job|jobs stats <player>")
-	public void onStats(final @NonNull Player player,
+	@Command("job|jobs stats [player]")
+	public void onStats(final @NonNull CommandSender sender,
 						@Argument(value = "player", description = "Player") final @Nullable Player target) {
-		final Optional<EpicJobsPlayer> optional = (target != null) ? plugin.getEpicJobsPlayer(target.getUniqueId()) : plugin.getEpicJobsPlayer(player.getUniqueId());
+		final Player player;
+		if (target != null) {
+			player = target;
+		} else if (sender instanceof Player) {
+			player = (Player) sender;
+		} else {
+			sender.sendMessage("§cYou must be a player to use this command.");
+			return;
+		}
+
+		final Optional<EpicJobsPlayer> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
 		if (optional.isEmpty()) {
 			player.sendMessage("§cError while loading player data. Please contact an administrator.");
 			return;
