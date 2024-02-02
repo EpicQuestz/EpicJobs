@@ -4,6 +4,7 @@ import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.caption.EpicJobsCaptionProvider;
 import com.epicquestz.epicjobs.command.commands.SuggestionProvider;
 import com.epicquestz.epicjobs.command.commands.job.JobCommand;
+import com.epicquestz.epicjobs.command.commands.job.JobEditCommand;
 import com.epicquestz.epicjobs.command.commands.job.JobListAllCommand;
 import com.epicquestz.epicjobs.command.commands.job.JobListDoneCommand;
 import com.epicquestz.epicjobs.command.commands.project.ProjectCommand;
@@ -53,6 +54,7 @@ public class Commands {
 		annotationParser.parse(new SuggestionProvider(plugin)); // suggestions must be parsed first
 
 		annotationParser.parse(new JobCommand(plugin));
+		annotationParser.parse(new JobEditCommand(plugin));
 		annotationParser.parse(new JobListAllCommand(plugin));
 		annotationParser.parse(new JobListDoneCommand(plugin));
 		annotationParser.parse(new TeleportJobCommand(plugin));
