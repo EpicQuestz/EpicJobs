@@ -583,7 +583,7 @@ public class JobCommand {
 	@Permission(CommandPermissions.CREATE_JOB)
 	@Command("job|jobs create <project> <category> <description>")
 	public void onCreate(final @NonNull Player player,
-						 @Argument(value = "project", description = "Project") final @NonNull Project project,
+						 @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project,
 						 @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory,
 						 @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
 	) {
