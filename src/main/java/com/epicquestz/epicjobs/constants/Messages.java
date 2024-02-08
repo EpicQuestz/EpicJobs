@@ -19,7 +19,7 @@ public enum Messages {
 
     // Jobs Abandon
     ANNOUNCE_JOB_ABANDONMENT("§c%s has abandoned job §b#%s.\n§aIt is available to be claimed again."),
-    JOB_CANT_BE_ABANDONED("§cYou can only abandon jobs that are incomplete."),
+    JOB_CANT_BE_ABANDONED("§cYou can only abandon jobs that are yours and incomplete."),
 
     // Jobs Teleport
     PLAYER_JOB_TELEPORT("§eTeleporting to job site #%s"),

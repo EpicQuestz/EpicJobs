@@ -390,38 +390,36 @@ public class JobCommand {
 						  @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                final Optional<EpicJobsPlayer> epicJobsPlayer = plugin.getEpicJobsPlayer(player.getUniqueId());
-                final List<Job> jobs = epicJobsPlayer.isPresent() ? epicJobsPlayer.get().getJobs() : new ArrayList<>();
-                Job jobEdited = null;
-                if (epicJobsPlayer.isPresent()) {
-                    if (job == null) {
-                        if (jobs.size() == 1) {
-                            if (jobs.get(0).getJobStatus().equals(JobStatus.TAKEN) || jobs.get(0).getJobStatus().equals(JobStatus.DONE)) {
-                                jobEdited = jobs.get(0);
-                                jobEdited.abandon(epicJobsPlayer.get());
-                                ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobs.get(0).getId());
-                            } else {
-                                JOB_CANT_BE_ABANDONED.send(player);
-                            }
-                        } else if (jobs.isEmpty()) {
-                            PLAYER_HAS_NO_JOBS.send(player);
-                        } else {
-                            PLAYER_HAS_MULITPLE_JOBS.send(player);
-                        }
-                    } else {
-                        if (jobs.contains(job)) {
-                            if (job.getJobStatus().equals(JobStatus.TAKEN) || job.getJobStatus().equals(JobStatus.DONE)) {
-                                job.abandon(epicJobsPlayer.get());
-                                ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), job.getId());
-                                jobEdited = job;
-                            } else {
-                                JOB_CANT_BE_ABANDONED.send(player);
-                            }
-                        } else {
-                            PLAYER_HASNT_CLAIMED_JOB.send(player);
-                        }
-                    }
-                }
+                final Optional<EpicJobsPlayer> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
+                if (optional.isEmpty()) return null;
+				final EpicJobsPlayer epicJobsPlayer = optional.get();
+				final List<Job> playerJobs = epicJobsPlayer.getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.TAKEN) || j.getJobStatus().equals(JobStatus.DONE)).toList();
+
+				Job jobEdited = null;
+				if (job != null) {
+					if (playerJobs.contains(job)) {
+						jobEdited = job;
+					} else {
+						JOB_CANT_BE_ABANDONED.send(player);
+					}
+				}
+
+				if (job == null) {
+					if (playerJobs.size() == 1) {
+						jobEdited = playerJobs.get(0);
+					} else {
+						if (playerJobs.isEmpty()) {
+							PLAYER_HAS_NO_JOBS.send(player);
+						} else {
+							PLAYER_HAS_MULITPLE_JOBS.send(player);
+						}
+					}
+				}
+
+				if (jobEdited != null) {
+					jobEdited.abandon(epicJobsPlayer);
+					ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobEdited.getId());
+				}
                 return jobEdited;
             })
             .abortIfNull()
