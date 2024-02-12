@@ -111,6 +111,12 @@ public class Job {
         player.removeJob(this);
     }
 
+    public void unassign(final EpicJobsPlayer player) {
+        this.setClaimant(null);
+        this.setJobStatus(JobStatus.OPEN);
+        player.removeJob(this);
+    }
+
     public void teleport(final Player player) {
         player.teleportAsync(this.getLocation());
         Messages.PLAYER_JOB_TELEPORT.send(player, getId());

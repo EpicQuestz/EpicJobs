@@ -541,7 +541,7 @@ public class JobCommand {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.TAKEN)) {
-                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
+                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(job::unassign);
                     return true;
                 } else {
                     JOB_CANT_BE_UNASSIGNED.send(player);
