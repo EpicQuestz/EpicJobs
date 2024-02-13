@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class EpicJobsPlayer {
+public class User {
 
     private final UUID uuid;
     private final List<Job> jobs;
 
-    public EpicJobsPlayer(final UUID uuid) {
+    public User(final UUID uuid) {
         this.uuid = uuid;
         this.jobs = new ArrayList<>();
     }

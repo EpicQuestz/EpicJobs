@@ -30,7 +30,7 @@ public class ProjectEditCommand {
 	) {
 		project.setName(name);
 		sender.sendMessage("Set name of project to " + name); // todo: formatting
-		plugin.getStorageImplementation().updateProject(project); // todo: async
+		plugin.getStorage().updateProject(project); // todo: async
 	}
 
 	@CommandDescription("Edit a project's leader")
@@ -42,7 +42,7 @@ public class ProjectEditCommand {
 	) {
 		project.setLeader(leader.getUniqueId());
 		sender.sendMessage("Set project leader to " + leader.getName());
-		plugin.getStorageImplementation().updateProject(project);
+		plugin.getStorage().updateProject(project);
 	}
 
 	@CommandDescription("Edit a project's location")
@@ -53,7 +53,7 @@ public class ProjectEditCommand {
 	) {
 		project.setLocation(player.getLocation());
 		player.sendMessage("Updated project location to your current");
-        plugin.getStorageImplementation().updateProject(project);
+        plugin.getStorage().updateProject(project);
 	}
 
 	@CommandDescription("Edit a project's status")
@@ -65,7 +65,7 @@ public class ProjectEditCommand {
 	) {
 		project.setProjectStatus(status);
 		sender.sendMessage("Set project status to " + status.name());
-		plugin.getStorageImplementation().updateProject(project);
+		plugin.getStorage().updateProject(project);
 	}
 
 }

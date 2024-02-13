@@ -6,7 +6,7 @@ import com.epicquestz.epicjobs.job.JobCategory;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import com.epicquestz.epicjobs.utils.Utils;
 import org.bukkit.Location;
 
@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.UUID;
 
-public class SqlStorage implements StorageImplementation {
+public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
 
     private static final String PROJECT_SELECT_ALL = "SELECT * FROM project;";
     private static final String JOB_SELECT_ALL = "SELECT * FROM job;";
@@ -54,22 +54,11 @@ public class SqlStorage implements StorageImplementation {
         "project INT NOT NULL,\n" +
         "location VARCHAR(255) COLLATE utf8_bin NOT NULL,\n" +
         "jobstatus enum('OPEN', 'TAKEN', 'DONE', 'COMPLETE') COLLATE utf8_bin NOT NULL,\n" +
-        "jobcategory enum('TERRAIN', 'INTERIOR', 'STRUCTURE', 'NATURE', 'DECORATION', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
+        "jobcategory enum('TERRAIN', 'VEGETATION', 'PATHWAY', 'ATMOSPHERE', 'EXTERIOR_STRUCTURE', 'INTERIOR_STRUCTURE', 'INTERIOR', 'REMOVAL', 'OTHER') COLLATE utf8_bin NOT NULL" +
         ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
 //      "CONSTRAINT job_ibfk_1" +
 //      "FOREIGN KEY (project) REFERENCES project (id);" +
 //      "CREATE INDEX IF NOT EXISTS project ON job (project);";
-
-    private final EpicJobs plugin;
-
-    public SqlStorage(final EpicJobs plugin) {
-        this.plugin = plugin;
-    }
-
-    @Override
-    public EpicJobs getPlugin() {
-        return plugin;
-    }
 
     @Override
     public void init() {
@@ -105,7 +94,7 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
-    public EpicJobsPlayer loadPlayer(final UUID uniqueId) {
+    public User loadPlayer(final UUID uniqueId) {
         return null;
     }
 
@@ -179,7 +168,7 @@ public class SqlStorage implements StorageImplementation {
 
                 if (location != null) {
                     final Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
-                    getPlugin().getProjectManager().addProject(project);
+                    plugin().getProjectManager().addProject(project);
                 }
             }
 
@@ -330,7 +319,7 @@ public class SqlStorage implements StorageImplementation {
 
                 if (location != null) {
                     final Job job = new Job(id, creator, claimant, creationTime.getTime(), description, project, location, jobStatus, jobCategory);
-                    getPlugin().getJobManager().addJob(job);
+                    plugin().getJobManager().addJob(job);
                 }
 
             }

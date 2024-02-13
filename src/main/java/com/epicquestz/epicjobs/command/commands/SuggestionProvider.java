@@ -3,7 +3,7 @@ package com.epicquestz.epicjobs.command.commands;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
-import com.epicquestz.epicjobs.user.EpicJobsPlayer;
+import com.epicquestz.epicjobs.user.User;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -23,7 +23,7 @@ public class SuggestionProvider {
 
 	@Suggestions("player-job")
 	public Stream<String> playerJobSuggestions(final @NonNull Player player) {
-		final Optional<EpicJobsPlayer> optionalProfile = plugin.getEpicJobsPlayer(player);
+		final Optional<User> optionalProfile = plugin.getEpicJobsPlayer(player);
 		if (optionalProfile.isEmpty()) {
 			return Stream.empty();
 		}
