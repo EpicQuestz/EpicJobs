@@ -20,11 +20,11 @@ public class Project {
     private ProjectStatus projectStatus;
     private final List<Job> jobs;
 
-    public Project(final int id, final String name, final Player leader) {
+    public Project(int id, String name, Player leader) {
         this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE);
     }
 
-    public Project(final int id, final String name, final UUID leader, final long creationTime, final Location location, final ProjectStatus projectStatus) {
+    public Project(int id, String name, UUID leader, long creationTime, Location location, ProjectStatus projectStatus) {
         this.id = id;
         this.name = name;
         this.leader = leader;
@@ -42,7 +42,7 @@ public class Project {
         return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -50,11 +50,11 @@ public class Project {
         return leader;
     }
 
-    public void setLeader(final Player leader) {
+    public void setLeader(Player leader) {
         this.leader = leader.getUniqueId();
     }
 
-    public void setLeader(final UUID leader) {
+    public void setLeader(UUID leader) {
         this.leader = leader;
     }
 
@@ -66,7 +66,7 @@ public class Project {
         return location;
     }
 
-    public void setLocation(final Location location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -74,7 +74,7 @@ public class Project {
         return projectStatus;
     }
 
-    public void setProjectStatus(final ProjectStatus projectStatus) {
+    public void setProjectStatus(ProjectStatus projectStatus) {
         this.projectStatus = projectStatus;
     }
 
@@ -82,17 +82,17 @@ public class Project {
         return ImmutableList.copyOf(jobs);
     }
 
-    public void addJob(final Job job) {
+    public void addJob(Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(final Job job) {
+    public void removeJob(Job job) {
         jobs.remove(job);
     }
 
-    public void teleport(final Player player) {
+    public void teleport(Player player) {
         player.teleportAsync(this.getLocation());
-        Messages.PLAYER_PROJECT_TELEPORT.send(player, getName());
+        Messages.PLAYER_PROJECT_TELEPORT.send(player, this.getName());
     }
 
 }

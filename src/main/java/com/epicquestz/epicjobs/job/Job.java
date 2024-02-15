@@ -5,6 +5,7 @@ import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.user.User;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public class Job {
 
     private final int id;
     private final UUID creator;
-    private UUID claimant;
+    private @Nullable UUID claimant;
     private final long creationTime;
     private String description;
     private Project project;
@@ -20,11 +21,11 @@ public class Job {
     private JobStatus jobStatus;
     private JobCategory jobCategory;
 
-    public Job(final int id, final Player creator, final String description, final JobCategory jobCategory, final Project project) {
+    public Job(int id, Player creator, String description, JobCategory jobCategory, Project project) {
         this(id, creator.getUniqueId(), null, System.currentTimeMillis(), description, project, creator.getLocation(), JobStatus.OPEN, jobCategory);
     }
 
-    public Job(final int id, final UUID creator, final UUID claimant, final long creationTime, final String description, final Project project, final Location location, final JobStatus jobStatus, final JobCategory jobCategory) {
+    public Job(int id, UUID creator, @Nullable UUID claimant, long creationTime, String description, Project project, Location location, JobStatus jobStatus, JobCategory jobCategory) {
         this.id = id;
         this.creator = creator;
         this.claimant = claimant;
@@ -47,11 +48,11 @@ public class Job {
         return creator;
     }
 
-    public UUID getClaimant() {
+    public @Nullable UUID getClaimant() {
         return claimant;
     }
 
-    public void setClaimant(final UUID claimant) {
+    public void setClaimant(@Nullable UUID claimant) {
         this.claimant = claimant;
     }
 
@@ -63,7 +64,7 @@ public class Job {
         return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -71,7 +72,7 @@ public class Job {
         return project;
     }
 
-    public void setProject(final Project project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 
@@ -79,7 +80,7 @@ public class Job {
         return location;
     }
 
-    public void setLocation(final Location location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -87,7 +88,7 @@ public class Job {
         return jobStatus;
     }
 
-    public void setJobStatus(final JobStatus jobStatus) {
+    public void setJobStatus(JobStatus jobStatus) {
         this.jobStatus = jobStatus;
     }
 
@@ -95,31 +96,25 @@ public class Job {
         return jobCategory;
     }
 
-    public void setJobCategory(final JobCategory jobCategory) {
+    public void setJobCategory(JobCategory jobCategory) {
         this.jobCategory = jobCategory;
     }
 
-    public void claim(final User user) {
+    public void claim(User user) {
         this.setClaimant(user.getUuid());
         this.setJobStatus(JobStatus.TAKEN);
 		user.addJob(this);
     }
 
-    public void abandon(final User user) {
+    public void abandon(User user) {
         this.setClaimant(null);
         this.setJobStatus(JobStatus.OPEN);
 		user.removeJob(this);
     }
 
-    public void unassign(final User user) {
-        this.setClaimant(null);
-        this.setJobStatus(JobStatus.OPEN);
-		user.removeJob(this);
-    }
-
-    public void teleport(final Player player) {
+    public void teleport(Player player) {
         player.teleportAsync(this.getLocation());
-        Messages.PLAYER_JOB_TELEPORT.send(player, getId());
+        Messages.PLAYER_JOB_TELEPORT.send(player, this.getId());
     }
 
 }

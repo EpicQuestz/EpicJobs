@@ -19,7 +19,7 @@ public enum JobCategory {
     private final String description;
     private final Material material;
 
-    JobCategory(final String name, final String description, final Material material) {
+    JobCategory(String name, String description, Material material) {
         this.name = name;
         this.description = description;
         this.material = material;
@@ -37,8 +37,8 @@ public enum JobCategory {
         return material;
     }
 
-    public static @Nullable JobCategory get(final String name) {
-        for (final JobCategory jobCategory : JobCategory.values()) {
+    public static @Nullable JobCategory get(String name) {
+        for (JobCategory jobCategory : JobCategory.values()) {
             if (jobCategory.toString().equalsIgnoreCase(name)) {
                 return jobCategory;
             }

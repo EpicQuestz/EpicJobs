@@ -1,8 +1,7 @@
 package com.epicquestz.epicjobs.user;
 
-import com.google.common.collect.ImmutableList;
 import com.epicquestz.epicjobs.job.Job;
-import com.epicquestz.epicjobs.job.JobStatus;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,26 +31,6 @@ public class User {
 
     public void removeJob(final Job job) {
         jobs.remove(job);
-    }
-
-    public List<Job> getActiveJobs() {
-        final List<Job> jobList = new ArrayList<>();
-        for (final Job job : jobs) {
-            if (job.getJobStatus().equals(JobStatus.TAKEN)) {
-                jobList.add(job);
-            }
-        }
-        return ImmutableList.copyOf(jobList);
-    }
-
-    public List<Job> getCompletedJobs() {
-        final List<Job> jobList = new ArrayList<>();
-        for (final Job job : jobs) {
-            if (job.getJobStatus().equals(JobStatus.COMPLETE)) {
-                jobList.add(job);
-            }
-        }
-        return ImmutableList.copyOf(jobList);
     }
 
 }

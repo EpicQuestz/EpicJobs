@@ -440,7 +440,7 @@ public class JobCommand {
 					return null;
 				}
                 final User user = optional.get();
-                final List<Job> jobs = user.getActiveJobs();
+                final List<Job> jobs = user.getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.TAKEN)).toList();
                 Job jobEdited = null;
 
                 if (job == null) {
@@ -541,7 +541,7 @@ public class JobCommand {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.TAKEN)) {
-                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(job::unassign);
+                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(job::abandon);
                     return true;
                 } else {
                     JOB_CANT_BE_UNASSIGNED.send(player);
@@ -645,7 +645,7 @@ public class JobCommand {
 			player.sendMessage("§cError while loading player data. Please contact an administrator.");
 			return;
 		}
-        player.sendMessage("Completed jobs: " + optional.get().getCompletedJobs().size());
+        player.sendMessage("Completed jobs: " + optional.get().getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.COMPLETE)).toList().size());
 	}
 
 }

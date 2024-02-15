@@ -13,7 +13,7 @@ public class JobManager {
 
     private final List<Job> jobs;
 
-    public JobManager(final EpicJobs plugin) {
+    public JobManager(EpicJobs plugin) {
         this.plugin = plugin;
         this.jobs = new ArrayList<>();
     }
@@ -26,8 +26,8 @@ public class JobManager {
         return ImmutableList.copyOf(jobs);
     }
 
-    public @Nullable Job getJobById(final int id) {
-        for (final Job job : jobs) {
+    public @Nullable Job getJobById(int id) {
+        for (Job job : jobs) {
             if (job.getId() == id) {
                 return job;
             }
@@ -35,11 +35,11 @@ public class JobManager {
         return null;
     }
 
-    public void addJob(final Job job) {
+    public void addJob(Job job) {
         jobs.add(job);
     }
 
-    public void removeJob(final Job job) {
+    public void removeJob(Job job) {
         jobs.remove(job);
     }
 

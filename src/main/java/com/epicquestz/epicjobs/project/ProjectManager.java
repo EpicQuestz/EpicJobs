@@ -2,6 +2,7 @@ package com.epicquestz.epicjobs.project;
 
 import com.google.common.collect.ImmutableList;
 import com.epicquestz.epicjobs.EpicJobs;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public class ProjectManager {
 
     private final List<Project> projects;
 
-    public ProjectManager(final EpicJobs plugin) {
+    public ProjectManager(EpicJobs plugin) {
         this.plugin = plugin;
         this.projects = new ArrayList<>();
     }
@@ -25,8 +26,8 @@ public class ProjectManager {
         return ImmutableList.copyOf(projects);
     }
 
-    public Project getProjectById(final int id) {
-        for (final Project project : projects) {
+    public @Nullable Project getProjectById(int id) {
+        for (Project project : projects) {
             if (project.getId() == id) {
                 return project;
             }
@@ -34,8 +35,8 @@ public class ProjectManager {
         return null;
     }
 
-    public Project getProjectByName(final String name) {
-        for (final Project project : projects) {
+    public @Nullable Project getProjectByName(String name) {
+        for (Project project : projects) {
             if (project.getName().equalsIgnoreCase(name)) {
                 return project;
             }
@@ -43,22 +44,12 @@ public class ProjectManager {
         return null;
     }
 
-    public void addProject(final Project project) {
+    public void addProject(Project project) {
         projects.add(project);
     }
 
-    public void removeProject(final Project project) {
+    public void removeProject(Project project) {
         projects.remove(project);
-    }
-
-    public List<Project> getOpenProjects() {
-        final List<Project> projectList = new ArrayList<>();
-        for (final Project project : projects) {
-            if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
-                projectList.add(project);
-            }
-        }
-        return ImmutableList.copyOf(projectList);
     }
 
 }
