@@ -2,6 +2,7 @@ package com.epicquestz.epicjobs.job;
 
 import com.google.common.collect.ImmutableList;
 import com.epicquestz.epicjobs.EpicJobs;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class JobManager {
         return ImmutableList.copyOf(jobs);
     }
 
-    public Job getJobById(final int id) {
+    public @Nullable Job getJobById(final int id) {
         for (final Job job : jobs) {
             if (job.getId() == id) {
                 return job;
@@ -40,26 +41,6 @@ public class JobManager {
 
     public void removeJob(final Job job) {
         jobs.remove(job);
-    }
-
-    public List<Job> getOpenJobs() {
-        final List<Job> jobList = new ArrayList<>();
-        for (final Job job : jobs) {
-            if (job.getJobStatus().equals(JobStatus.OPEN)) {
-                jobList.add(job);
-            }
-        }
-        return ImmutableList.copyOf(jobList);
-    }
-
-    public int getFreeId() {
-        int maxNumber = 0;
-        for (final Job job : jobs) {
-            if (job.getId() > maxNumber) {
-                maxNumber = job.getId();
-            }
-        }
-        return maxNumber + 1;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.epicquestz.epicjobs.command.commands;
 
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.user.User;
@@ -34,7 +35,8 @@ public class SuggestionProvider {
 
 	@Suggestions("open-job")
 	public Stream<String> openJobSuggestions() {
-		return plugin.getJobManager().getOpenJobs().stream()
+		return plugin.getJobManager().getJobs().stream()
+				.filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
 				.map(job -> String.valueOf(job.getId()));
 	}
 
