@@ -5,10 +5,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public enum JobCategory {
 
-//    STRUCTURE -> EXTERIOR_STRUCTURE
-//    NATURE -> VEGETATION
-//    DECORATION -> ATMOSPHERE
-
     TERRAIN("Terrain", "Hills, rivers, etc.", Material.GRASS_BLOCK),
     VEGETATION("Vegetation", "Gardens, forests, agriculture & general nature", Material.FLOWERING_AZALEA_LEAVES),
     PATHWAY("Pathway", "Roads, paths, trails, etc", Material.DIRT_PATH),
