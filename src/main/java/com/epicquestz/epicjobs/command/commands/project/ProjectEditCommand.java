@@ -13,6 +13,7 @@ import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
 
+@Command("project|projects")
 public class ProjectEditCommand {
 
 	private final EpicJobs plugin;
@@ -23,7 +24,7 @@ public class ProjectEditCommand {
 
 	@CommandDescription("Edit a project's name")
 	@Permission(CommandPermissions.MODIFY_PROJECT_NAME)
-	@Command("project|projects edit|e name <project> <name>")
+	@Command("edit|e name <project> <name>")
 	public void onEditName(@NonNull CommandSender sender,
 						   @Argument(value = "project", description = "Project") final @NonNull Project project,
 						   @Argument(value = "name", description = "Name") final @NonNull String name
@@ -35,7 +36,7 @@ public class ProjectEditCommand {
 
 	@CommandDescription("Edit a project's leader")
 	@Permission(CommandPermissions.MODIFY_PROJECT_LEADER)
-	@Command("project|projects edit|e leader <project> <leader>")
+	@Command("edit|e leader <project> <leader>")
 	public void onEditLeader(@NonNull CommandSender sender,
 							 @Argument(value = "project", description = "Project") final @NonNull Project project,
 							 @Argument(value = "leader", description = "Leader", suggestions = "all-offline-players") final @NonNull OfflinePlayer leader
@@ -47,7 +48,7 @@ public class ProjectEditCommand {
 
 	@CommandDescription("Edit a project's location")
 	@Permission(CommandPermissions.MODIFY_PROJECT_LOCATION)
-	@Command("project|projects edit|e location <project>")
+	@Command("edit|e location <project>")
 	public void onEditLocation(@NonNull Player player,
 							   @Argument(value = "project", description = "Project") final @NonNull Project project
 	) {
@@ -58,7 +59,7 @@ public class ProjectEditCommand {
 
 	@CommandDescription("Edit a project's status")
 	@Permission(CommandPermissions.MODIFY_PROJECT_STATUS)
-	@Command("project|projects edit|e status <project> <status>")
+	@Command("edit|e status <project> <status>")
 	public void onEditStatus(@NonNull CommandSender sender,
 							 @Argument(value = "project", description = "Project") final @NonNull Project project,
 							 @Argument(value = "status", description = "Status") final @NonNull ProjectStatus status

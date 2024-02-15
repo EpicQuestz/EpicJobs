@@ -30,6 +30,7 @@ import static com.epicquestz.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_CREATED_PROJECT;
 
+@Command("project|projects")
 public class ProjectCommand {
 
 	private final EpicJobs plugin;
@@ -40,7 +41,7 @@ public class ProjectCommand {
 
 	@CommandDescription("List projects")
 	@Permission(CommandPermissions.LIST_PROJECTS)
-	@Command("project|projects list|ls")
+	@Command("list|ls")
 	public void onList(final @NonNull CommandSender sender) {
 		final List<Project> projects = plugin.getProjectManager().getProjects().stream()
             .filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
@@ -50,7 +51,7 @@ public class ProjectCommand {
 
 	@CommandDescription("List all projects")
 	@Permission(CommandPermissions.LIST_ALL_PROJECTS)
-	@Command("project|projects list|ls all")
+	@Command("list|ls all")
 	public void onListAll(final @NonNull CommandSender sender) {
 		final List<Project> projects = plugin.getProjectManager().getProjects();
 		sendProjectList(sender, projects);
@@ -81,7 +82,7 @@ public class ProjectCommand {
 
 	@CommandDescription("Create a project")
 	@Permission(CommandPermissions.CREATE_PROJECT)
-	@Command("project|projects create <name> [leader]")
+	@Command("create <name> [leader]")
 	public void onCreate(final @NonNull Player player,
 						 @Argument(value = "name", description = "Name") final @NonNull String name,
 						 @Argument(value = "leader", description = "Leader") final @Nullable Player leader
@@ -111,19 +112,17 @@ public class ProjectCommand {
 
 	@CommandDescription("Teleport to a project")
 	@Permission(CommandPermissions.TELEPORT_PROJECT)
-	@Command("project|projects teleport|tp <project>")
+	@Command("teleport|tp <project>")
 	public void onTeleport(final @NonNull Player player,
-						   @Argument(value = "project", description = "Project") final @NonNull Project project
-	) {
+						   @Argument(value = "project", description = "Project") final @NonNull Project project) {
 		project.teleport(player);
 	}
 
 	@CommandDescription("Pause a project")
 	@Permission(CommandPermissions.PAUSE_PROJECT)
-	@Command("project|projects pause <project>")
+	@Command("pause <project>")
 	public void onPause(final @NonNull CommandSender sender,
-						@Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project
-	) {
+						@Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project) {
 		EpicJobs.newSharedChain("EpicJobs")
 			.syncFirst(() -> {
 				if (!project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
@@ -142,10 +141,9 @@ public class ProjectCommand {
 
 	@CommandDescription("Resume a project")
 	@Permission(CommandPermissions.RESUME_PROJECT)
-	@Command("project|projects resume|unpause <project>")
+	@Command("resume|unpause <project>")
 	public void onResume(final @NonNull CommandSender sender,
-						 @Argument(value = "project", description = "Project", suggestions = "paused-project") final @NonNull Project project
-	) {
+						 @Argument(value = "project", description = "Project", suggestions = "paused-project") final @NonNull Project project) {
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
@@ -164,10 +162,9 @@ public class ProjectCommand {
 
 	@CommandDescription("Complete a project")
 	@Permission(CommandPermissions.COMPLETE_PROJECT)
-	@Command("project|projects complete <project>")
+	@Command("complete <project>")
 	public void onComplete(final @NonNull Player player,
-						   @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project
-	) {
+						   @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project) {
 		EpicJobs.newSharedChain("EpicJobs")
 			.syncFirst(() -> {
 				if (!project.getProjectStatus().equals(ProjectStatus.COMPLETE)) {

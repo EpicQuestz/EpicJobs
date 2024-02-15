@@ -16,6 +16,7 @@ import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
 
+@Command("job|jobs edit")
 public class JobEditCommand {
 
 	private final EpicJobs plugin;
@@ -26,7 +27,7 @@ public class JobEditCommand {
 
 	@CommandDescription("Edit a job's claimant")
 	@Permission(CommandPermissions.MODIFY_JOB_CLAIMANT)
-	@Command("job|jobs edit claimant <job> <claimant>")
+	@Command("claimant <job> <claimant>")
 	public void onEditClaimant(final @NonNull CommandSender sender,
 							   @Argument(value = "job", description = "Job") final @NonNull Job job,
 							   @Argument(value = "claimant", description = "Claimant", suggestions = "all-offline-players") final @NonNull OfflinePlayer claimant
@@ -39,7 +40,7 @@ public class JobEditCommand {
 
 	@CommandDescription("Edit a job's description")
 	@Permission(CommandPermissions.MODIFY_JOB_DESCRIPTION)
-	@Command("job|jobs edit description <job> <description>")
+	@Command("description <job> <description>")
 	public void onList(final @NonNull CommandSender sender,
 					   @Argument(value = "job", description = "Job") final @NonNull Job job,
 					   @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
@@ -51,7 +52,7 @@ public class JobEditCommand {
 
 	@CommandDescription("Edit a job's project")
 	@Permission(CommandPermissions.MODIFY_JOB_PROJECT)
-	@Command("job|jobs edit project <job> <project>")
+	@Command("project <job> <project>")
 	public void onEditProject(final @NonNull CommandSender sender,
 							  @Argument(value = "job", description = "Job") final @NonNull Job job,
 							  @Argument(value = "project", description = "Project") final @NonNull Project project
@@ -63,10 +64,9 @@ public class JobEditCommand {
 
 	@CommandDescription("Edit a job's location")
 	@Permission(CommandPermissions.MODIFY_JOB_LOCATION)
-	@Command("job|jobs edit location <job>")
+	@Command("location <job>")
 	public void onEditLocation(final @NonNull Player player,
-							   @Argument(value = "job", description = "Job") final @NonNull Job job
-	) {
+							   @Argument(value = "job", description = "Job") final @NonNull Job job) {
 		job.setLocation(player.getLocation());
 		player.sendMessage("Set job location to your current on");
 		plugin.getStorage().updateJob(job);
@@ -74,7 +74,7 @@ public class JobEditCommand {
 
 	@CommandDescription("Edit a job's status")
 	@Permission(CommandPermissions.MODIFY_JOB_STATUS)
-	@Command("job|jobs edit status <job> <status>")
+	@Command("status <job> <status>")
 	public void onEditStatus(final @NonNull CommandSender sender,
 							 @Argument(value = "job", description = "Job") final @NonNull Job job,
 							 @Argument(value = "status", description = "Status") final @NonNull JobStatus status
@@ -86,7 +86,7 @@ public class JobEditCommand {
 
 	@CommandDescription("Edit a job's category")
 	@Permission(CommandPermissions.MODIFY_JOB_CATEGORY)
-	@Command("job|jobs edit category <job> <category>")
+	@Command("category <job> <category>")
 	public void onEditCategory(final @NonNull CommandSender sender,
 							   @Argument(value = "job", description = "Job") final @NonNull Job job,
 							   @Argument(value = "category", description = "Category") final @NonNull JobCategory category
