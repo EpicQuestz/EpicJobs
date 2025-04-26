@@ -49,6 +49,7 @@ import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_TAKEN;
 import static com.epicquestz.epicjobs.constants.Messages.CREATING_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_ASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_BEEN_ASSIGNED_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.HAS_UNASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_ABANDONED;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_ASSIGNED;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_COMPLETE;
@@ -542,6 +543,7 @@ public class JobCommand {
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.TAKEN)) {
                     plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(job::abandon);
+					HAS_UNASSIGNED_JOB.send(player, job.getId());
                     return true;
                 } else {
                     JOB_CANT_BE_UNASSIGNED.send(player);

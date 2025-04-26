@@ -39,6 +39,7 @@ public enum Messages {
     JOB_NOT_DONE("§cThis job is not marked as done or complete."),
 
     // Jobs Un-assign
+    HAS_UNASSIGNED_JOB("§6You have un-assigned the player from job §b#%s."),
     JOB_CANT_BE_UNASSIGNED("§cYou can only un-assign incomplete jobs taken by a player."),
 
     // Jobs Assign,
