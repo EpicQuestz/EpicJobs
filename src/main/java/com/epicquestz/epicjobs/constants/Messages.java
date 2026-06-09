@@ -72,6 +72,7 @@ public enum Messages {
     // Jobs Stats
     MUST_BE_PLAYER(Role.ERROR, "You must be a player to use this command."),
     COMPLETED_JOBS_COUNT(Role.INFO, "Completed jobs: <em><arg1></em>"),
+    TARGET_COMPLETED_JOBS_COUNT(Role.INFO, "<em><arg1></em>'s completed jobs: <em><arg2></em>"),
 
     // Jobs Edit
     JOB_CLAIMANT_SET(Role.SUCCESS, "Set claimant of job to: <em><arg1></em>"),
