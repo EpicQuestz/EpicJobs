@@ -299,9 +299,9 @@ public class JobCommand {
 	public void onInfo(final @NonNull CommandSender sender,
 					   @Argument(value = "job", description = "Job") final @NonNull Job job) {
 		final TextComponent text = Component.text()
-			.content("Job #" + job.getId() + " — " + job.getProject().getName() + "\n").color(Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, true)
+			.content("Job #" + job.getId() + " @ ").color(Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, true)
 			.append(Component.text(
-				String.format("[%s x:%s y:%s z:%s]\n",
+				String.format("[%s x:%s y:%s z:%s]\n\n",
 					job.getLocation().getWorld().getName(),
 					job.getLocation().getBlockX(),
 					job.getLocation().getBlockY(),
@@ -309,10 +309,11 @@ public class JobCommand {
 				), Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/job teleport " + job.getId())))
 			.append(Component.text()
 				.decoration(TextDecoration.BOLD, false)
-				.append(Component.text("Category: ", Palette.MUTED)).append(Component.text(job.getJobCategory().toString(), Palette.Role.INFO.body()))
-				.append(Component.text("   Status: ", Palette.MUTED)).append(Component.text(job.getJobStatus().toString() + "\n", Palette.Role.INFO.body()))
+				.append(Component.text("Project: ", Palette.MUTED)).append(Component.text(job.getProject().getName(), Palette.Role.INFO.body()))
+				.append(Component.text(" Category: ", Palette.MUTED)).append(Component.text(job.getJobCategory().toString(), Palette.Role.INFO.body()))
+				.append(Component.text(" Status: ", Palette.MUTED)).append(Component.text(job.getJobStatus().toString() + "\n", Palette.Role.INFO.body()))
 				.append(Component.text("Leader: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(job.getCreator()), Palette.Role.INFO.body()))
-				.append(Component.text("   Claimant: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n", Palette.Role.INFO.body()))
+				.append(Component.text(" Claimant: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n\n", Palette.Role.INFO.body()))
 				.append(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true)))
 			.build();
 		sender.sendMessage(Component.empty());
