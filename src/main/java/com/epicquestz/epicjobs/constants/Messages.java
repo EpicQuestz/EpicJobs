@@ -26,6 +26,7 @@ public enum Messages {
     PLAYER_HAS_NO_JOBS(Role.WARNING, "You have no claimed jobs!\n<muted>Use <em>/job check</em> to see if there are any available to claim.</muted>"),
     PLAYER_HAS_MULITPLE_JOBS(Role.WARNING, "You have more than one job.\n<muted>Please specify a job to continue.</muted>"),
     PLAYER_HASNT_CLAIMED_JOB(Role.ERROR, "You have not claimed this job."),
+    TARGET_HAS_NO_JOBS(Role.WARNING, "<em><arg1></em> has not claimed any jobs."),
 
     // Jobs Claim
     ANNOUNCE_JOB_TAKEN(Role.SUCCESS, "<em><arg1></em> has claimed job <em>#<arg2></em>."),
