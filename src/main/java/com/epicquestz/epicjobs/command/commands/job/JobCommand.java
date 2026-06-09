@@ -139,7 +139,7 @@ public class JobCommand {
             });
             guiItems.add(guiItem);
         }
-        final ChestGui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems);
+        final ChestGui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems, null);
         gui.show(player);
     }
 
@@ -211,7 +211,7 @@ public class JobCommand {
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
-        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Status", projectItem, statusItem);
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Status", null, projectItem, statusItem);
         gui.show(player);
     }
 
