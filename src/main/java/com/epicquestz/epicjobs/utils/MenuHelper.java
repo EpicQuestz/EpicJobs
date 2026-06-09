@@ -12,8 +12,8 @@ import java.util.List;
 
 public class MenuHelper {
 
-    public static ChestGui getStaticSelectionGui(final String name, final  GuiItem... guiItems) {
-        final ChestGui gui = new ChestGui(1, name);
+    public static ChestGui getStaticSelectionGui(final String name, final GuiItem backItem, final GuiItem... guiItems) {
+        final ChestGui gui = new ChestGui(backItem == null ? 1 : 2, name);
         int startPos = guiItems.length > 5 ? 0 : 5 - guiItems.length;
         final int incrementAmount = guiItems.length > 5 ? 1 : 2;
         for (final GuiItem guiItem : guiItems) {
@@ -22,14 +22,24 @@ public class MenuHelper {
             gui.addPane(staticPane);
             startPos += incrementAmount;
         }
+        if (backItem != null) {
+            final StaticPane backPane = new StaticPane(0, 1, 1, 1);
+            backPane.addItem(backItem, 0, 0);
+            gui.addPane(backPane);
+        }
         return gui;
     }
 
-    public static ChestGui getPaginatedSelectionGui(final String name, final List<GuiItem> guiItems) {
-        final ChestGui gui = new ChestGui(3, name);
+    public static ChestGui getPaginatedSelectionGui(final String name, final List<GuiItem> guiItems, final GuiItem backItem) {
+        final ChestGui gui = new ChestGui(backItem == null ? 3 : 4, name);
         final PaginatedPane pagination = new PaginatedPane(0, 0, 9, 3);
         pagination.populateWithGuiItems(guiItems);
         gui.addPane(pagination);
+        if (backItem != null) {
+            final StaticPane backPane = new StaticPane(0, 3, 1, 1);
+            backPane.addItem(backItem, 0, 0);
+            gui.addPane(backPane);
+        }
         return gui;
     }
 

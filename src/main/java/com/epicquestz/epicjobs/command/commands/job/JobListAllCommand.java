@@ -62,8 +62,15 @@ public class JobListAllCommand {
             sendCategoryMenu(player);
         });
 
-        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Filter", projectItem, statusItem, categoryItem);
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Filter", null, projectItem, statusItem, categoryItem);
         gui.show(player);
+    }
+
+    private GuiItem getBackItem(final Player player) {
+        return new GuiItem(BACK_BUTTON, inventoryClickEvent -> {
+            inventoryClickEvent.setResult(Event.Result.DENY);
+            sendSelectionMenu(player);
+        });
     }
 
     private void sendProjectMenu(final Player player) {
@@ -87,13 +94,13 @@ public class JobListAllCommand {
                         final List<Job> jobs = plugin.getJobManager().getJobs().stream()
                                 .filter(job -> job.getProject().equals(project))
                                 .collect(Collectors.toList());
-                        sendJobMenu(player, jobs);
+                        sendJobMenu(player, jobs, () -> sendProjectMenu(player));
                         break;
                 }
             });
             guiItems.add(guiItem);
         }
-        final ChestGui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems);
+        final ChestGui gui = MenuHelper.getPaginatedSelectionGui("Current Projects", guiItems, getBackItem(player));
         gui.show(player);
     }
 
@@ -105,11 +112,11 @@ public class JobListAllCommand {
                 final List<Job> jobs = plugin.getJobManager().getJobs().stream()
                         .filter(job -> job.getJobStatus().equals(jobStatus))
                         .collect(Collectors.toList());
-                sendJobMenu(player, jobs);
+                sendJobMenu(player, jobs, () -> sendStatusMenu(player));
             });
             guiItems.add(guiItem);
         }
-        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Status", guiItems.toArray(new GuiItem[guiItems.size()]));
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Status", getBackItem(player), guiItems.toArray(new GuiItem[guiItems.size()]));
         gui.show(player);
     }
 
@@ -121,15 +128,15 @@ public class JobListAllCommand {
                 final List<Job> jobs = plugin.getJobManager().getJobs().stream()
                         .filter(job -> job.getJobCategory().equals(jobCategory))
                         .collect(Collectors.toList());
-                sendJobMenu(player, jobs);
+                sendJobMenu(player, jobs, () -> sendCategoryMenu(player));
             });
             guiItems.add(guiItem);
         }
-        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Category", guiItems.toArray(new GuiItem[guiItems.size()]));
+        final ChestGui gui = MenuHelper.getStaticSelectionGui("Select Job Category", getBackItem(player), guiItems.toArray(new GuiItem[guiItems.size()]));
         gui.show(player);
     }
 
-    private void sendJobMenu(final Player player, final List<Job> jobs) {
+    private void sendJobMenu(final Player player, final List<Job> jobs, final Runnable backAction) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
             final ItemStack itemStack = JobItemHelper.getJobItem(job, "<muted>Shift-click to <em>teleport</em>", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
@@ -151,7 +158,7 @@ public class JobListAllCommand {
 
         final GuiItem mainMenuItem = new GuiItem(BACK_BUTTON, inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
-            sendSelectionMenu(player);
+            backAction.run();
         });
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)

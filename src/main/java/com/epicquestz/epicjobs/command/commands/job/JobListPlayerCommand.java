@@ -96,7 +96,7 @@ public class JobListPlayerCommand {
 			guiItems.add(guiItem);
 		}
 
-		final ChestGui gui = MenuHelper.getStaticSelectionGui(targetName + "'s Jobs", guiItems.toArray(new GuiItem[0]));
+		final ChestGui gui = MenuHelper.getStaticSelectionGui(targetName + "'s Jobs", null, guiItems.toArray(new GuiItem[0]));
 		gui.show(player);
 	}
 
