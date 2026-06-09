@@ -94,7 +94,7 @@ public class JobCommand {
 	@Command("list|ls near [radius]")
 	public void onListNear(final @NonNull Player player,
 						   @Argument(value = "radius", description = "Radius") @Default(value = "32") final int radius) {
-		final int clampedRadius = Math.max(1, Math.min(radius, 512));
+		final int clampedRadius = Math.clamp(radius, 1, 512);
 		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
             .filter(job -> job.getLocation().getWorld().equals(player.getWorld()))
@@ -369,7 +369,7 @@ public class JobCommand {
 
 				if (job == null) {
 					if (playerJobs.size() == 1) {
-						jobEdited = playerJobs.get(0);
+						jobEdited = playerJobs.getFirst();
 					} else {
 						if (playerJobs.isEmpty()) {
 							PLAYER_HAS_NO_JOBS.send(player);
@@ -408,10 +408,10 @@ public class JobCommand {
 
                 if (job == null) {
                     if (jobs.size() == 1) {
-                            jobEdited = jobs.get(0);
+                            jobEdited = jobs.getFirst();
                         if (jobEdited.getJobStatus().equals(JobStatus.TAKEN)) {
                             jobEdited.setJobStatus(JobStatus.DONE);
-                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.get(0).getId());
+                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.getFirst().getId());
                         } else {
                             JOB_HAS_TO_BE_ACTIVE.send(player);
                         }

@@ -50,7 +50,7 @@ public class TeleportJobCommand {
 		}
 
 		if (jobs.size() == 1) {
-			jobs.get(0).teleport(player);
+			jobs.getFirst().teleport(player);
 			return;
 		}
 
