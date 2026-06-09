@@ -5,12 +5,10 @@ import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.user.User;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.annotations.suggestion.Suggestions;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -56,8 +54,7 @@ public class SuggestionProvider {
 
 	@Suggestions("all-offline-players")
 	public Stream<String> allOfflinePlayers() {
-		return Arrays.stream(plugin.getServer().getOfflinePlayers())
-				.map(OfflinePlayer::getName);
+		return plugin.getPlayerCache().getNames().stream();
 	}
 
 }

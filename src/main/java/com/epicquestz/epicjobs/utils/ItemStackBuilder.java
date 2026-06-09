@@ -1,7 +1,9 @@
 package com.epicquestz.epicjobs.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -15,7 +17,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class ItemStackBuilder {
 
@@ -34,51 +35,71 @@ public class ItemStackBuilder {
         return this;
     }
 
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+
+    /**
+     * Parses MiniMessage and disables the italic styling Minecraft applies to item names/lore
+     * by default (unless the text explicitly requests italics).
+     */
+    private static Component deserialize(final String miniMessage) {
+        return MINI_MESSAGE.deserialize(miniMessage).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+    }
+
     public ItemStackBuilder withName(final String name) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        meta.setDisplayName(Utils.color(name));
+        meta.displayName(deserialize(name));
         ITEM_STACK.setItemMeta(meta);
         return this;
     }
 
-    public ItemStackBuilder withLore(final String name) {
+    public ItemStackBuilder withLore(final String line) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        List<String> lore = meta.getLore();
-        if (lore == null) {
-            lore = new ArrayList<>();
-        }
-        lore.add(Utils.color(name));
-        meta.setLore(lore);
+        final List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
+        lore.add(deserialize(line));
+        meta.lore(lore);
         ITEM_STACK.setItemMeta(meta);
         return this;
     }
 
-    public ItemStackBuilder withLineBreakLore(final ChatColor chatColor, final String name) {
+    public ItemStackBuilder withName(final Component name) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        List<String> lore = meta.getLore();
-        if (lore == null) {
-            lore = new ArrayList<>();
-        }
+        meta.displayName(name.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
+        ITEM_STACK.setItemMeta(meta);
+        return this;
+    }
 
-        final String[] words = name.split(" ");
+    public ItemStackBuilder withLore(final Component line) {
+        final ItemMeta meta = ITEM_STACK.getItemMeta();
+        final List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
+        lore.add(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
+        meta.lore(lore);
+        ITEM_STACK.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemStackBuilder withLineBreakLore(final TextColor color, final String text) {
+        final ItemMeta meta = ITEM_STACK.getItemMeta();
+        final List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
+
+        final String[] words = text.split(" ");
         StringBuilder line = new StringBuilder(words[0]);
         if (words.length > 1) {
             for (int i = 1; i < words.length; i++) {
                 if (line.length() <= 32) {
                     line.append(" ").append(words[i]);
                 } else {
-                    lore.add(chatColor + line.toString());
+                    lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, false));
                     line = new StringBuilder(words[i]);
                 }
                 if (i == words.length - 1) {
-                    lore.add(chatColor + line.toString());
+                    lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, false));
                 }
             }
         } else {
-            lore.add(chatColor + line.toString());
+            lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, false));
         }
 
-        meta.setLore(lore);
+        meta.lore(lore);
         ITEM_STACK.setItemMeta(meta);
         return this;
     }
@@ -112,19 +133,6 @@ public class ItemStackBuilder {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public ItemStackBuilder setSkullOwner(final UUID uuid) {
-        final Material type = ITEM_STACK.getType();
-        if (type == Material.PLAYER_HEAD) {
-            final ItemMeta meta = ITEM_STACK.getItemMeta();
-            final SkullMeta skullMeta = (SkullMeta) meta;
-            skullMeta.setOwner(Bukkit.getPlayer(uuid).getName());
-            return this;
-        } else {
-            throw new IllegalArgumentException("withSkullOwner is only applicable for skulls!");
-        }
-    }
-
     public ItemStackBuilder withModel(final int model) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         meta.setCustomModelData(model);
@@ -150,7 +158,7 @@ public class ItemStackBuilder {
 
     public ItemStackBuilder clearLore() {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
-        meta.setLore(new ArrayList<String>());
+        meta.lore(new ArrayList<>());
         ITEM_STACK.setItemMeta(meta);
         return this;
     }

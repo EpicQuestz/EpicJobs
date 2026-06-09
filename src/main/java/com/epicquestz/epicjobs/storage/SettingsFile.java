@@ -41,7 +41,7 @@ public class SettingsFile {
         }
     }
 
-    private static final String DATA_SOURCE_CLASS = "org.mariadb.jdbc.MySQLDataSource";
+    private static final String DATA_SOURCE_CLASS = "org.mariadb.jdbc.MariaDbDataSource";
 
     // https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing
     private static final int MAXIMUM_POOL_SIZE = (Runtime.getRuntime().availableProcessors() * 2) + 1;
@@ -60,9 +60,7 @@ public class SettingsFile {
         hikariDataSource.setPoolName("EpicJobs");
 
         hikariDataSource.setDataSourceClassName(DATA_SOURCE_CLASS);
-        hikariDataSource.addDataSourceProperty("serverName", address.split(":")[0]);
-        hikariDataSource.addDataSourceProperty("port", address.split(":")[1]);
-        hikariDataSource.addDataSourceProperty("databaseName", database);
+        hikariDataSource.addDataSourceProperty("url", "jdbc:mariadb://" + address + "/" + database);
         hikariDataSource.addDataSourceProperty("user", username);
         hikariDataSource.addDataSourceProperty("password", password);
 
@@ -72,9 +70,6 @@ public class SettingsFile {
         hikariDataSource.setMaxLifetime(MAX_LIFETIME);
         hikariDataSource.setConnectionTimeout(CONNECTION_TIMEOUT);
         hikariDataSource.setLeakDetectionThreshold(LEAK_DETECTION_THRESHOLD);
-
-        // ensure we use unicode (this calls #setProperties, a hack for the mariadb driver)
-        hikariDataSource.addDataSourceProperty("properties", "useUnicode=true;characterEncoding=utf8");
 
         return hikariDataSource;
     }

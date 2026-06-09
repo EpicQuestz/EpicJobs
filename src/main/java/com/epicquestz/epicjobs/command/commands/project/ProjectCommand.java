@@ -4,6 +4,7 @@ import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
+import com.epicquestz.epicjobs.utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
@@ -75,9 +76,9 @@ public class ProjectCommand {
 				.lastSeparator(Component.text(" and ", NamedTextColor.GOLD))
 				.build();
 		final Component message = Component.join(joinConfiguration, textComponents);
-		sender.sendMessage("");
+		sender.sendMessage(Component.empty());
 		sender.sendMessage(message);
-		sender.sendMessage("");
+		sender.sendMessage(Component.empty());
 	}
 
 	@CommandDescription("Create a project")
@@ -104,8 +105,11 @@ public class ProjectCommand {
                 return project;
             })
             .syncLast((project) -> {
-                final String message = (project == null) ? "§cError while creating project. Please contact an administrator." : SUCCESSFULLY_CREATED_PROJECT.toString(project.getId());
-                player.sendMessage(message);
+                if (project == null) {
+                    player.sendMessage(Utils.mini("<red>Error while creating project. Please contact an administrator.</red>"));
+                } else {
+                    SUCCESSFULLY_CREATED_PROJECT.send(player, project.getId());
+                }
             })
             .execute();
 	}
@@ -127,10 +131,10 @@ public class ProjectCommand {
 			.syncFirst(() -> {
 				if (!project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
 					project.setProjectStatus(ProjectStatus.PAUSED);
-					sender.sendMessage("Paused project " + project.getName());
+					sender.sendMessage(Component.text("Paused project " + project.getName()));
 					return true;
 				} else {
-					sender.sendMessage("Project is already paused.");
+					sender.sendMessage(Component.text("Project is already paused."));
 					return false;
 				}
 			})
@@ -148,10 +152,10 @@ public class ProjectCommand {
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
                     project.setProjectStatus(ProjectStatus.ACTIVE);
-                    sender.sendMessage("Unpaused project " + project.getName());
+                    sender.sendMessage(Component.text("Unpaused project " + project.getName()));
                     return true;
                 } else {
-					sender.sendMessage("Project is not paused.");
+					sender.sendMessage(Component.text("Project is not paused."));
                     return false;
                 }
             })

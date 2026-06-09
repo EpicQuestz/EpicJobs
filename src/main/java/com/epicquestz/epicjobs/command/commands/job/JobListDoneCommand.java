@@ -7,6 +7,7 @@ import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.utils.ItemStackBuilder;
 import com.epicquestz.epicjobs.utils.JobItemHelper;
 import com.epicquestz.epicjobs.utils.MenuHelper;
+import net.kyori.adventure.text.Component;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import org.bukkit.Bukkit;
@@ -44,7 +45,7 @@ public class JobListDoneCommand {
 	private void sendJobMenu(final Player player, final String title, final List<Job> jobs) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
-            final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift left-click to mark §lcomplete", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
+            final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift left-click to mark <bold>complete", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
@@ -58,7 +59,7 @@ public class JobListDoneCommand {
                         job.teleport(player);
                         break;
                     case RIGHT:
-                        player.sendMessage(job.getDescription());
+                        player.sendMessage(Component.text(job.getDescription()));
                         break;
                 }
             });
@@ -66,10 +67,10 @@ public class JobListDoneCommand {
         }
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("§f§lInformation")
-            .withLore("§7Mark job as §lcomplete §7by using shift left-click")
-            .withLore("§7§lReopen §7job by using shift right-click")
-            .withLore("§7Click to §lview job info")
+            .withName("<white><bold>Information")
+            .withLore("<gray>Mark job as <bold>complete</bold> by using shift left-click")
+            .withLore("<gray><bold>Reopen</bold> job by using shift right-click")
+            .withLore("<gray>Click to <bold>view job info")
             .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, null, infoBook);

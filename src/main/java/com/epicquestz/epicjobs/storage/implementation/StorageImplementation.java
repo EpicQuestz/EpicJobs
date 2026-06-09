@@ -21,6 +21,17 @@ public interface StorageImplementation {
 
     User loadPlayer(UUID uniqueId);
 
+    /**
+     * Loads every known player into the {@link com.epicquestz.epicjobs.user.PlayerCache}.
+     * Used to resolve names &lt;-&gt; UUIDs for offline players (e.g. /job assign).
+     */
+    void loadAllPlayers();
+
+    /**
+     * Inserts or updates a player's cached name and last-seen time.
+     */
+    void savePlayer(UUID uniqueId, String name);
+
     Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus);
 
     Project loadProject(int id);

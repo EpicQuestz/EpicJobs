@@ -21,8 +21,10 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,6 +42,7 @@ import org.incendo.cloud.annotations.Permission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMENT;
@@ -72,7 +75,7 @@ import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_REMOVED_JO
 @Command("job|jobs")
 public class JobCommand {
 
-	private static final ItemStack BACK_BUTTON = Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "§f§lBack");
+	private static final ItemStack BACK_BUTTON = Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "<white><bold>Back");
 
 	private final EpicJobs plugin;
 
@@ -84,7 +87,6 @@ public class JobCommand {
 	@Permission(CommandPermissions.LIST_JOBS)
 	@Command("list|ls")
 	public void onList(final @NonNull Player player) {
-		final List<Job> jobs = plugin.getJobManager().getJobs();
 		sendProjectMenu(player);
 	}
 
@@ -92,13 +94,14 @@ public class JobCommand {
 	@Permission(CommandPermissions.LIST_JOBS)
 	@Command("list|ls near [radius]")
 	public void onListNear(final @NonNull Player player,
-						   @Argument(value = "radius", description = "Radius") @Default(value = "32") final @NonNull int radius) {
+						   @Argument(value = "radius", description = "Radius") @Default(value = "32") final int radius) {
+		final int clampedRadius = Math.max(1, Math.min(radius, 512));
 		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.OPEN))
             .filter(job -> job.getLocation().getWorld().equals(player.getWorld()))
-            .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < radius * radius)
+            .filter(job -> job.getLocation().distanceSquared(player.getLocation()) < (double) clampedRadius * clampedRadius)
             .collect(Collectors.toList());
-        sendJobMenu(player, "Available jobs (range " + radius + ")", null, jobs);
+        sendJobMenu(player, "Available jobs (range " + clampedRadius + ")", null, jobs);
 	}
 
 	private void sendProjectMenu(final Player player) {
@@ -110,9 +113,9 @@ public class JobCommand {
         final List<Project> projects = plugin.getProjectManager().getProjects().stream().filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE)).toList();
         for (final Project project : projects) {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
-                .withName("§f§l" + project.getName())
-                .withLore("§7Shift-click to teleport")
-                .withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeader()))
+                .withName(Component.text(project.getName(), NamedTextColor.WHITE, TextDecoration.BOLD))
+                .withLore("<gray>Shift-click to teleport")
+                .withLore("<white><bold>Leader: </bold>" + Utils.getPlayerHolderText(project.getLeader()))
                 .build();
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
@@ -140,7 +143,7 @@ public class JobCommand {
 	private void sendJobMenu(final Player player, final String title, final GuiItem mainMenuItem, final List<Job> jobs) {
 		final List<GuiItem> guiItems = new ArrayList<>();
 		for (final Job job : jobs) {
-			final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift-click to §lclaim", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+			final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift-click to <bold>claim", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
 			final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
 				inventoryClickEvent.setResult(Event.Result.DENY);
 				switch (inventoryClickEvent.getClick()) {
@@ -154,7 +157,7 @@ public class JobCommand {
 						job.teleport(player);
 						break;
 					case RIGHT:
-						player.sendMessage(job.getDescription());
+						player.sendMessage(Component.text(job.getDescription()));
 						break;
 				}
 			});
@@ -162,10 +165,10 @@ public class JobCommand {
 		}
 
 		final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("§f§lInformation")
-            .withLore("§7§lClaim §7job by using shift-click")
-            .withLore("§7§lTeleport §7by using left-click")
-            .withLore("§7To §lview job info §7right-click")
+            .withName("<white><bold>Information")
+            .withLore("<gray><bold>Claim</bold> job by using shift-click")
+            .withLore("<gray><bold>Teleport</bold> by using left-click")
+            .withLore("<gray>To <bold>view job info</bold> right-click")
             .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
@@ -193,13 +196,13 @@ public class JobCommand {
             sendStatusSelectionMenu(player, user);
         });
 
-        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("§f§lActive Jobs").build(), inventoryClickEvent -> {
+        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("<white><bold>Active Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             final List<Job> jobs = user.getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.TAKEN) || job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
-        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("§f§lCompleted Jobs").build(), inventoryClickEvent -> {
+        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("<white><bold>Completed Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             final List<Job> jobs = user.getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.COMPLETE)).collect(Collectors.toList());
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
@@ -215,7 +218,7 @@ public class JobCommand {
             GuiItem guiItem = null;
             switch (job.getJobStatus()) {
                 case TAKEN: {
-                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift left-click to mark §ldone\n§7Shift right-click to mark §labandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift left-click to mark <bold>done\n<gray>Shift right-click to mark <bold>abandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
                     guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                         inventoryClickEvent.setResult(Event.Result.DENY);
                         switch (inventoryClickEvent.getClick()) {
@@ -233,13 +236,13 @@ public class JobCommand {
                                 job.teleport(player);
                                 break;
                             case RIGHT:
-                                player.sendMessage(job.getDescription());
+                                player.sendMessage(Component.text(job.getDescription()));
                                 break;
                         }
                     });
                 } break;
                 case DONE: {
-                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift right-click to mark §labandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift right-click to mark <bold>abandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
                     guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                         inventoryClickEvent.setResult(Event.Result.DENY);
                         switch (inventoryClickEvent.getClick()) {
@@ -253,13 +256,13 @@ public class JobCommand {
                                 job.teleport(player);
                                 break;
                             case RIGHT:
-                                player.sendMessage(job.getDescription());
+                                player.sendMessage(Component.text(job.getDescription()));
                                 break;
                         }
                     });
                 } break;
                 case COMPLETE: {
-                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift-click to §lteleport", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift-click to <bold>teleport", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
                     guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                         inventoryClickEvent.setResult(Event.Result.DENY);
                         switch (inventoryClickEvent.getClick()) {
@@ -269,7 +272,7 @@ public class JobCommand {
                                 break;
                             case LEFT:
                             case RIGHT:
-                                player.sendMessage(job.getDescription());
+                                player.sendMessage(Component.text(job.getDescription()));
                                 break;
                         }
                     });
@@ -279,53 +282,13 @@ public class JobCommand {
         }
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("§f§lInformation")
-            .withLore("§7None :-)")
+            .withName("<white><bold>Information")
+            .withLore("<gray>None :-)")
             .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
         gui.show(player);
     }
-
-//	@CommandDescription("List jobs by project")
-//	@Command("job|jobs list|ls project <project> [status] [category]")
-//	public void onListProject(final @NonNull CommandSender sender,
-//							  @Argument(value = "project", description = "Project") final @NonNull Project project,
-//							  @Argument(value = "status", description = "Status") @Default(value = "OPEN") final @Nullable JobStatus jobStatus,
-//							  @Argument(value = "category", description = "Category") @Default(value = "ALL") final @Nullable JobCategory jobCategory)
-//	{
-//		Stream<Job> jobStream = plugin.getJobManager().getJobs().stream().filter(job -> job.getProject().equals(project));
-//        if (jobStatus != null)
-//            jobStream = jobStream.filter(job -> job.getJobStatus().equals(jobStatus));
-//        if (jobCategory != null)
-//            jobStream = jobStream.filter(job -> job.getJobCategory().equals(jobCategory));
-//        final List<Job> jobs = jobStream.limit(20).toList();
-////        sendJobList(commandSender, jobs);
-//	}
-//
-//	@CommandDescription("List jobs by status")
-//	@Command("job|jobs list|ls status <status>")
-//	public void onListStatus(final @NonNull CommandSender sender,
-//							 @Argument(value = "status", description = "Status") final @NonNull JobStatus jobStatus)
-//	{
-//		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-//			.filter(job -> job.getJobStatus().equals(jobStatus))
-//			.limit(20)
-//			.toList();
-////		sendJobList(commandSender, jobs);
-//	}
-//
-//	@CommandDescription("List jobs by category")
-//	@Command("job|jobs list|ls category <category>")
-//	public void onListCategory(final @NonNull CommandSender sender,
-//							   @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory)
-//	{
-//		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
-//			.filter(job -> job.getJobCategory().equals(jobCategory))
-//			.limit(20)
-//			.toList();
-////		sendJobList(commandSender, jobs);
-//	}
 
 	@CommandDescription("Show job info")
 	@Permission(CommandPermissions.JOB_INFO)
@@ -348,9 +311,9 @@ public class JobCommand {
 			.append(Component.text(" Claimant: ", NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n", NamedTextColor.YELLOW))
 			.append(Component.text("Description: ", NamedTextColor.GOLD)).append(Component.text(job.getDescription(), NamedTextColor.YELLOW))
 			.build();
-		sender.sendMessage("");
+		sender.sendMessage(Component.empty());
 		sender.sendMessage(text);
-		sender.sendMessage("");
+		sender.sendMessage(Component.empty());
 	}
 
 	@CommandDescription("Claim a job")
@@ -437,7 +400,7 @@ public class JobCommand {
             .syncFirst(() -> {
                 final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
 				if (optional.isEmpty()) {
-					player.sendMessage("§cCould not find your profile. Please contact an administrator.");
+					player.sendMessage(Utils.mini("<red>Could not find your profile. Please contact an administrator.</red>"));
 					return null;
 				}
                 final User user = optional.get();
@@ -509,10 +472,12 @@ public class JobCommand {
                 switch (job.getJobStatus()) {
                     case COMPLETE:
                     case TAKEN:
+                        final UUID previousClaimant = job.getClaimant();
                         job.setJobStatus(JobStatus.OPEN);
                         job.setClaimant(null);
-                        final Optional<User> epicJobsPlayer = plugin.getEpicJobsPlayer(job.getClaimant());
-                        epicJobsPlayer.ifPresent(jobsPlayer -> jobsPlayer.removeJob(job));
+                        if (previousClaimant != null) {
+                            plugin.getEpicJobsPlayer(previousClaimant).ifPresent(jobsPlayer -> jobsPlayer.removeJob(job));
+                        }
                         ANNOUNCE_JOB_REOPEN.send(player, player.getName(), job.getId());
                         return true;
                     case DONE:
@@ -542,7 +507,12 @@ public class JobCommand {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.TAKEN)) {
-                    plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(job::abandon);
+                    final UUID claimant = job.getClaimant();
+                    job.setClaimant(null);
+                    job.setJobStatus(JobStatus.OPEN);
+                    if (claimant != null) {
+                        plugin.getEpicJobsPlayer(claimant).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
+                    }
 					HAS_UNASSIGNED_JOB.send(player, job.getId());
                     return true;
                 } else {
@@ -560,14 +530,20 @@ public class JobCommand {
 	@Command("assign <job> <player>")
 	public void onAssign(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job,
-						 @Argument(value = "player", description = "Player") final @NonNull Player target
+						 @Argument(value = "player", description = "Player") final @NonNull OfflinePlayer target
 	) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.OPEN)) {
-                    plugin.getEpicJobsPlayer(target.getUniqueId()).ifPresent(job::claim);
-                    HAS_ASSIGNED_JOB.send(player, target.getName(), job.getId());
-                    HAS_BEEN_ASSIGNED_JOB.send(target, job.getId());
+                    job.setClaimant(target.getUniqueId());
+                    job.setJobStatus(JobStatus.TAKEN);
+                    // keep the in-memory profile in sync if the target is currently online
+                    plugin.getEpicJobsPlayer(target.getUniqueId()).ifPresent(epicJobsPlayer -> epicJobsPlayer.addJob(job));
+                    HAS_ASSIGNED_JOB.send(player, Utils.getPlayerHolderText(target.getUniqueId()), job.getId());
+                    final Player onlineTarget = target.getPlayer();
+                    if (onlineTarget != null) {
+                        HAS_BEEN_ASSIGNED_JOB.send(onlineTarget, job.getId());
+                    }
                     return true;
                 } else {
                     JOB_CANT_BE_ASSIGNED.send(player);
@@ -598,14 +574,15 @@ public class JobCommand {
                 }
             })
             .abortIf(false)
-            .asyncFirst(() -> {
-                final Job job = plugin.getStorage().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory);
-                plugin.getJobManager().addJob(job);
-                return job;
-            })
+            .asyncFirst(() -> plugin.getStorage().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory))
             .syncLast((job) -> {
-                final String message = (job == null) ? "§cError while creating job. Please contact an administrator." : SUCCESSFULLY_CREATED_JOB.toString(job.getId());
-                player.sendMessage(message);
+                if (job == null) {
+                    player.sendMessage(Utils.mini("<red>Error while creating job. Please contact an administrator.</red>"));
+                    return;
+                }
+                plugin.getJobManager().addJob(job); // register on the main thread
+                job.getProject().addJob(job);
+                SUCCESSFULLY_CREATED_JOB.send(player, job.getId());
             })
             .execute();
 	}
@@ -638,16 +615,16 @@ public class JobCommand {
 		} else if (sender instanceof Player) {
 			player = (Player) sender;
 		} else {
-			sender.sendMessage("§cYou must be a player to use this command.");
+			sender.sendMessage(Utils.mini("<red>You must be a player to use this command.</red>"));
 			return;
 		}
 
 		final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
 		if (optional.isEmpty()) {
-			player.sendMessage("§cError while loading player data. Please contact an administrator.");
+			player.sendMessage(Utils.mini("<red>Error while loading player data. Please contact an administrator.</red>"));
 			return;
 		}
-        player.sendMessage("Completed jobs: " + optional.get().getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.COMPLETE)).toList().size());
+        player.sendMessage(Component.text("Completed jobs: " + optional.get().getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.COMPLETE)).toList().size()));
 	}
 
 }

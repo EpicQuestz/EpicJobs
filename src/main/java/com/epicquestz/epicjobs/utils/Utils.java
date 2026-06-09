@@ -2,16 +2,17 @@ package com.epicquestz.epicjobs.utils;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.job.Job;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,27 +42,26 @@ public class Utils {
     }
 
     public static String getPlayerHolderText(@Nullable final UUID uuid) {
-        if (uuid == null) return "§oNone";
-        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-        return offlinePlayer.getName();
+        if (uuid == null) return "None";
+        final String cached = EpicJobs.get().getPlayerCache().getName(uuid);
+        if (cached != null) return cached;
+        final String name = Bukkit.getOfflinePlayer(uuid).getName();
+        return name != null ? name : "Unknown";
     }
 
-    public static String color(final String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
+    public static Component mini(final String miniMessage) {
+        return MiniMessage.miniMessage().deserialize(miniMessage);
     }
 
     public static ItemStack getSkull(final String base64, final String name) {
-        final ItemStack ITEMSTACK = new ItemStack(Material.PLAYER_HEAD);
-        final ItemMeta itemMeta = ITEMSTACK.getItemMeta();
-        itemMeta.setDisplayName(name);
-        ITEMSTACK.setItemMeta(itemMeta);
-        final SkullMeta skullMeta = (SkullMeta) ITEMSTACK.getItemMeta();
+        final ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+        final SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+        skullMeta.displayName(MiniMessage.miniMessage().deserialize(name).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         final PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID());
-        final ProfileProperty profileProperty = new ProfileProperty("textures", base64);
-        playerProfile.getProperties().add(profileProperty);
+        playerProfile.getProperties().add(new ProfileProperty("textures", base64));
         skullMeta.setPlayerProfile(playerProfile);
-        ITEMSTACK.setItemMeta(skullMeta);
-        return ITEMSTACK;
+        itemStack.setItemMeta(skullMeta);
+        return itemStack;
     }
 
 }

@@ -6,6 +6,8 @@ import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobCategory;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
+import com.epicquestz.epicjobs.utils.Utils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,21 +35,21 @@ public class JobEditCommand {
 							   @Argument(value = "claimant", description = "Claimant", suggestions = "all-offline-players") final @NonNull OfflinePlayer claimant
 	) {
 		job.setClaimant(claimant.getUniqueId());
-		sender.sendMessage("Set claimant of job to: " + claimant.getName());
-		plugin.getStorage().updateJob(job);
+		sender.sendMessage(Component.text("Set claimant of job to: " + Utils.getPlayerHolderText(claimant.getUniqueId())));
+		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
 
 	@CommandDescription("Edit a job's description")
 	@Permission(CommandPermissions.MODIFY_JOB_DESCRIPTION)
 	@Command("description <job> <description>")
-	public void onList(final @NonNull CommandSender sender,
+	public void onEditDescription(final @NonNull CommandSender sender,
 					   @Argument(value = "job", description = "Job") final @NonNull Job job,
 					   @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
 	) {
 		job.setDescription(description);
-		sender.sendMessage("Set description of job to: " + description);
-        plugin.getStorage().updateJob(job);
+		sender.sendMessage(Component.text("Set description of job to: " + description));
+		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
 	@CommandDescription("Edit a job's project")
@@ -58,8 +60,8 @@ public class JobEditCommand {
 							  @Argument(value = "project", description = "Project") final @NonNull Project project
 	) {
 		job.setProject(project);
-		sender.sendMessage("Set project of job to: " + project.getName());
-		plugin.getStorage().updateJob(job);
+		sender.sendMessage(Component.text("Set project of job to: " + project.getName()));
+		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
 	@CommandDescription("Edit a job's location")
@@ -68,8 +70,8 @@ public class JobEditCommand {
 	public void onEditLocation(final @NonNull Player player,
 							   @Argument(value = "job", description = "Job") final @NonNull Job job) {
 		job.setLocation(player.getLocation());
-		player.sendMessage("Set job location to your current on");
-		plugin.getStorage().updateJob(job);
+		player.sendMessage(Component.text("Set job location to your current position"));
+		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
 	@CommandDescription("Edit a job's status")
@@ -80,8 +82,8 @@ public class JobEditCommand {
 							 @Argument(value = "status", description = "Status") final @NonNull JobStatus status
 	) {
 		job.setJobStatus(status);
-		sender.sendMessage("Set job status to: " + status.name());
-		plugin.getStorage().updateJob(job);
+		sender.sendMessage(Component.text("Set job status to: " + status.name()));
+		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
 	@CommandDescription("Edit a job's category")
@@ -92,8 +94,8 @@ public class JobEditCommand {
 							   @Argument(value = "category", description = "Category") final @NonNull JobCategory category
 	) {
 		job.setJobCategory(category);
-		sender.sendMessage("Set job category to: " + category);
-		plugin.getStorage().updateJob(job);
+		sender.sendMessage(Component.text("Set job category to: " + category));
+		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
 }

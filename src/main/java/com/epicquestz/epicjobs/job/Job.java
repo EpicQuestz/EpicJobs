@@ -35,9 +35,6 @@ public class Job {
         this.location = location;
         this.jobStatus = jobStatus;
         this.jobCategory = jobCategory;
-        if (project != null) {
-            project.addJob(this);
-        }
     }
 
     public int getId() {

@@ -20,19 +20,14 @@ public final class ProjectParser<C> implements ArgumentParser<C, Project>, Block
 			final @NonNull CommandInput commandInput
 	) {
 		final String input = commandInput.peekString();
-		try {
-			final Project project = EpicJobs.get().getProjectManager().getProjectByName(input);
+		final Project project = EpicJobs.get().getProjectManager().getProjectByName(input);
 
-			if (project == null) {
-				return ArgumentParseResult.failure(new ProjectParserException(input, commandContext));
-			}
-
-			commandInput.readString();
-			return ArgumentParseResult.success(project);
-		} catch (final NumberFormatException e) {
+		if (project == null) {
 			return ArgumentParseResult.failure(new ProjectParserException(input, commandContext));
 		}
 
+		commandInput.readString();
+		return ArgumentParseResult.success(project);
 	}
 
 	@Override

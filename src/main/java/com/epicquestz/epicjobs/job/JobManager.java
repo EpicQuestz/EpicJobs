@@ -7,6 +7,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * In-memory view of all jobs. This collection must only be mutated from the server main thread;
+ * database writes happen off-thread but never touch this list directly.
+ */
 public class JobManager {
 
     private final EpicJobs plugin;

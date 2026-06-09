@@ -11,6 +11,9 @@ import com.epicquestz.epicjobs.utils.ItemStackBuilder;
 import com.epicquestz.epicjobs.utils.JobItemHelper;
 import com.epicquestz.epicjobs.utils.MenuHelper;
 import com.epicquestz.epicjobs.utils.Utils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import org.bukkit.Bukkit;
@@ -28,7 +31,7 @@ import java.util.stream.Collectors;
 
 public class JobListAllCommand {
 
-	private static final ItemStack BACK_BUTTON = Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "§f§lBack");
+	private static final ItemStack BACK_BUTTON = Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "<white><bold>Back");
 
 	private final EpicJobs plugin;
 
@@ -44,17 +47,17 @@ public class JobListAllCommand {
 	}
 
 	private void sendSelectionMenu(final Player player) {
-        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.SCAFFOLDING).withName("§f§lProjects").build(), inventoryClickEvent -> {
+        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.SCAFFOLDING).withName("<white><bold>Projects").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             sendProjectMenu(player);
         });
 
-        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.OAK_SIGN).withName("§f§lStatus").build(), inventoryClickEvent -> {
+        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.OAK_SIGN).withName("<white><bold>Status").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             sendStatusMenu(player);
         });
 
-        final GuiItem categoryItem = new GuiItem(new ItemStackBuilder(Material.JUKEBOX).withName("§f§lCategory").build(), inventoryClickEvent -> {
+        final GuiItem categoryItem = new GuiItem(new ItemStackBuilder(Material.JUKEBOX).withName("<white><bold>Category").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             sendCategoryMenu(player);
         });
@@ -67,9 +70,9 @@ public class JobListAllCommand {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Project project : plugin.getProjectManager().getProjects()) {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
-				.withName("§f§l" + project.getName())
-				.withLore("§7Shift-click to teleport")
-				.withLore("§f§lLeader: §f" + Utils.getPlayerHolderText(project.getLeader()))
+				.withName(Component.text(project.getName(), NamedTextColor.WHITE, TextDecoration.BOLD))
+				.withLore("<gray>Shift-click to teleport")
+				.withLore("<white><bold>Leader: </bold>" + Utils.getPlayerHolderText(project.getLeader()))
 				.build();
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
@@ -96,7 +99,7 @@ public class JobListAllCommand {
     private void sendStatusMenu(final Player player) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final JobStatus jobStatus : JobStatus.values()) {
-            final GuiItem guiItem = new GuiItem(new ItemStackBuilder(Material.OAK_SIGN).withName("§f§l" + jobStatus.name()).build(), inventoryClickEvent -> {
+            final GuiItem guiItem = new GuiItem(new ItemStackBuilder(Material.OAK_SIGN).withName("<white><bold>" + jobStatus.name()).build(), inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 final List<Job> jobs = plugin.getJobManager().getJobs().stream()
                         .filter(job -> job.getJobStatus().equals(jobStatus))
@@ -112,7 +115,7 @@ public class JobListAllCommand {
     private void sendCategoryMenu(final Player player) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final JobCategory jobCategory : JobCategory.values()) {
-            final GuiItem guiItem = new GuiItem(new ItemStackBuilder(jobCategory.getMaterial()).withName("§f§l" + jobCategory.name()).build(), inventoryClickEvent -> {
+            final GuiItem guiItem = new GuiItem(new ItemStackBuilder(jobCategory.getMaterial()).withName("<white><bold>" + jobCategory.name()).build(), inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 final List<Job> jobs = plugin.getJobManager().getJobs().stream()
                         .filter(job -> job.getJobCategory().equals(jobCategory))
@@ -128,7 +131,7 @@ public class JobListAllCommand {
     private void sendJobMenu(final Player player, final List<Job> jobs) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
-            final ItemStack itemStack = JobItemHelper.getJobItem(job, "§7Shift-click to §lteleport", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
+            final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift-click to <bold>teleport", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
@@ -138,7 +141,7 @@ public class JobListAllCommand {
                         break;
                     case LEFT:
                     case RIGHT:
-                        player.sendMessage(job.getDescription());
+                        player.sendMessage(Component.text(job.getDescription()));
                         break;
                 }
             });
@@ -151,9 +154,9 @@ public class JobListAllCommand {
         });
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-                .withName("§f§lInformation")
-                .withLore("§7§lTeleport §7to job by using shift-click")
-                .withLore("§7Click to §lview job info")
+                .withName("<white><bold>Information")
+                .withLore("<gray><bold>Teleport</bold> to job by using shift-click")
+                .withLore("<gray>Click to <bold>view job info")
                 .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui("All Jobs", guiItems, mainMenuItem, infoBook);

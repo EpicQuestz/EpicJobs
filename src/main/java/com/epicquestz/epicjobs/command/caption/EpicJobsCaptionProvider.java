@@ -16,6 +16,11 @@ public final class EpicJobsCaptionProvider<C> extends DelegatingCaptionProvider<
 	 */
 	public static final String ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND = "Could not find job '<input>'";
 
+	/**
+	 * Default caption for {@link EpicJobsCaptionKeys#ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND}.
+	 */
+	public static final String ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND = "Could not find player '<input>'. They must have joined the server before.";
+
 	private static final CaptionProvider<?> PROVIDER = CaptionProvider.constantProvider()
 		.putCaption(
 			EpicJobsCaptionKeys.ARGUMENT_PARSE_FAILURE_PROJECT_NOT_FOUND,
@@ -23,6 +28,9 @@ public final class EpicJobsCaptionProvider<C> extends DelegatingCaptionProvider<
 		).putCaption(
 			EpicJobsCaptionKeys.ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND,
 			ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND
+		).putCaption(
+			EpicJobsCaptionKeys.ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND,
+			ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND
 		).build();
 
 	@Override

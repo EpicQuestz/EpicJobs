@@ -8,7 +8,7 @@ public enum JobCategory {
     TERRAIN("Terrain", "Hills, rivers, etc.", Material.GRASS_BLOCK),
     VEGETATION("Vegetation", "Gardens, forests, agriculture & general nature", Material.FLOWERING_AZALEA_LEAVES),
     PATHWAY("Pathway", "Roads, paths, trails, etc", Material.DIRT_PATH),
-    ATMOSPHERE("Atomsphere", "Mainly for towns: street furniture & ambience", Material.CAMPFIRE),
+    ATMOSPHERE("Atmosphere", "Mainly for towns: street furniture & ambience", Material.CAMPFIRE),
     EXTERIOR_STRUCTURE("Exterior Structure", "Exterior structure, including walls & windows", Material.SCAFFOLDING),
     INTERIOR_STRUCTURE("Interior Structure", "Internal structure layout - walls, doors & floors", Material.OAK_DOOR),
     INTERIOR("Interior Decoration", "Furniture, internal ambience & decoration", Material.RED_BED),

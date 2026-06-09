@@ -24,6 +24,11 @@ public class EpicJobsCaptionKeys {
 	 */
 	public static final Caption ARGUMENT_PARSE_FAILURE_JOB_NOT_FOUND = of("argument.parse.failure.job_not_found");
 
+	/**
+	 * Variables: {input}
+	 */
+	public static final Caption ARGUMENT_PARSE_FAILURE_PLAYER_NOT_FOUND = of("argument.parse.failure.player_not_found");
+
 	private EpicJobsCaptionKeys() { }
 
 	private static @NonNull Caption of(final @NonNull String key) {

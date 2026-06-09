@@ -13,6 +13,7 @@ import com.epicquestz.epicjobs.project.ProjectManager;
 import com.epicquestz.epicjobs.storage.SettingsFile;
 import com.epicquestz.epicjobs.storage.implementation.SqlStorage;
 import com.epicquestz.epicjobs.storage.implementation.StorageImplementation;
+import com.epicquestz.epicjobs.user.PlayerCache;
 import com.epicquestz.epicjobs.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -53,6 +54,7 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     private Commands commands;
     private Set<User> users;
+    private PlayerCache playerCache;
 
     @Override
     public void onEnable() {
@@ -72,6 +74,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         storage.init();
         projectManager.firstLoad();
         jobManager.firstLoad();
+
+        playerCache = new PlayerCache(this);
+        playerCache.firstLoad();
 
         commands = new Commands(this);
         users = new HashSet<>();
@@ -144,6 +149,10 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         return jobManager;
     }
 
+    public PlayerCache getPlayerCache() {
+        return playerCache;
+    }
+
     public Commands getCommands() {
         return commands;
     }
@@ -151,6 +160,13 @@ public final class EpicJobs extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
+        // Keep the offline-player name cache up to date (memory now, database off-thread).
+        playerCache.cache(player.getUniqueId(), player.getName());
+        EpicJobs.newSharedChain("EpicJobs")
+            .async(() -> storage.savePlayer(player.getUniqueId(), player.getName()))
+            .execute();
+
         final User user = new User(player.getUniqueId());
         loadPlayerJobs(user);
         users.add(user);

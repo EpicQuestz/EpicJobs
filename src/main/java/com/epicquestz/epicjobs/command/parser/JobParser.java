@@ -37,8 +37,13 @@ public final class JobParser<C> implements ArgumentParser<C, Job>, BlockingSugge
 	}
 
 	@Override
-	public @NonNull Iterable<@NonNull String> stringSuggestions(@NonNull CommandContext<C> commandContext, @NonNull CommandInput input) {
-		return EpicJobs.get().getJobManager().getJobs().stream().map(Job::getId).map(String::valueOf)::iterator; // todo: filter by input
+	public @NonNull Iterable<@NonNull String> stringSuggestions(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput input) {
+		final String prefix = input.peekString();
+		return EpicJobs.get().getJobManager().getJobs().stream()
+				.map(Job::getId)
+				.map(String::valueOf)
+				.filter(id -> id.startsWith(prefix))
+				::iterator;
 	}
 
 	private static final class JobParserException extends ParserException {

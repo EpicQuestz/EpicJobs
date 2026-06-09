@@ -1,90 +1,92 @@
 package com.epicquestz.epicjobs.constants;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
+/**
+ * Central registry of user-facing messages. Templates are written in
+ * <a href="https://docs.advntr.dev/minimessage/format.html">MiniMessage</a> and rendered to
+ * Adventure {@link Component}s. Positional arguments are referenced as {@code <arg1>},
+ * {@code <arg2>}, ... and are inserted as plain (unparsed) text.
+ */
 public enum Messages {
 
     // Jobs List & General
-    JOB_DOESNT_EXIST("§cThis job does not exist. Did you enter the correct job ID?"),
-    NO_JOBS_AVAILABLE("§cThere are no jobs available! Check back later."),
-    PLAYER_HAS_NO_JOBS("§cYou have no claimed jobs!\n§6Use /job check to see if there are any available to claim."),
-    PLAYER_HAS_MULITPLE_JOBS("§cYou have more than one job.\n§6Please specify a job to continue."),
-    PLAYER_HASNT_CLAIMED_JOB("§cYou have not claimed this job."),
+    JOB_DOESNT_EXIST("<red>This job does not exist. Did you enter the correct job ID?</red>"),
+    NO_JOBS_AVAILABLE("<red>There are no jobs available! Check back later.</red>"),
+    PLAYER_HAS_NO_JOBS("<red>You have no claimed jobs!</red>\n<gold>Use /job check to see if there are any available to claim.</gold>"),
+    PLAYER_HAS_MULITPLE_JOBS("<red>You have more than one job.</red>\n<gold>Please specify a job to continue.</gold>"),
+    PLAYER_HASNT_CLAIMED_JOB("<red>You have not claimed this job.</red>"),
 
     // Jobs Claim
-    ANNOUNCE_JOB_TAKEN("§a%s has claimed job §b#%s."),
-    JOB_NOT_OPEN("§cThis job is not available to be claimed."),
+    ANNOUNCE_JOB_TAKEN("<green><arg1> has claimed job <aqua>#<arg2></aqua>.</green>"),
+    JOB_NOT_OPEN("<red>This job is not available to be claimed.</red>"),
 
     // Jobs Abandon
-    ANNOUNCE_JOB_ABANDONMENT("§c%s has abandoned job §b#%s.\n§aIt is available to be claimed again."),
-    JOB_CANT_BE_ABANDONED("§cYou can only abandon jobs that are yours and incomplete."),
+    ANNOUNCE_JOB_ABANDONMENT("<red><arg1> has abandoned job <aqua>#<arg2></aqua>.</red>\n<green>It is available to be claimed again.</green>"),
+    JOB_CANT_BE_ABANDONED("<red>You can only abandon jobs that are yours and incomplete.</red>"),
 
     // Jobs Teleport
-    PLAYER_JOB_TELEPORT("§eTeleporting to job site #%s"),
+    PLAYER_JOB_TELEPORT("<yellow>Teleporting to job site #<arg1></yellow>"),
 
     // Jobs Done
-    ANNOUNCE_JOB_DONE("§a%s has marked job §b#%s§a as done."),
-    JOB_HAS_TO_BE_ACTIVE("§cThe job has to be active to be marked done."),
-    PLAYER_HAS_NO_ACTIVE_JOBS("§cYou have no active jobs."),
+    ANNOUNCE_JOB_DONE("<green><arg1> has marked job <aqua>#<arg2></aqua> as done.</green>"),
+    JOB_HAS_TO_BE_ACTIVE("<red>The job has to be active to be marked done.</red>"),
+    PLAYER_HAS_NO_ACTIVE_JOBS("<red>You have no active jobs.</red>"),
 
     // Jobs Complete
-    JOB_COMPLETED("§aJob §b#%s§a has been marked as complete."),
-    JOB_CANT_BE_COMPLETE("§cA job has to be marked done to complete."),
+    JOB_COMPLETED("<green>Job <aqua>#<arg1></aqua> has been marked as complete.</green>"),
+    JOB_CANT_BE_COMPLETE("<red>A job has to be marked done to complete.</red>"),
 
     // Jobs Reopen
-    ANNOUNCE_JOB_REOPEN("§6%s has reopened job §b#%s."),
-    JOB_REOPEN("§aRe-opened job §b#%s§a for player %s to make edits."),
-    JOB_NOT_DONE("§cThis job is not marked as done or complete."),
+    ANNOUNCE_JOB_REOPEN("<gold><arg1> has reopened job <aqua>#<arg2></aqua>.</gold>"),
+    JOB_REOPEN("<green>Re-opened job <aqua>#<arg1></aqua> for player <arg2> to make edits.</green>"),
+    JOB_NOT_DONE("<red>This job is not marked as done or complete.</red>"),
 
     // Jobs Un-assign
-    HAS_UNASSIGNED_JOB("§6You have un-assigned the player from job §b#%s."),
-    JOB_CANT_BE_UNASSIGNED("§cYou can only un-assign incomplete jobs taken by a player."),
+    HAS_UNASSIGNED_JOB("<gold>You have un-assigned the player from job <aqua>#<arg1></aqua>.</gold>"),
+    JOB_CANT_BE_UNASSIGNED("<red>You can only un-assign incomplete jobs taken by a player.</red>"),
 
-    // Jobs Assign,
-    HAS_ASSIGNED_JOB("§6You have assigned %s to job §b#%s."),
-    JOB_CANT_BE_ASSIGNED("§cYou can only assign available jobs to a player."),
-    HAS_BEEN_ASSIGNED_JOB("§6You have been assigned job §b#%s."),
+    // Jobs Assign
+    HAS_ASSIGNED_JOB("<gold>You have assigned <arg1> to job <aqua>#<arg2></aqua>.</gold>"),
+    JOB_CANT_BE_ASSIGNED("<red>You can only assign available jobs to a player.</red>"),
+    HAS_BEEN_ASSIGNED_JOB("<gold>You have been assigned job <aqua>#<arg1></aqua>.</gold>"),
 
     // Jobs Create
-    CREATING_JOB("§6Creating job..."), //actionbar
-    SUCCESSFULLY_CREATED_JOB("§aSuccessfully created job with id §b#%s."),
+    CREATING_JOB("<gold>Creating job...</gold>"), // actionbar
+    SUCCESSFULLY_CREATED_JOB("<green>Successfully created job with id <aqua>#<arg1></aqua>.</green>"),
 
     // Jobs Remove
-    REMOVING_JOB("§6Removing job #%s..."), //actionbar
-    SUCCESSFULLY_REMOVED_JOB("§aSuccessfully deleted job."),
+    REMOVING_JOB("<gold>Removing job #<arg1>...</gold>"), // actionbar
+    SUCCESSFULLY_REMOVED_JOB("<green>Successfully deleted job.</green>"),
 
     // Project List & General
-    PROJECT_DOESNT_EXIST("§cThis project does not exist. Did you enter the correct project name?"),
-    NO_PROJECTS_AVAILABLE("§cThere are no active projects to participate in."),
-    PROJECT_ALREADY_COMPLETE("§cThis project is already marked as complete."),
+    PROJECT_DOESNT_EXIST("<red>This project does not exist. Did you enter the correct project name?</red>"),
+    NO_PROJECTS_AVAILABLE("<red>There are no active projects to participate in.</red>"),
+    PROJECT_ALREADY_COMPLETE("<red>This project is already marked as complete.</red>"),
 
     // Create Project
-    CREATING_PROJECT("§6Creating project %s..."), //actionbar
-    SUCCESSFULLY_CREATED_PROJECT("§aSuccessfully created project with id #%s."),
-    CANT_CREATE_PROJECT("§cCannot create a project with duplicate name."),
+    CREATING_PROJECT("<gold>Creating project <arg1>...</gold>"), // actionbar
+    SUCCESSFULLY_CREATED_PROJECT("<green>Successfully created project with id #<arg1>.</green>"),
+    CANT_CREATE_PROJECT("<red>Cannot create a project with duplicate name.</red>"),
 
     // Project Edit
-    PLAYER_NOT_FOUND("§cPlayer %s could not be found."),
+    PLAYER_NOT_FOUND("<red>Player <arg1> could not be found.</red>"),
 
     // Project Teleport
-    PLAYER_PROJECT_TELEPORT("§eTeleporting to project site %s"),
+    PLAYER_PROJECT_TELEPORT("<yellow>Teleporting to project site <arg1></yellow>"),
 
     // Project Complete
-    ANNOUNCE_PROJECT_COMPLETION("§aProject %s has been completed!"),
+    ANNOUNCE_PROJECT_COMPLETION("<green>Project <arg1> has been completed!</green>"),
 
     // Profile
-    MISSING_PROFILE("§cYour EpicJobs profile could not be found. Please contact an administrator.");
+    MISSING_PROFILE("<red>Your EpicJobs profile could not be found. Please contact an administrator.</red>");
 
-//    /*
-//     * Old unused - maybe needed in the future
-//     */
-//
-//    SPECIFY_JOB_ID("Please specify a job id to continue."),
-//    CATEGORY_DOESNT_EXIST("This job category does not exist. Please check again if you entered the correct category name."),
-//    PROJECT_NAME_NO_SPACES("A project name cannot contain spaces."),
-//    PROJECT_ALREADY_COMPLETE("The project you want to create a job for has already been complete."),
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     private final String message;
 
@@ -92,52 +94,34 @@ public enum Messages {
         this.message = message;
     }
 
-    public String toString() {
+    /**
+     * @return the raw MiniMessage template (not the rendered component).
+     */
+    public String template() {
         return message;
     }
 
-    public String toString(final Object... parts) {
-        return String.format(message, parts);
+    public Component component(final Object... args) {
+        if (args.length == 0) {
+            return MINI_MESSAGE.deserialize(message);
+        }
+        final TagResolver[] resolvers = new TagResolver[args.length];
+        for (int i = 0; i < args.length; i++) {
+            resolvers[i] = Placeholder.unparsed("arg" + (i + 1), String.valueOf(args[i]));
+        }
+        return MINI_MESSAGE.deserialize(message, resolvers);
     }
 
-    public void send(final Player player) {
-        player.sendMessage(message);
+    public void send(final Audience audience, final Object... args) {
+        audience.sendMessage(component(args));
     }
 
-    public void send(final CommandSender sender) {
-        sender.sendMessage(message);
+    public void sendActionbar(final Audience audience, final Object... args) {
+        audience.sendActionBar(component(args));
     }
 
-    public void send(final Player player, final String replacement) {
-        player.sendMessage(message.replace("%s", replacement));
-    }
-
-    public void send(final Player player, final Object... replacements) {
-        player.sendMessage(String.format(message, replacements));
-    }
-
-    public void sendActionbar(final Player player) {
-        player.sendActionBar(message);
-    }
-
-    public void sendActionbar(final Player player, final String replacement) {
-        player.sendActionBar(message.replace("%s", replacement));
-    }
-
-    public void sendActionbar(final Player player, final Object... replacements) {
-        player.sendActionBar(String.format(message, replacements));
-    }
-
-    public void broadcast() {
-        Bukkit.broadcastMessage(message);
-    }
-
-    public void broadcast(final String replacement) {
-        Bukkit.broadcastMessage(message.replace("%s", replacement));
-    }
-
-    public void broadcast(final Object... replacements) {
-        Bukkit.broadcastMessage(String.format(message, replacements));
+    public void broadcast(final Object... args) {
+        Bukkit.getServer().broadcast(component(args));
     }
 
 }
