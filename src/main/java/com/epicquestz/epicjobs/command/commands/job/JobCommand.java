@@ -72,6 +72,7 @@ import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_ACTIVE_JO
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_CREATED_JOB;
+import static com.epicquestz.epicjobs.constants.Messages.TARGET_COMPLETED_JOBS_COUNT;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_REMOVED_JOB;
 
 @Command("job|jobs")
@@ -611,23 +612,29 @@ public class JobCommand {
 	@Permission(CommandPermissions.SHOW_STATISTICS)
 	@Command("stats [player]")
 	public void onStats(final @NonNull CommandSender sender,
-						@Argument(value = "player", description = "Player") final @Nullable Player target) {
-		final Player player;
+						@Argument(value = "player", description = "Player") final @Nullable OfflinePlayer target) {
+		final UUID uuid;
 		if (target != null) {
-			player = target;
-		} else if (sender instanceof Player) {
-			player = (Player) sender;
+			uuid = target.getUniqueId();
+		} else if (sender instanceof Player player) {
+			uuid = player.getUniqueId();
 		} else {
 			MUST_BE_PLAYER.send(sender);
 			return;
 		}
 
-		final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
-		if (optional.isEmpty()) {
-			MISSING_PROFILE.send(player);
-			return;
+		// Count from the global job list instead of going through the User
+		// profile, so this also works for players who are currently offline.
+		final long completedJobs = plugin.getJobManager().getJobs().stream()
+			.filter(job -> uuid.equals(job.getClaimant()))
+			.filter(job -> job.getJobStatus().equals(JobStatus.COMPLETE))
+			.count();
+
+		if (target != null) {
+			TARGET_COMPLETED_JOBS_COUNT.send(sender, Utils.getPlayerHolderText(uuid), completedJobs);
+		} else {
+			COMPLETED_JOBS_COUNT.send(sender, completedJobs);
 		}
-        COMPLETED_JOBS_COUNT.send(player, optional.get().getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.COMPLETE)).toList().size());
 	}
 
 }
