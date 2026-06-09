@@ -2,12 +2,14 @@ package com.epicquestz.epicjobs.command.commands.job;
 
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.CommandPermissions;
+import com.epicquestz.epicjobs.constants.Palette;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.utils.ItemStackBuilder;
 import com.epicquestz.epicjobs.utils.JobItemHelper;
 import com.epicquestz.epicjobs.utils.MenuHelper;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import org.bukkit.Bukkit;
@@ -45,7 +47,7 @@ public class JobListDoneCommand {
 	private void sendJobMenu(final Player player, final String title, final List<Job> jobs) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Job job : jobs) {
-            final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift left-click to mark <bold>complete", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
+            final ItemStack itemStack = JobItemHelper.getJobItem(job, "<muted>Shift left-click to mark <em>complete</em>", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR, JobItemHelper.InfoType.CLAIMANT);
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
                 switch (inventoryClickEvent.getClick()) {
@@ -59,7 +61,7 @@ public class JobListDoneCommand {
                         job.teleport(player);
                         break;
                     case RIGHT:
-                        player.sendMessage(Component.text(job.getDescription()));
+                        player.sendMessage(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true));
                         break;
                 }
             });
@@ -67,10 +69,10 @@ public class JobListDoneCommand {
         }
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("<white><bold>Information")
-            .withLore("<gray>Mark job as <bold>complete</bold> by using shift left-click")
-            .withLore("<gray><bold>Reopen</bold> job by using shift right-click")
-            .withLore("<gray>Click to <bold>view job info")
+            .withName("<em>Information")
+            .withLore("<muted>Mark job as <em>complete</em> by using shift left-click")
+            .withLore("<muted><em>Reopen</em> job by using shift right-click")
+            .withLore("<muted>Click to <em>view job info</em>")
             .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, null, infoBook);

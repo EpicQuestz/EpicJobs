@@ -52,7 +52,7 @@ public class MenuHelper {
             mainMenu.addItem(mainMenuItem, 0, 0);
         }
 
-        back.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("Previous Page").build(), inventoryClickEvent -> {
+        back.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("<em>Previous Page").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             pagination.setPage(pagination.getPage() - 1);
 
@@ -70,7 +70,7 @@ public class MenuHelper {
 
         info.addItem(new GuiItem(infoBook, inventoryClickEvent -> inventoryClickEvent.setResult(Event.Result.DENY)), 0, 0);
 
-        forward.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("Next Page").build(), inventoryClickEvent -> {
+        forward.addItem(new GuiItem(new ItemStackBuilder(Material.ARROW).withName("<em>Next Page").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             pagination.setPage(pagination.getPage() + 1);
 

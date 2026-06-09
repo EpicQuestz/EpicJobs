@@ -1,5 +1,6 @@
 package com.epicquestz.epicjobs.utils;
 
+import com.epicquestz.epicjobs.constants.Palette;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -39,10 +40,11 @@ public class ItemStackBuilder {
 
     /**
      * Parses MiniMessage and disables the italic styling Minecraft applies to item names/lore
-     * by default (unless the text explicitly requests italics).
+     * by default (unless the text explicitly requests italics). GUI text is an INFO surface, so
+     * the palette tags {@code <em>} (white, bold) and {@code <muted>} are available.
      */
     private static Component deserialize(final String miniMessage) {
-        return MINI_MESSAGE.deserialize(miniMessage).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+        return MINI_MESSAGE.deserialize(miniMessage, Palette.Role.INFO.tags()).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
     }
 
     public ItemStackBuilder withName(final String name) {
@@ -78,6 +80,10 @@ public class ItemStackBuilder {
     }
 
     public ItemStackBuilder withLineBreakLore(final TextColor color, final String text) {
+        return withLineBreakLore(color, text, false);
+    }
+
+    public ItemStackBuilder withLineBreakLore(final TextColor color, final String text, final boolean italic) {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         final List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
 
@@ -88,15 +94,15 @@ public class ItemStackBuilder {
                 if (line.length() <= 32) {
                     line.append(" ").append(words[i]);
                 } else {
-                    lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, false));
+                    lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, italic));
                     line = new StringBuilder(words[i]);
                 }
                 if (i == words.length - 1) {
-                    lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, false));
+                    lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, italic));
                 }
             }
         } else {
-            lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text(line.toString(), color).decoration(TextDecoration.ITALIC, italic));
         }
 
         meta.lore(lore);

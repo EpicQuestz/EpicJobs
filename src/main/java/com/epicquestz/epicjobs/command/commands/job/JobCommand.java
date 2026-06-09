@@ -21,7 +21,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -78,7 +77,7 @@ import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_REMOVED_JO
 @Command("job|jobs")
 public class JobCommand {
 
-	private static final ItemStack BACK_BUTTON = Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "<white><bold>Back");
+	private static final ItemStack BACK_BUTTON = Utils.getSkull(SkullHeads.OAK_WOOD_ARROW_LEFT.getBase64(), "<em>Back");
 
 	private final EpicJobs plugin;
 
@@ -116,9 +115,10 @@ public class JobCommand {
         final List<Project> projects = plugin.getProjectManager().getProjects().stream().filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE)).toList();
         for (final Project project : projects) {
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
-                .withName(Component.text(project.getName(), NamedTextColor.WHITE, TextDecoration.BOLD))
-                .withLore("<gray>Shift-click to teleport")
-                .withLore("<white><bold>Leader: </bold>" + Utils.getPlayerHolderText(project.getLeader()))
+                .withName(Component.text(project.getName(), Palette.Role.INFO.accent(), TextDecoration.BOLD))
+                .withLore(Component.text("Leader: ", Palette.MUTED).append(Component.text(Utils.getPlayerHolderText(project.getLeader()), Palette.Role.INFO.body())))
+                .withLore(Component.empty())
+                .withLore("<muted>Shift-click to <em>teleport</em>")
                 .build();
             final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                 inventoryClickEvent.setResult(Event.Result.DENY);
@@ -146,7 +146,7 @@ public class JobCommand {
 	private void sendJobMenu(final Player player, final String title, final GuiItem mainMenuItem, final List<Job> jobs) {
 		final List<GuiItem> guiItems = new ArrayList<>();
 		for (final Job job : jobs) {
-			final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift-click to <bold>claim", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+			final ItemStack itemStack = JobItemHelper.getJobItem(job, "<muted>Shift-click to <em>claim</em>", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
 			final GuiItem guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
 				inventoryClickEvent.setResult(Event.Result.DENY);
 				switch (inventoryClickEvent.getClick()) {
@@ -160,7 +160,7 @@ public class JobCommand {
 						job.teleport(player);
 						break;
 					case RIGHT:
-						player.sendMessage(Component.text(job.getDescription()));
+						player.sendMessage(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true));
 						break;
 				}
 			});
@@ -168,10 +168,10 @@ public class JobCommand {
 		}
 
 		final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("<white><bold>Information")
-            .withLore("<gray><bold>Claim</bold> job by using shift-click")
-            .withLore("<gray><bold>Teleport</bold> by using left-click")
-            .withLore("<gray>To <bold>view job info</bold> right-click")
+            .withName("<em>Information")
+            .withLore("<muted><em>Claim</em> job by using shift-click")
+            .withLore("<muted><em>Teleport</em> by using left-click")
+            .withLore("<muted>To <em>view job info</em> right-click")
             .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);
@@ -199,13 +199,13 @@ public class JobCommand {
             sendStatusSelectionMenu(player, user);
         });
 
-        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("<white><bold>Active Jobs").build(), inventoryClickEvent -> {
+        final GuiItem projectItem = new GuiItem(new ItemStackBuilder(Material.WRITABLE_BOOK).withName("<em>Active Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             final List<Job> jobs = user.getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.TAKEN) || job.getJobStatus().equals(JobStatus.DONE)).collect(Collectors.toList());
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
         });
 
-        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("<white><bold>Completed Jobs").build(), inventoryClickEvent -> {
+        final GuiItem statusItem = new GuiItem(new ItemStackBuilder(Material.COMPOSTER).withName("<em>Completed Jobs").build(), inventoryClickEvent -> {
             inventoryClickEvent.setResult(Event.Result.DENY);
             final List<Job> jobs = user.getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.COMPLETE)).collect(Collectors.toList());
             sendMyJobMenu(player, "Your Jobs", mainMenuItem, jobs);
@@ -221,7 +221,7 @@ public class JobCommand {
             GuiItem guiItem = null;
             switch (job.getJobStatus()) {
                 case TAKEN: {
-                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift left-click to mark <bold>done\n<gray>Shift right-click to mark <bold>abandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<muted>Shift left-click to mark <em>done</em>\n<muted>Shift right-click to mark <em>abandon</em>", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
                     guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                         inventoryClickEvent.setResult(Event.Result.DENY);
                         switch (inventoryClickEvent.getClick()) {
@@ -239,13 +239,13 @@ public class JobCommand {
                                 job.teleport(player);
                                 break;
                             case RIGHT:
-                                player.sendMessage(Component.text(job.getDescription()));
+                                player.sendMessage(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true));
                                 break;
                         }
                     });
                 } break;
                 case DONE: {
-                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift right-click to mark <bold>abandon", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<muted>Shift right-click to mark <em>abandon</em>", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
                     guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                         inventoryClickEvent.setResult(Event.Result.DENY);
                         switch (inventoryClickEvent.getClick()) {
@@ -259,13 +259,13 @@ public class JobCommand {
                                 job.teleport(player);
                                 break;
                             case RIGHT:
-                                player.sendMessage(Component.text(job.getDescription()));
+                                player.sendMessage(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true));
                                 break;
                         }
                     });
                 } break;
                 case COMPLETE: {
-                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<gray>Shift-click to <bold>teleport", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
+                    final ItemStack itemStack = JobItemHelper.getJobItem(job, "<muted>Shift-click to <em>teleport</em>", JobItemHelper.InfoType.PROJECT, JobItemHelper.InfoType.CATEGORY, JobItemHelper.InfoType.STATUS, JobItemHelper.InfoType.DESCRIPTION, JobItemHelper.InfoType.CREATOR);
                     guiItem = new GuiItem(itemStack, inventoryClickEvent -> {
                         inventoryClickEvent.setResult(Event.Result.DENY);
                         switch (inventoryClickEvent.getClick()) {
@@ -275,7 +275,7 @@ public class JobCommand {
                                 break;
                             case LEFT:
                             case RIGHT:
-                                player.sendMessage(Component.text(job.getDescription()));
+                                player.sendMessage(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true));
                                 break;
                         }
                     });
@@ -285,8 +285,8 @@ public class JobCommand {
         }
 
         final ItemStack infoBook = new ItemStackBuilder(Material.BOOK)
-            .withName("<white><bold>Information")
-            .withLore("<gray>None :-)")
+            .withName("<em>Information")
+            .withLore("<muted>None :-)")
             .build();
 
         final ChestGui gui = MenuHelper.getPaginatedGui(title, guiItems, mainMenuItem, infoBook);

@@ -3,6 +3,7 @@ package com.epicquestz.epicjobs.utils;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.constants.Palette;
 import com.epicquestz.epicjobs.job.Job;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -56,7 +57,7 @@ public class Utils {
     public static ItemStack getSkull(final String base64, final String name) {
         final ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
         final SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        skullMeta.displayName(MiniMessage.miniMessage().deserialize(name).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
+        skullMeta.displayName(MiniMessage.miniMessage().deserialize(name, Palette.Role.INFO.tags()).decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         final PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID());
         playerProfile.getProperties().add(new ProfileProperty("textures", base64));
         skullMeta.setPlayerProfile(playerProfile);
