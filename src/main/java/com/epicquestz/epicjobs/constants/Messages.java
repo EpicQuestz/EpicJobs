@@ -57,7 +57,6 @@ public enum Messages {
     HAS_BEEN_ASSIGNED_JOB("<gold>You have been assigned job <aqua>#<arg1></aqua>.</gold>"),
 
     // Jobs Create
-    CREATING_JOB("<gold>Creating job...</gold>"), // actionbar
     SUCCESSFULLY_CREATED_JOB("<green>Successfully created job with id <aqua>#<arg1></aqua>.</green>"),
 
     // Jobs Remove
@@ -70,7 +69,6 @@ public enum Messages {
     PROJECT_ALREADY_COMPLETE("<red>This project is already marked as complete.</red>"),
 
     // Create Project
-    CREATING_PROJECT("<gold>Creating project <arg1>...</gold>"), // actionbar
     SUCCESSFULLY_CREATED_PROJECT("<green>Successfully created project with id #<arg1>.</green>"),
     CANT_CREATE_PROJECT("<red>Cannot create a project with duplicate name.</red>"),
 

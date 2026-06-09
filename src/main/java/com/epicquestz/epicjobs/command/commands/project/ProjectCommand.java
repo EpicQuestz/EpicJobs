@@ -26,7 +26,6 @@ import java.util.List;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_PROJECT_COMPLETION;
 import static com.epicquestz.epicjobs.constants.Messages.CANT_CREATE_PROJECT;
-import static com.epicquestz.epicjobs.constants.Messages.CREATING_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_CREATED_PROJECT;
@@ -91,7 +90,6 @@ public class ProjectCommand {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (plugin.getProjectManager().getProjectByName(name) == null) {
-                    CREATING_PROJECT.sendActionbar(player, name);
                     return true;
                 } else {
                     CANT_CREATE_PROJECT.send(player);

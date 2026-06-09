@@ -49,7 +49,6 @@ import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMEN
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_TAKEN;
-import static com.epicquestz.epicjobs.constants.Messages.CREATING_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_ASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_BEEN_ASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_UNASSIGNED_JOB;
@@ -566,7 +565,6 @@ public class JobCommand {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
-                    CREATING_JOB.sendActionbar(player);
                     return true;
                 } else {
                     PROJECT_ALREADY_COMPLETE.send(player);
