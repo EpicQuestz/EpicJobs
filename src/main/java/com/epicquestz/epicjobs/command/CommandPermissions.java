@@ -41,6 +41,7 @@ public class CommandPermissions {
 	public static final String LIST_JOBS = JOB_COMMAND + SEPARATOR + "list";
 	public static final String LIST_ALL_JOBS = LIST_JOBS + SEPARATOR + "all";
 	public static final String LIST_DONE_JOBS = LIST_JOBS + SEPARATOR + "done";
+	public static final String LIST_PLAYER_JOBS = LIST_JOBS + SEPARATOR + "player";
 
 	public static final String JOB_INFO = JOB_COMMAND + SEPARATOR + "info";
 	public static final String TELEPORT_JOB = JOB_COMMAND + SEPARATOR + "teleport";
