@@ -1,6 +1,6 @@
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow") version("8.1.1")
+    id("com.gradleup.shadow") version("8.3.0")
 }
 
 java {
@@ -10,17 +10,18 @@ java {
 group = "com.epicquestz"
 version = "1.4"
 
-val paperVersion = "1.20.4-R0.1-SNAPSHOT"
-val hikariVersion = "5.1.0"
-val mariadbClientVersion = "2.7.11"
-val cloudVersion = "2.0.0-SNAPSHOT"
+val paperVersion = "1.21.11-R0.1-SNAPSHOT"
+val hikariVersion = "6.3.3"
+val mariadbClientVersion = "3.5.8"
+val cloudVersion = "2.0.0" // cloud-core / annotations
+val cloudMinecraftVersion = "2.0.0-beta.9" // cloud-paper / minecraft-extras
 val taskchainVersion = "3.7.2"
 val inventoryFrameworkVersion = "0.10.13"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://papermc.io/repo/repository/maven-public/") } // Paper
-    maven { url = uri("https://oss.sonatype.org/content/groups/public/") } // Cloud
+    maven { url = uri("https://repo.papermc.io/repository/maven-public/") } // Paper
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") } // Cloud
     maven { url = uri( "https://repo.aikar.co/content/groups/aikar/") } // TaskChain
     maven { url = uri("https://www.iani.de/nexus/content/groups/public") } // InventoryFramework
 }
@@ -29,13 +30,13 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.mariadb.jdbc:mariadb-java-client:$mariadbClientVersion")
-    implementation("org.incendo:cloud-paper:$cloudVersion") {
+    implementation("org.incendo:cloud-paper:$cloudMinecraftVersion") {
         exclude("org.checkerframework")
     }
     implementation("org.incendo:cloud-annotations:$cloudVersion") {
         exclude("org.checkerframework")
     }
-    implementation("org.incendo:cloud-minecraft-extras:$cloudVersion") {
+    implementation("org.incendo:cloud-minecraft-extras:$cloudMinecraftVersion") {
         exclude("org.checkerframework")
         exclude("net.kyori")
     }
@@ -63,6 +64,6 @@ tasks {
 
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release.set(17)
+        options.release.set(21)
     }
 }
