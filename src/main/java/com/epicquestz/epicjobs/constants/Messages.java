@@ -1,5 +1,6 @@
 package com.epicquestz.epicjobs.constants;
 
+import com.epicquestz.epicjobs.constants.Palette.Role;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -12,83 +13,114 @@ import org.bukkit.Bukkit;
  * <a href="https://docs.advntr.dev/minimessage/format.html">MiniMessage</a> and rendered to
  * Adventure {@link Component}s. Positional arguments are referenced as {@code <arg1>},
  * {@code <arg2>}, ... and are inserted as plain (unparsed) text.
+ *
+ * <p>Each message declares a semantic {@link Role} from the shared {@link Palette}; the role's
+ * body colour is applied to the whole message, and {@code <em>} marks the values that should
+ * stand out in the role's accent tone (see {@link Palette} for the tonal-pair rules).
  */
 public enum Messages {
 
     // Jobs List & General
-    JOB_DOESNT_EXIST("<red>This job does not exist. Did you enter the correct job ID?</red>"),
-    NO_JOBS_AVAILABLE("<red>There are no jobs available! Check back later.</red>"),
-    PLAYER_HAS_NO_JOBS("<red>You have no claimed jobs!</red>\n<gold>Use /job check to see if there are any available to claim.</gold>"),
-    PLAYER_HAS_MULITPLE_JOBS("<red>You have more than one job.</red>\n<gold>Please specify a job to continue.</gold>"),
-    PLAYER_HASNT_CLAIMED_JOB("<red>You have not claimed this job.</red>"),
+    JOB_DOESNT_EXIST(Role.ERROR, "This job does not exist. Did you enter the correct job ID?"),
+    NO_JOBS_AVAILABLE(Role.WARNING, "There are no jobs available! Check back later."),
+    PLAYER_HAS_NO_JOBS(Role.WARNING, "You have no claimed jobs!\n<muted>Use <em>/job check</em> to see if there are any available to claim.</muted>"),
+    PLAYER_HAS_MULITPLE_JOBS(Role.WARNING, "You have more than one job.\n<muted>Please specify a job to continue.</muted>"),
+    PLAYER_HASNT_CLAIMED_JOB(Role.ERROR, "You have not claimed this job."),
 
     // Jobs Claim
-    ANNOUNCE_JOB_TAKEN("<green><arg1> has claimed job <aqua>#<arg2></aqua>.</green>"),
-    JOB_NOT_OPEN("<red>This job is not available to be claimed.</red>"),
+    ANNOUNCE_JOB_TAKEN(Role.SUCCESS, "<em><arg1></em> has claimed job <em>#<arg2></em>."),
+    JOB_NOT_OPEN(Role.WARNING, "This job is not available to be claimed."),
 
     // Jobs Abandon
-    ANNOUNCE_JOB_ABANDONMENT("<red><arg1> has abandoned job <aqua>#<arg2></aqua>.</red>\n<green>It is available to be claimed again.</green>"),
-    JOB_CANT_BE_ABANDONED("<red>You can only abandon jobs that are yours and incomplete.</red>"),
+    ANNOUNCE_JOB_ABANDONMENT(Role.WARNING, "<em><arg1></em> has abandoned job <em>#<arg2></em>.\nIt is available to be claimed again."),
+    JOB_CANT_BE_ABANDONED(Role.ERROR, "You can only abandon jobs that are yours and incomplete."),
 
     // Jobs Teleport
-    PLAYER_JOB_TELEPORT("<yellow>Teleporting to job site #<arg1></yellow>"),
+    PLAYER_JOB_TELEPORT(Role.INFO, "Teleporting to job site <em>#<arg1></em>"),
 
     // Jobs Done
-    ANNOUNCE_JOB_DONE("<green><arg1> has marked job <aqua>#<arg2></aqua> as done.</green>"),
-    JOB_HAS_TO_BE_ACTIVE("<red>The job has to be active to be marked done.</red>"),
-    PLAYER_HAS_NO_ACTIVE_JOBS("<red>You have no active jobs.</red>"),
+    ANNOUNCE_JOB_DONE(Role.SUCCESS, "<em><arg1></em> has marked job <em>#<arg2></em> as done."),
+    JOB_HAS_TO_BE_ACTIVE(Role.WARNING, "The job has to be active to be marked done."),
+    PLAYER_HAS_NO_ACTIVE_JOBS(Role.WARNING, "You have no active jobs."),
 
     // Jobs Complete
-    JOB_COMPLETED("<green>Job <aqua>#<arg1></aqua> has been marked as complete.</green>"),
-    JOB_CANT_BE_COMPLETE("<red>A job has to be marked done to complete.</red>"),
+    JOB_COMPLETED(Role.SUCCESS, "Job <em>#<arg1></em> has been marked as complete."),
+    JOB_CANT_BE_COMPLETE(Role.WARNING, "A job has to be marked done to complete."),
 
     // Jobs Reopen
-    ANNOUNCE_JOB_REOPEN("<gold><arg1> has reopened job <aqua>#<arg2></aqua>.</gold>"),
-    JOB_REOPEN("<green>Re-opened job <aqua>#<arg1></aqua> for player <arg2> to make edits.</green>"),
-    JOB_NOT_DONE("<red>This job is not marked as done or complete.</red>"),
+    ANNOUNCE_JOB_REOPEN(Role.WARNING, "<em><arg1></em> has reopened job <em>#<arg2></em>."),
+    JOB_REOPEN(Role.SUCCESS, "Re-opened job <em>#<arg1></em> for player <em><arg2></em> to make edits."),
+    JOB_NOT_DONE(Role.WARNING, "This job is not marked as done or complete."),
 
     // Jobs Un-assign
-    HAS_UNASSIGNED_JOB("<gold>You have un-assigned the player from job <aqua>#<arg1></aqua>.</gold>"),
-    JOB_CANT_BE_UNASSIGNED("<red>You can only un-assign incomplete jobs taken by a player.</red>"),
+    HAS_UNASSIGNED_JOB(Role.SUCCESS, "You have un-assigned the player from job <em>#<arg1></em>."),
+    JOB_CANT_BE_UNASSIGNED(Role.ERROR, "You can only un-assign incomplete jobs taken by a player."),
 
     // Jobs Assign
-    HAS_ASSIGNED_JOB("<gold>You have assigned <arg1> to job <aqua>#<arg2></aqua>.</gold>"),
-    JOB_CANT_BE_ASSIGNED("<red>You can only assign available jobs to a player.</red>"),
-    HAS_BEEN_ASSIGNED_JOB("<gold>You have been assigned job <aqua>#<arg1></aqua>.</gold>"),
+    HAS_ASSIGNED_JOB(Role.SUCCESS, "You have assigned <em><arg1></em> to job <em>#<arg2></em>."),
+    JOB_CANT_BE_ASSIGNED(Role.ERROR, "You can only assign available jobs to a player."),
+    HAS_BEEN_ASSIGNED_JOB(Role.INFO, "You have been assigned job <em>#<arg1></em>."),
 
     // Jobs Create
-    SUCCESSFULLY_CREATED_JOB("<green>Successfully created job with id <aqua>#<arg1></aqua>.</green>"),
+    SUCCESSFULLY_CREATED_JOB(Role.SUCCESS, "Successfully created job with id <em>#<arg1></em>."),
+    ERROR_CREATING_JOB(Role.ERROR, "Error while creating job. Please contact an administrator."),
 
     // Jobs Remove
-    REMOVING_JOB("<gold>Removing job #<arg1>...</gold>"), // actionbar
-    SUCCESSFULLY_REMOVED_JOB("<green>Successfully deleted job.</green>"),
+    SUCCESSFULLY_REMOVED_JOB(Role.SUCCESS, "Successfully deleted job."),
+
+    // Jobs Stats
+    MUST_BE_PLAYER(Role.ERROR, "You must be a player to use this command."),
+    COMPLETED_JOBS_COUNT(Role.INFO, "Completed jobs: <em><arg1></em>"),
+
+    // Jobs Edit
+    JOB_CLAIMANT_SET(Role.SUCCESS, "Set claimant of job to: <em><arg1></em>"),
+    JOB_DESCRIPTION_SET(Role.SUCCESS, "Set description of job to: <em><arg1></em>"),
+    JOB_PROJECT_SET(Role.SUCCESS, "Set project of job to: <em><arg1></em>"),
+    JOB_LOCATION_SET(Role.SUCCESS, "Set job location to your current position"),
+    JOB_STATUS_SET(Role.SUCCESS, "Set job status to: <em><arg1></em>"),
+    JOB_CATEGORY_SET(Role.SUCCESS, "Set job category to: <em><arg1></em>"),
 
     // Project List & General
-    PROJECT_DOESNT_EXIST("<red>This project does not exist. Did you enter the correct project name?</red>"),
-    NO_PROJECTS_AVAILABLE("<red>There are no active projects to participate in.</red>"),
-    PROJECT_ALREADY_COMPLETE("<red>This project is already marked as complete.</red>"),
+    PROJECT_DOESNT_EXIST(Role.ERROR, "This project does not exist. Did you enter the correct project name?"),
+    NO_PROJECTS_AVAILABLE(Role.WARNING, "There are no active projects to participate in."),
+    PROJECT_ALREADY_COMPLETE(Role.WARNING, "This project is already marked as complete."),
 
     // Create Project
-    SUCCESSFULLY_CREATED_PROJECT("<green>Successfully created project with id #<arg1>.</green>"),
-    CANT_CREATE_PROJECT("<red>Cannot create a project with duplicate name.</red>"),
+    SUCCESSFULLY_CREATED_PROJECT(Role.SUCCESS, "Successfully created project with id <em>#<arg1></em>."),
+    CANT_CREATE_PROJECT(Role.ERROR, "Cannot create a project with duplicate name."),
+    ERROR_CREATING_PROJECT(Role.ERROR, "Error while creating project. Please contact an administrator."),
 
     // Project Edit
-    PLAYER_NOT_FOUND("<red>Player <arg1> could not be found.</red>"),
+    PLAYER_NOT_FOUND(Role.ERROR, "Player <em><arg1></em> could not be found."),
+    PROJECT_NAME_SET(Role.SUCCESS, "Set name of project to <em><arg1></em>"),
+    PROJECT_LEADER_SET(Role.SUCCESS, "Set project leader to <em><arg1></em>"),
+    PROJECT_LOCATION_SET(Role.SUCCESS, "Updated project location to your current position"),
+    PROJECT_STATUS_SET(Role.SUCCESS, "Set project status to <em><arg1></em>"),
 
     // Project Teleport
-    PLAYER_PROJECT_TELEPORT("<yellow>Teleporting to project site <arg1></yellow>"),
+    PLAYER_PROJECT_TELEPORT(Role.INFO, "Teleporting to project site <em><arg1></em>"),
+
+    // Project Pause
+    PROJECT_PAUSED(Role.INFO, "Paused project <em><arg1></em>."),
+    PROJECT_ALREADY_PAUSED(Role.WARNING, "Project is already paused."),
+
+    // Project Resume
+    PROJECT_RESUMED(Role.INFO, "Unpaused project <em><arg1></em>."),
+    PROJECT_NOT_PAUSED(Role.WARNING, "Project is not paused."),
 
     // Project Complete
-    ANNOUNCE_PROJECT_COMPLETION("<green>Project <arg1> has been completed!</green>"),
+    ANNOUNCE_PROJECT_COMPLETION(Role.SUCCESS, "Project <em><arg1></em> has been completed!"),
 
     // Profile
-    MISSING_PROFILE("<red>Your EpicJobs profile could not be found. Please contact an administrator.</red>");
+    MISSING_PROFILE(Role.ERROR, "Your EpicJobs profile could not be found. Please contact an administrator.");
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
+    private final Role role;
     private final String message;
 
-    Messages(final String message) {
+    Messages(final Role role, final String message) {
+        this.role = role;
         this.message = message;
     }
 
@@ -100,22 +132,16 @@ public enum Messages {
     }
 
     public Component component(final Object... args) {
-        if (args.length == 0) {
-            return MINI_MESSAGE.deserialize(message);
-        }
-        final TagResolver[] resolvers = new TagResolver[args.length];
+        final TagResolver[] resolvers = new TagResolver[args.length + 1];
+        resolvers[0] = role.tags();
         for (int i = 0; i < args.length; i++) {
-            resolvers[i] = Placeholder.unparsed("arg" + (i + 1), String.valueOf(args[i]));
+            resolvers[i + 1] = Placeholder.unparsed("arg" + (i + 1), String.valueOf(args[i]));
         }
-        return MINI_MESSAGE.deserialize(message, resolvers);
+        return MINI_MESSAGE.deserialize(message, resolvers).colorIfAbsent(role.body());
     }
 
     public void send(final Audience audience, final Object... args) {
         audience.sendMessage(component(args));
-    }
-
-    public void sendActionbar(final Audience audience, final Object... args) {
-        audience.sendActionBar(component(args));
     }
 
     public void broadcast(final Object... args) {

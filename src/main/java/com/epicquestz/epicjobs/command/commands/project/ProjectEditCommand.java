@@ -5,7 +5,6 @@ import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.utils.Utils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,6 +13,11 @@ import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
+
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_LEADER_SET;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_LOCATION_SET;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_NAME_SET;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_STATUS_SET;
 
 @Command("project|projects")
 public class ProjectEditCommand {
@@ -32,7 +36,7 @@ public class ProjectEditCommand {
 						   @Argument(value = "name", description = "Name") final @NonNull String name
 	) {
 		project.setName(name);
-		sender.sendMessage(Component.text("Set name of project to " + name));
+		PROJECT_NAME_SET.send(sender, name);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
 	}
 
@@ -44,7 +48,7 @@ public class ProjectEditCommand {
 							 @Argument(value = "leader", description = "Leader", suggestions = "all-offline-players") final @NonNull OfflinePlayer leader
 	) {
 		project.setLeader(leader.getUniqueId());
-		sender.sendMessage(Component.text("Set project leader to " + Utils.getPlayerHolderText(leader.getUniqueId())));
+		PROJECT_LEADER_SET.send(sender, Utils.getPlayerHolderText(leader.getUniqueId()));
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
 	}
 
@@ -55,7 +59,7 @@ public class ProjectEditCommand {
 							   @Argument(value = "project", description = "Project") final @NonNull Project project
 	) {
 		project.setLocation(player.getLocation());
-		player.sendMessage(Component.text("Updated project location to your current position"));
+		PROJECT_LOCATION_SET.send(player);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
 	}
 
@@ -67,7 +71,7 @@ public class ProjectEditCommand {
 							 @Argument(value = "status", description = "Status") final @NonNull ProjectStatus status
 	) {
 		project.setProjectStatus(status);
-		sender.sendMessage(Component.text("Set project status to " + status.name()));
+		PROJECT_STATUS_SET.send(sender, status.name());
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
 	}
 

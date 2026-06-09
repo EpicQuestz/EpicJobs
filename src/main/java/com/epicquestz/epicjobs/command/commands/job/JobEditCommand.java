@@ -7,7 +7,6 @@ import com.epicquestz.epicjobs.job.JobCategory;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.utils.Utils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,6 +16,13 @@ import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
+
+import static com.epicquestz.epicjobs.constants.Messages.JOB_CATEGORY_SET;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_CLAIMANT_SET;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_DESCRIPTION_SET;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_LOCATION_SET;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_PROJECT_SET;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_STATUS_SET;
 
 @Command("job|jobs edit")
 public class JobEditCommand {
@@ -35,7 +41,7 @@ public class JobEditCommand {
 							   @Argument(value = "claimant", description = "Claimant", suggestions = "all-offline-players") final @NonNull OfflinePlayer claimant
 	) {
 		job.setClaimant(claimant.getUniqueId());
-		sender.sendMessage(Component.text("Set claimant of job to: " + Utils.getPlayerHolderText(claimant.getUniqueId())));
+		JOB_CLAIMANT_SET.send(sender, Utils.getPlayerHolderText(claimant.getUniqueId()));
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
@@ -48,7 +54,7 @@ public class JobEditCommand {
 					   @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
 	) {
 		job.setDescription(description);
-		sender.sendMessage(Component.text("Set description of job to: " + description));
+		JOB_DESCRIPTION_SET.send(sender, description);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
@@ -60,7 +66,7 @@ public class JobEditCommand {
 							  @Argument(value = "project", description = "Project") final @NonNull Project project
 	) {
 		job.setProject(project);
-		sender.sendMessage(Component.text("Set project of job to: " + project.getName()));
+		JOB_PROJECT_SET.send(sender, project.getName());
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
@@ -70,7 +76,7 @@ public class JobEditCommand {
 	public void onEditLocation(final @NonNull Player player,
 							   @Argument(value = "job", description = "Job") final @NonNull Job job) {
 		job.setLocation(player.getLocation());
-		player.sendMessage(Component.text("Set job location to your current position"));
+		JOB_LOCATION_SET.send(player);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
@@ -82,7 +88,7 @@ public class JobEditCommand {
 							 @Argument(value = "status", description = "Status") final @NonNull JobStatus status
 	) {
 		job.setJobStatus(status);
-		sender.sendMessage(Component.text("Set job status to: " + status.name()));
+		JOB_STATUS_SET.send(sender, status.name());
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 
@@ -94,7 +100,7 @@ public class JobEditCommand {
 							   @Argument(value = "category", description = "Category") final @NonNull JobCategory category
 	) {
 		job.setJobCategory(category);
-		sender.sendMessage(Component.text("Set job category to: " + category));
+		JOB_CATEGORY_SET.send(sender, category);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
 	}
 

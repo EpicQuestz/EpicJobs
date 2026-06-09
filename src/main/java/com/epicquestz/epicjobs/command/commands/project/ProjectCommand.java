@@ -2,15 +2,14 @@ package com.epicquestz.epicjobs.command.commands.project;
 
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.CommandPermissions;
+import com.epicquestz.epicjobs.constants.Palette;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
-import com.epicquestz.epicjobs.utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -26,8 +25,13 @@ import java.util.List;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_PROJECT_COMPLETION;
 import static com.epicquestz.epicjobs.constants.Messages.CANT_CREATE_PROJECT;
+import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_PAUSED;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_NOT_PAUSED;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_PAUSED;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_RESUMED;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_CREATED_PROJECT;
 
 @Command("project|projects")
@@ -65,14 +69,14 @@ public class ProjectCommand {
 
 		final List<TextComponent> textComponents = new ArrayList<>();
 		projects.forEach(project -> {
-			final TextComponent textComponent = Component.text(project.getName(), NamedTextColor.AQUA)
-					.hoverEvent(HoverEvent.showText(Component.text("Click to teleport!")))
+			final TextComponent textComponent = Component.text(project.getName(), Palette.Role.INFO.accent())
+					.hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED)))
 					.clickEvent(ClickEvent.runCommand("/project teleport " + project.getName()));
 			textComponents.add(textComponent);
 		});
 		final JoinConfiguration joinConfiguration = JoinConfiguration.builder()
-				.separator(Component.text(", ", NamedTextColor.GOLD))
-				.lastSeparator(Component.text(" and ", NamedTextColor.GOLD))
+				.separator(Component.text(", ", Palette.MUTED))
+				.lastSeparator(Component.text(" and ", Palette.MUTED))
 				.build();
 		final Component message = Component.join(joinConfiguration, textComponents);
 		sender.sendMessage(Component.empty());
@@ -104,7 +108,7 @@ public class ProjectCommand {
             })
             .syncLast((project) -> {
                 if (project == null) {
-                    player.sendMessage(Utils.mini("<red>Error while creating project. Please contact an administrator.</red>"));
+                    ERROR_CREATING_PROJECT.send(player);
                 } else {
                     SUCCESSFULLY_CREATED_PROJECT.send(player, project.getId());
                 }
@@ -129,10 +133,10 @@ public class ProjectCommand {
 			.syncFirst(() -> {
 				if (!project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
 					project.setProjectStatus(ProjectStatus.PAUSED);
-					sender.sendMessage(Component.text("Paused project " + project.getName()));
+					PROJECT_PAUSED.send(sender, project.getName());
 					return true;
 				} else {
-					sender.sendMessage(Component.text("Project is already paused."));
+					PROJECT_ALREADY_PAUSED.send(sender);
 					return false;
 				}
 			})
@@ -150,10 +154,10 @@ public class ProjectCommand {
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
                     project.setProjectStatus(ProjectStatus.ACTIVE);
-                    sender.sendMessage(Component.text("Unpaused project " + project.getName()));
+                    PROJECT_RESUMED.send(sender, project.getName());
                     return true;
                 } else {
-					sender.sendMessage(Component.text("Project is not paused."));
+					PROJECT_NOT_PAUSED.send(sender);
                     return false;
                 }
             })

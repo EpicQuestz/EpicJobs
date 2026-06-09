@@ -3,6 +3,7 @@ package com.epicquestz.epicjobs.command.commands.job;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.CommandPermissions;
+import com.epicquestz.epicjobs.constants.Palette;
 import com.epicquestz.epicjobs.constants.SkullHeads;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobCategory;
@@ -49,6 +50,8 @@ import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMEN
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_TAKEN;
+import static com.epicquestz.epicjobs.constants.Messages.COMPLETED_JOBS_COUNT;
+import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_ASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_BEEN_ASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_UNASSIGNED_JOB;
@@ -62,12 +65,13 @@ import static com.epicquestz.epicjobs.constants.Messages.JOB_HAS_TO_BE_ACTIVE;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_NOT_DONE;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_NOT_OPEN;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_REOPEN;
+import static com.epicquestz.epicjobs.constants.Messages.MISSING_PROFILE;
+import static com.epicquestz.epicjobs.constants.Messages.MUST_BE_PLAYER;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HASNT_CLAIMED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_MULITPLE_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_ACTIVE_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
-import static com.epicquestz.epicjobs.constants.Messages.REMOVING_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_CREATED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.SUCCESSFULLY_REMOVED_JOB;
 
@@ -295,20 +299,21 @@ public class JobCommand {
 	public void onInfo(final @NonNull CommandSender sender,
 					   @Argument(value = "job", description = "Job") final @NonNull Job job) {
 		final TextComponent text = Component.text()
-			.content("Job #" + job.getId() + " @ ").color(NamedTextColor.GOLD)
+			.content("Job #" + job.getId() + " — " + job.getProject().getName() + "\n").color(Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, true)
 			.append(Component.text(
 				String.format("[%s x:%s y:%s z:%s]\n",
 					job.getLocation().getWorld().getName(),
 					job.getLocation().getBlockX(),
 					job.getLocation().getBlockY(),
 					job.getLocation().getBlockZ()
-				), NamedTextColor.AQUA).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!"))).clickEvent(ClickEvent.runCommand("/job teleport " + job.getId())))
-			.append(Component.text("Project: ", NamedTextColor.GOLD)).append(Component.text(job.getProject().getName(), NamedTextColor.YELLOW))
-			.append(Component.text(" Category: ", NamedTextColor.GOLD)).append(Component.text(job.getJobCategory().toString(), NamedTextColor.YELLOW))
-			.append(Component.text(" Status: ", NamedTextColor.GOLD)).append(Component.text(job.getJobStatus().toString() + "\n", NamedTextColor.YELLOW))
-			.append(Component.text("Leader: ", NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getCreator()), NamedTextColor.YELLOW))
-			.append(Component.text(" Claimant: ", NamedTextColor.GOLD)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n", NamedTextColor.YELLOW))
-			.append(Component.text("Description: ", NamedTextColor.GOLD)).append(Component.text(job.getDescription(), NamedTextColor.YELLOW))
+				), Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/job teleport " + job.getId())))
+			.append(Component.text()
+				.decoration(TextDecoration.BOLD, false)
+				.append(Component.text("Category: ", Palette.MUTED)).append(Component.text(job.getJobCategory().toString(), Palette.Role.INFO.body()))
+				.append(Component.text("   Status: ", Palette.MUTED)).append(Component.text(job.getJobStatus().toString() + "\n", Palette.Role.INFO.body()))
+				.append(Component.text("Leader: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(job.getCreator()), Palette.Role.INFO.body()))
+				.append(Component.text("   Claimant: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(job.getClaimant()) + "\n", Palette.Role.INFO.body()))
+				.append(Component.text("\"" + job.getDescription() + "\"", Palette.Role.INFO.body()).decoration(TextDecoration.ITALIC, true)))
 			.build();
 		sender.sendMessage(Component.empty());
 		sender.sendMessage(text);
@@ -399,7 +404,7 @@ public class JobCommand {
             .syncFirst(() -> {
                 final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
 				if (optional.isEmpty()) {
-					player.sendMessage(Utils.mini("<red>Could not find your profile. Please contact an administrator.</red>"));
+					MISSING_PROFILE.send(player);
 					return null;
 				}
                 final User user = optional.get();
@@ -575,7 +580,7 @@ public class JobCommand {
             .asyncFirst(() -> plugin.getStorage().createAndLoadJob(player.getUniqueId(), description, project, player.getLocation(), JobStatus.OPEN, jobCategory))
             .syncLast((job) -> {
                 if (job == null) {
-                    player.sendMessage(Utils.mini("<red>Error while creating job. Please contact an administrator.</red>"));
+                    ERROR_CREATING_JOB.send(player);
                     return;
                 }
                 plugin.getJobManager().addJob(job); // register on the main thread
@@ -595,7 +600,6 @@ public class JobCommand {
                 plugin.getJobManager().removeJob(job);
                 job.getProject().removeJob(job);
                 plugin.getEpicJobsPlayer(job.getClaimant()).ifPresent(epicJobsPlayer -> epicJobsPlayer.removeJob(job));
-                REMOVING_JOB.sendActionbar(player, job.getId());
             })
             .async(() -> plugin.getStorage().deleteJob(job))
             .sync(() -> SUCCESSFULLY_REMOVED_JOB.send(player)
@@ -613,16 +617,16 @@ public class JobCommand {
 		} else if (sender instanceof Player) {
 			player = (Player) sender;
 		} else {
-			sender.sendMessage(Utils.mini("<red>You must be a player to use this command.</red>"));
+			MUST_BE_PLAYER.send(sender);
 			return;
 		}
 
 		final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
 		if (optional.isEmpty()) {
-			player.sendMessage(Utils.mini("<red>Error while loading player data. Please contact an administrator.</red>"));
+			MISSING_PROFILE.send(player);
 			return;
 		}
-        player.sendMessage(Component.text("Completed jobs: " + optional.get().getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.COMPLETE)).toList().size()));
+        COMPLETED_JOBS_COUNT.send(player, optional.get().getJobs().stream().filter(j -> j.getJobStatus().equals(JobStatus.COMPLETE)).toList().size());
 	}
 
 }

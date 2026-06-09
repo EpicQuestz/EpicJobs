@@ -5,6 +5,7 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.command.Commands;
+import com.epicquestz.epicjobs.constants.Palette;
 import com.zaxxer.hikari.HikariDataSource;
 import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobManager;
@@ -18,7 +19,6 @@ import com.epicquestz.epicjobs.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -190,22 +190,22 @@ public final class EpicJobs extends JavaPlugin implements Listener {
 
     private void sendReviewerJoinMessage(final Player player, final int jobCount) {
         final Component textComponent = Component.text()
-            .content("There are ").color(NamedTextColor.YELLOW)
-            .append(Component.text(jobCount, NamedTextColor.GOLD))
-            .append(Component.text(" job(s) marked as done. Use ", NamedTextColor.YELLOW))
-            .append(Component.text("/jobs list done", NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list done")))
-            .append(Component.text(" to review them.", NamedTextColor.YELLOW))
+            .content("There are ").color(Palette.Role.INFO.body())
+            .append(Component.text(jobCount, Palette.Role.INFO.accent(), TextDecoration.BOLD))
+            .append(Component.text(" job(s) marked as done. Use "))
+            .append(Component.text("/jobs list done", Palette.Role.INFO.accent()).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review jobs!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/jobs list done")))
+            .append(Component.text(" to review them."))
             .build();
         player.sendMessage(textComponent);
     }
 
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
         final Component textComponent = Component.text()
-            .content("There are ").color(NamedTextColor.YELLOW)
-            .append(Component.text(jobCount, NamedTextColor.GOLD))
-            .append(Component.text(" job(s) available to be claimed. Use ", NamedTextColor.YELLOW))
-            .append(Component.text("/jobs list", NamedTextColor.YELLOW).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("View jobs!"))).clickEvent(ClickEvent.runCommand("/jobs list")))
-            .append(Component.text(" to find one for yourself.", NamedTextColor.YELLOW))
+            .content("There are ").color(Palette.Role.INFO.body())
+            .append(Component.text(jobCount, Palette.Role.INFO.accent(), TextDecoration.BOLD))
+            .append(Component.text(" job(s) available to be claimed. Use "))
+            .append(Component.text("/jobs list", Palette.Role.INFO.accent()).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("View jobs!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/jobs list")))
+            .append(Component.text(" to find one for yourself."))
             .build();
         player.sendMessage(textComponent);
     }
