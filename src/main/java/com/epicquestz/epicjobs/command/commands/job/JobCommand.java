@@ -52,6 +52,7 @@ import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE_OVERR
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_TAKEN;
 import static com.epicquestz.epicjobs.constants.Messages.COMPLETED_JOBS_COUNT;
+import static com.epicquestz.epicjobs.constants.Messages.CONFIRM_COMPLETE_OVERRIDE;
 import static com.epicquestz.epicjobs.constants.Messages.CONFIRM_DONE_OVERRIDE;
 import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_ASSIGNED_JOB;
@@ -467,20 +468,34 @@ public class JobCommand {
 	@Permission(CommandPermissions.COMPLETE_JOB)
 	@Command("complete <job>")
 	public void onComplete(final @NonNull Player player,
-						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
+						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job,
+						   @Flag(value = "confirm", description = "Confirm completing a job for a project you don't lead") final boolean confirm) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (!job.getProject().isLeaderOrDeputy(player.getUniqueId()) && !player.hasPermission(CommandPermissions.COMPLETE_JOB_BYPASS)) {
+                if (job.getProject().isLeaderOrDeputy(player.getUniqueId())) {
+                    if (job.getJobStatus().equals(JobStatus.DONE)) {
+                        job.setJobStatus(JobStatus.COMPLETE);
+                        JOB_COMPLETED.send(player, job.getId());
+                        return true;
+                    } else {
+                        JOB_CANT_BE_COMPLETE.send(player);
+                        return false;
+                    }
+                } else if (!player.hasPermission(CommandPermissions.COMPLETE_JOB_BYPASS)) {
                     JOB_COMPLETE_NOT_ALLOWED.send(player);
                     return false;
-                }
-                if (job.getJobStatus().equals(JobStatus.DONE)) {
+                } else if (!job.getJobStatus().equals(JobStatus.DONE)) {
+                    JOB_CANT_BE_COMPLETE.send(player);
+                    return false;
+                } else if (!confirm) {
+                    player.sendMessage(CONFIRM_COMPLETE_OVERRIDE.component(job.getId(), job.getProject().getName())
+                        .clickEvent(ClickEvent.runCommand("/job complete " + job.getId() + " --confirm"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Confirm"))));
+                    return false;
+                } else {
                     job.setJobStatus(JobStatus.COMPLETE);
                     JOB_COMPLETED.send(player, job.getId());
                     return true;
-                } else {
-                    JOB_CANT_BE_COMPLETE.send(player);
-                    return false;
                 }
             })
             .abortIf(false)

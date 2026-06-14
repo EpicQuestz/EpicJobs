@@ -50,6 +50,7 @@ public enum Messages {
     JOB_COMPLETED(Role.SUCCESS, "Job <em>#<arg1></em> has been marked as complete."),
     JOB_CANT_BE_COMPLETE(Role.WARNING, "A job has to be marked done to complete."),
     JOB_COMPLETE_NOT_ALLOWED(Role.ERROR, "You can only complete jobs for projects you lead or are a deputy of."),
+    CONFIRM_COMPLETE_OVERRIDE(Role.WARNING, "Job <em>#<arg1></em> belongs to project <em><arg2></em>, which you do not lead.\n<u>Click to mark it complete anyway</u>."),
 
     // Jobs Reopen
     ANNOUNCE_JOB_REOPEN(Role.WARNING, "<em><arg1></em> has reopened job <em>#<arg2></em>."),
