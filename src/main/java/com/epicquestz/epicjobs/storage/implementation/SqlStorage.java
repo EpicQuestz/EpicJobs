@@ -17,7 +17,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
 
@@ -28,7 +31,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
     private static final String PLAYER_UPSERT = "INSERT INTO player(uuid, name, last_seen) VALUES (?, ?, CURRENT_TIMESTAMP) " +
         "ON DUPLICATE KEY UPDATE name = VALUES(name), last_seen = CURRENT_TIMESTAMP;";
 
-    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leader = ?, location = ?, projectstatus = ? WHERE id = ?;";
+    private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leader = ?, deputies = ?, location = ?, projectstatus = ? WHERE id = ?;";
     private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
 
     private static final String PROJECT_INSERT = "INSERT INTO project(name, leader, location, projectstatus) VALUES (?, ?, ?, ?);";
@@ -76,7 +79,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
      * Current database schema version. Bump this and add a corresponding case to
      * {@link #migrationStatements(int)} whenever the schema changes.
      */
-    private static final int CURRENT_SCHEMA_VERSION = 1;
+    private static final int CURRENT_SCHEMA_VERSION = 2;
 
     private static final String SCHEMA_VERSION_TABLE_CREATE =
         "CREATE TABLE IF NOT EXISTS schema_version (" +
@@ -103,6 +106,13 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
         "ALTER TABLE job MODIFY COLUMN jobcategory " +
             "enum('TERRAIN', 'VEGETATION', 'PATHWAY', 'ATMOSPHERE', 'EXTERIOR_STRUCTURE', 'INTERIOR_STRUCTURE', 'INTERIOR', 'REMOVAL', 'OTHER') " +
             "COLLATE utf8_bin NOT NULL;"
+    };
+
+    // Migration v2: add a column to store a project's deputies as a comma-separated list of
+    // UUIDs. The column is added only here (not in PROJECT_TABLE_CREATE) so that fresh installs,
+    // which run every migration from version 0, don't try to ADD a column that already exists.
+    private static final String[] MIGRATION_V2 = {
+        "ALTER TABLE project ADD COLUMN deputies VARCHAR(1024) COLLATE utf8_bin NOT NULL DEFAULT '';"
     };
 
     @Override
@@ -134,6 +144,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
     private String[] migrationStatements(final int version) {
         return switch (version) {
             case 1 -> MIGRATION_V1;
+            case 2 -> MIGRATION_V2;
             default -> new String[0];
         };
     }
@@ -160,6 +171,23 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
         try (final PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.execute();
         }
+    }
+
+    private static String serializeDeputies(final List<UUID> deputies) {
+        return deputies.stream().map(UUID::toString).collect(Collectors.joining(","));
+    }
+
+    private static List<UUID> deserializeDeputies(final String raw) {
+        final List<UUID> deputies = new ArrayList<>();
+        if (raw == null || raw.isBlank()) {
+            return deputies;
+        }
+        for (final String token : raw.split(",")) {
+            if (!token.isBlank()) {
+                deputies.add(UUID.fromString(token.trim()));
+            }
+        }
+        return deputies;
     }
 
     @Override
@@ -210,7 +238,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
 
             try (final ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
-                    return new Project(resultSet.getInt(1), name, leader, System.currentTimeMillis(), location, projectStatus);
+                    return new Project(resultSet.getInt(1), name, leader, System.currentTimeMillis(), location, projectStatus, new ArrayList<>());
                 }
             }
         } catch (final SQLException e) {
@@ -237,9 +265,10 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
                 final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
                 final Location location = Utils.deserializeLocation(resultSet.getString("location"));
                 final ProjectStatus projectStatus = ProjectStatus.valueOf(resultSet.getString("projectstatus"));
+                final List<UUID> deputies = deserializeDeputies(resultSet.getString("deputies"));
 
                 if (location != null) {
-                    final Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus);
+                    final Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus, deputies);
                     plugin().getProjectManager().addProject(project);
                 }
             }
@@ -254,9 +283,10 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
              final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_UPDATE)) {
             preparedStatement.setString(1, project.getName());
             preparedStatement.setString(2, project.getLeader().toString());
-            preparedStatement.setString(3, Utils.serializeLocation(project.getLocation()));
-            preparedStatement.setString(4, project.getProjectStatus().toString());
-            preparedStatement.setInt(5, project.getId());
+            preparedStatement.setString(3, serializeDeputies(project.getDeputies()));
+            preparedStatement.setString(4, Utils.serializeLocation(project.getLocation()));
+            preparedStatement.setString(5, project.getProjectStatus().toString());
+            preparedStatement.setInt(6, project.getId());
             preparedStatement.execute();
         } catch (final SQLException e) {
             e.printStackTrace();

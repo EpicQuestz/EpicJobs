@@ -21,6 +21,7 @@ public class CommandPermissions {
 	public static final String LIST_PROJECTS = PROJECT_COMMAND + SEPARATOR + "list";
 	public static final String LIST_ALL_PROJECTS = LIST_PROJECTS + SEPARATOR + "all";
 
+	public static final String INFO_PROJECT = PROJECT_COMMAND + SEPARATOR + "info";
 	public static final String TELEPORT_PROJECT = PROJECT_COMMAND + SEPARATOR + "teleport";
 	public static final String PAUSE_PROJECT = PROJECT_COMMAND + SEPARATOR + "pause";
 	public static final String RESUME_PROJECT = PROJECT_COMMAND + SEPARATOR + "resume";
@@ -30,6 +31,8 @@ public class CommandPermissions {
 	private static final String MODIFY_PROJECT = PROJECT_COMMAND + SEPARATOR + "modify";
 	public static final String MODIFY_PROJECT_NAME = MODIFY_PROJECT + SEPARATOR + "name";
 	public static final String MODIFY_PROJECT_LEADER = MODIFY_PROJECT + SEPARATOR + "leader";
+	public static final String MODIFY_PROJECT_DEPUTIES = MODIFY_PROJECT + SEPARATOR + "deputies";
+	public static final String MODIFY_PROJECT_DEPUTIES_BYPASS = MODIFY_PROJECT_DEPUTIES + SEPARATOR + "bypass";
 	public static final String MODIFY_PROJECT_LOCATION = MODIFY_PROJECT + SEPARATOR + "location";
 	public static final String MODIFY_PROJECT_STATUS = MODIFY_PROJECT + SEPARATOR + "status";
 
@@ -49,6 +52,7 @@ public class CommandPermissions {
 	public static final String ABANDON_JOB = JOB_COMMAND + SEPARATOR + "abandon";
 	public static final String DONE_JOB = JOB_COMMAND + SEPARATOR + "done";
 	public static final String COMPLETE_JOB = JOB_COMMAND + SEPARATOR + "complete";
+	public static final String COMPLETE_JOB_BYPASS = COMPLETE_JOB + SEPARATOR + "bypass";
 	public static final String REOPEN_JOB = JOB_COMMAND + SEPARATOR + "reopen";
 	public static final String ASSIGN_JOB = JOB_COMMAND + SEPARATOR + "assign";
 	public static final String UNASSIGN_JOB = JOB_COMMAND + SEPARATOR + "unassign";

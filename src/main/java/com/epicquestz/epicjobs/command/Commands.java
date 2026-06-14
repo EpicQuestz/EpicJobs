@@ -10,6 +10,7 @@ import com.epicquestz.epicjobs.command.commands.job.JobListDoneCommand;
 import com.epicquestz.epicjobs.command.commands.job.JobListPlayerCommand;
 import com.epicquestz.epicjobs.command.commands.job.TeleportJobCommand;
 import com.epicquestz.epicjobs.command.commands.project.ProjectCommand;
+import com.epicquestz.epicjobs.command.commands.project.ProjectDeputyCommand;
 import com.epicquestz.epicjobs.command.commands.project.ProjectEditCommand;
 import com.epicquestz.epicjobs.command.parser.JobParser;
 import com.epicquestz.epicjobs.command.parser.ProjectParser;
@@ -76,6 +77,7 @@ public class Commands {
 
 		annotationParser.parse(new ProjectCommand(plugin));
 		annotationParser.parse(new ProjectEditCommand(plugin));
+		annotationParser.parse(new ProjectDeputyCommand(plugin));
 
 	}
 }

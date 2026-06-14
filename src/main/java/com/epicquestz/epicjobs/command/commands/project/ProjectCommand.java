@@ -5,11 +5,13 @@ import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.constants.Palette;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
+import com.epicquestz.epicjobs.utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,8 +22,13 @@ import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_PROJECT_COMPLETION;
 import static com.epicquestz.epicjobs.constants.Messages.CANT_CREATE_PROJECT;
@@ -59,6 +66,40 @@ public class ProjectCommand {
 	public void onListAll(final @NonNull CommandSender sender) {
 		final List<Project> projects = plugin.getProjectManager().getProjects();
 		sendProjectList(sender, projects);
+	}
+
+	@CommandDescription("Show project info")
+	@Permission(CommandPermissions.INFO_PROJECT)
+	@Command("info <project>")
+	public void onInfo(final @NonNull CommandSender sender,
+					   @Argument(value = "project", description = "Project") final @NonNull Project project) {
+		final List<UUID> deputies = project.getDeputies();
+		final String deputyNames = deputies.isEmpty()
+			? "None"
+			: deputies.stream().map(Utils::getPlayerHolderText).collect(Collectors.joining(", "));
+		final String created = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+			.withZone(ZoneId.systemDefault())
+			.format(Instant.ofEpochMilli(project.getCreationTime()));
+
+		final TextComponent text = Component.text()
+			.content(project.getName() + " @ ").color(Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, true)
+			.append(Component.text(
+				String.format("[%s x:%s y:%s z:%s]\n\n",
+					project.getLocation().getWorld().getName(),
+					project.getLocation().getBlockX(),
+					project.getLocation().getBlockY(),
+					project.getLocation().getBlockZ()
+				), Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/project teleport " + project.getName())))
+			.append(Component.text()
+				.decoration(TextDecoration.BOLD, false)
+				.append(Component.text("Leader: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(project.getLeader()), Palette.Role.INFO.body()))
+				.append(Component.text(" Status: ", Palette.MUTED)).append(Component.text(project.getProjectStatus().toString(), Palette.Role.INFO.body()))
+				.append(Component.text(" Created: ", Palette.MUTED)).append(Component.text(created + "\n", Palette.Role.INFO.body()))
+				.append(Component.text("Deputies: ", Palette.MUTED)).append(Component.text(deputyNames, Palette.Role.INFO.body())))
+			.build();
+		sender.sendMessage(Component.empty());
+		sender.sendMessage(text);
+		sender.sendMessage(Component.empty());
 	}
 
 	private static void sendProjectList(@NotNull CommandSender sender, List<Project> projects) {
