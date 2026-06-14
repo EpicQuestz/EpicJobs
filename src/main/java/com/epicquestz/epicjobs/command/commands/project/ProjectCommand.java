@@ -3,6 +3,8 @@ package com.epicquestz.epicjobs.command.commands.project;
 import com.epicquestz.epicjobs.EpicJobs;
 import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.constants.Palette;
+import com.epicquestz.epicjobs.job.Job;
+import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.utils.Utils;
@@ -27,6 +29,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,7 +37,9 @@ import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_PROJECT_COMPLE
 import static com.epicquestz.epicjobs.constants.Messages.CANT_CREATE_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
+import static com.epicquestz.epicjobs.constants.Messages.NO_STATS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
+import static com.epicquestz.epicjobs.constants.Messages.PROJECT_HAS_NO_COMPLETED_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_PAUSED;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_NOT_PAUSED;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_PAUSED;
@@ -226,6 +231,79 @@ public class ProjectCommand {
 			.abortIf(false)
 			.async(() -> plugin.getStorage().updateProject(project))
 			.execute();
+	}
+
+	@CommandDescription("Project statistics")
+	@Permission(CommandPermissions.SHOW_PROJECT_STATISTICS)
+	@Command("stats [project]")
+	public void onStats(final @NonNull CommandSender sender,
+						@Argument(value = "project", description = "Project") final @Nullable Project project) {
+		if (project != null) {
+			// Per-project: progress and the builders who completed its jobs (all of them).
+			sendStats(sender, "Stats for " + project.getName(), project.getJobs(), project.getName(), 0);
+			return;
+		}
+
+		// Global: aggregate over every job, capped to the top builders.
+		final List<Job> allJobs = plugin.getJobManager().getJobs();
+		final boolean anyComplete = allJobs.stream().anyMatch(job -> job.getJobStatus().equals(JobStatus.COMPLETE));
+		if (!anyComplete) {
+			NO_STATS_AVAILABLE.send(sender);
+			return;
+		}
+		sendStats(sender, "Server-wide project stats", allJobs, null, 10);
+	}
+
+	private static void sendStats(final @NotNull CommandSender sender, final String title, final List<Job> jobs,
+								  final @Nullable String projectName, final int limit) {
+		final List<Job> completed = jobs.stream()
+			.filter(job -> job.getJobStatus().equals(JobStatus.COMPLETE))
+			.toList();
+		final int total = jobs.size();
+		final int percent = total == 0 ? 0 : completed.size() * 100 / total;
+
+		final List<Map.Entry<UUID, Long>> leaderboard = completed.stream()
+			.filter(job -> job.getClaimant() != null)
+			.collect(Collectors.groupingBy(Job::getClaimant, Collectors.counting()))
+			.entrySet().stream()
+			.sorted(Map.Entry.<UUID, Long>comparingByValue().reversed())
+			.limit(limit > 0 ? limit : Long.MAX_VALUE)
+			.toList();
+
+		final TextComponent.Builder panel = Component.text()
+			.append(Component.text(title, Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, true))
+			.append(Component.newline())
+			.append(Component.text(completed.size() + "/" + total, Palette.Role.INFO.body()))
+			.append(Component.text(" jobs complete ", Palette.MUTED))
+			.append(Component.text("(" + percent + "%)", Palette.Role.INFO.body()));
+
+		if (leaderboard.isEmpty()) {
+			sender.sendMessage(Component.empty());
+			sender.sendMessage(panel.build());
+			if (projectName != null) {
+				PROJECT_HAS_NO_COMPLETED_JOBS.send(sender, projectName);
+			}
+			sender.sendMessage(Component.empty());
+			return;
+		}
+
+		panel.append(Component.newline()).append(Component.newline());
+		int rank = 1;
+		for (final Map.Entry<UUID, Long> entry : leaderboard) {
+			if (rank > 1) {
+				panel.append(Component.newline());
+			}
+			final long count = entry.getValue();
+			panel.append(Component.text(rank + ". ", Palette.MUTED))
+				.append(Component.text(Utils.getPlayerHolderText(entry.getKey()), Palette.Role.INFO.accent()))
+				.append(Component.text(": ", Palette.MUTED))
+				.append(Component.text(count + (count == 1 ? " job" : " jobs"), Palette.Role.INFO.body()));
+			rank++;
+		}
+
+		sender.sendMessage(Component.empty());
+		sender.sendMessage(panel.build());
+		sender.sendMessage(Component.empty());
 	}
 
 }

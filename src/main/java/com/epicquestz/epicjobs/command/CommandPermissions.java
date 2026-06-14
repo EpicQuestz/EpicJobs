@@ -26,6 +26,7 @@ public class CommandPermissions {
 	public static final String PAUSE_PROJECT = PROJECT_COMMAND + SEPARATOR + "pause";
 	public static final String RESUME_PROJECT = PROJECT_COMMAND + SEPARATOR + "resume";
 	public static final String COMPLETE_PROJECT = PROJECT_COMMAND + SEPARATOR + "complete";
+	public static final String SHOW_PROJECT_STATISTICS = PROJECT_COMMAND + SEPARATOR + "statistics";
 
 	// Edit sub-commands
 	private static final String MODIFY_PROJECT = PROJECT_COMMAND + SEPARATOR + "modify";

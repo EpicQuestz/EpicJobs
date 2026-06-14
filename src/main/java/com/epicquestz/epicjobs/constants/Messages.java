@@ -114,6 +114,10 @@ public enum Messages {
     // Project Complete
     ANNOUNCE_PROJECT_COMPLETION(Role.SUCCESS, "Project <em><arg1></em> has been completed!"),
 
+    // Project Stats
+    NO_STATS_AVAILABLE(Role.WARNING, "There are no completed jobs to show statistics for yet."),
+    PROJECT_HAS_NO_COMPLETED_JOBS(Role.INFO, "No jobs have been completed in <em><arg1></em> yet."),
+
     // Project Deputies
     DEPUTY_ADDED(Role.SUCCESS, "Added <em><arg1></em> as a deputy of project <em><arg2></em>."),
     DEPUTY_REMOVED(Role.WARNING, "Removed <em><arg1></em> as a deputy of project <em><arg2></em>."),
