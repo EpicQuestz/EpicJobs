@@ -47,6 +47,7 @@ public enum Messages {
     // Jobs Complete
     JOB_COMPLETED(Role.SUCCESS, "Job <em>#<arg1></em> has been marked as complete."),
     JOB_CANT_BE_COMPLETE(Role.WARNING, "A job has to be marked done to complete."),
+    JOB_COMPLETE_NOT_ALLOWED(Role.ERROR, "You can only complete jobs for projects you lead or are a deputy of."),
 
     // Jobs Reopen
     ANNOUNCE_JOB_REOPEN(Role.WARNING, "<em><arg1></em> has reopened job <em>#<arg2></em>."),
@@ -112,6 +113,15 @@ public enum Messages {
 
     // Project Complete
     ANNOUNCE_PROJECT_COMPLETION(Role.SUCCESS, "Project <em><arg1></em> has been completed!"),
+
+    // Project Deputies
+    DEPUTY_ADDED(Role.SUCCESS, "Added <em><arg1></em> as a deputy of project <em><arg2></em>."),
+    DEPUTY_REMOVED(Role.WARNING, "Removed <em><arg1></em> as a deputy of project <em><arg2></em>."),
+    ALREADY_DEPUTY(Role.WARNING, "<em><arg1></em> is already a deputy of this project."),
+    NOT_A_DEPUTY(Role.WARNING, "<em><arg1></em> is not a deputy of this project."),
+    LEADER_CANT_BE_DEPUTY(Role.WARNING, "The project leader cannot be added as a deputy."),
+    NO_DEPUTIES(Role.INFO, "This project has no deputies."),
+    CANT_MANAGE_DEPUTIES(Role.ERROR, "Only the project leader can manage deputies."),
 
     // Profile
     MISSING_PROFILE(Role.ERROR, "Your EpicJobs profile could not be found. Please contact an administrator.");

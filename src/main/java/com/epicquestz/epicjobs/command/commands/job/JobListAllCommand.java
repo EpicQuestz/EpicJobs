@@ -27,6 +27,7 @@ import org.incendo.cloud.annotations.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class JobListAllCommand {
@@ -76,9 +77,12 @@ public class JobListAllCommand {
     private void sendProjectMenu(final Player player) {
         final List<GuiItem> guiItems = new ArrayList<>();
         for (final Project project : plugin.getProjectManager().getProjects()) {
+            final List<UUID> deputies = project.getDeputies();
+            final String deputyNames = deputies.isEmpty() ? "None" : deputies.stream().map(Utils::getPlayerHolderText).collect(Collectors.joining(", "));
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
 				.withName(Component.text(project.getName(), Palette.Role.INFO.accent(), TextDecoration.BOLD))
 				.withLore(Component.text("Leader: ", Palette.MUTED).append(Component.text(Utils.getPlayerHolderText(project.getLeader()), Palette.Role.INFO.body())))
+				.withLore(Component.text("Deputies: ", Palette.MUTED).append(Component.text(deputyNames, Palette.Role.INFO.body())))
 				.withLore(Component.empty())
 				.withLore("<muted>Shift-click to <em>teleport</em>")
 				.build();

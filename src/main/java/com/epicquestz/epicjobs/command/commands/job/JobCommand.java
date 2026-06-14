@@ -59,6 +59,7 @@ import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_ASSIGNED;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_COMPLETE;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_CANT_BE_UNASSIGNED;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_COMPLETED;
+import static com.epicquestz.epicjobs.constants.Messages.JOB_COMPLETE_NOT_ALLOWED;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_DOESNT_EXIST;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_HAS_TO_BE_ACTIVE;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_NOT_DONE;
@@ -115,9 +116,12 @@ public class JobCommand {
         final List<GuiItem> guiItems = new ArrayList<>();
         final List<Project> projects = plugin.getProjectManager().getProjects().stream().filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE)).toList();
         for (final Project project : projects) {
+            final List<UUID> deputies = project.getDeputies();
+            final String deputyNames = deputies.isEmpty() ? "None" : deputies.stream().map(Utils::getPlayerHolderText).collect(Collectors.joining(", "));
             final ItemStack itemStack = new ItemStackBuilder(Material.SCAFFOLDING)
                 .withName(Component.text(project.getName(), Palette.Role.INFO.accent(), TextDecoration.BOLD))
                 .withLore(Component.text("Leader: ", Palette.MUTED).append(Component.text(Utils.getPlayerHolderText(project.getLeader()), Palette.Role.INFO.body())))
+                .withLore(Component.text("Deputies: ", Palette.MUTED).append(Component.text(deputyNames, Palette.Role.INFO.body())))
                 .withLore(Component.empty())
                 .withLore("<muted>Shift-click to <em>teleport</em>")
                 .build();
@@ -454,6 +458,10 @@ public class JobCommand {
 						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
+                if (!job.getProject().isLeaderOrDeputy(player.getUniqueId()) && !player.hasPermission(CommandPermissions.COMPLETE_JOB_BYPASS)) {
+                    JOB_COMPLETE_NOT_ALLOWED.send(player);
+                    return false;
+                }
                 if (job.getJobStatus().equals(JobStatus.DONE)) {
                     job.setJobStatus(JobStatus.COMPLETE);
                     JOB_COMPLETED.send(player, job.getId());

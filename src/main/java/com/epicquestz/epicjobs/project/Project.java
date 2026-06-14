@@ -18,19 +18,21 @@ public class Project {
     private final long creationTime;
     private Location location;
     private ProjectStatus projectStatus;
+    private final List<UUID> deputies;
     private final List<Job> jobs;
 
     public Project(int id, String name, Player leader) {
-        this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE);
+        this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE, List.of());
     }
 
-    public Project(int id, String name, UUID leader, long creationTime, Location location, ProjectStatus projectStatus) {
+    public Project(int id, String name, UUID leader, long creationTime, Location location, ProjectStatus projectStatus, List<UUID> deputies) {
         this.id = id;
         this.name = name;
         this.leader = leader;
         this.creationTime = creationTime;
         this.location = location;
         this.projectStatus = projectStatus;
+        this.deputies = new ArrayList<>(deputies);
         jobs = new ArrayList<>();
     }
 
@@ -56,6 +58,32 @@ public class Project {
 
     public void setLeader(UUID leader) {
         this.leader = leader;
+    }
+
+    public List<UUID> getDeputies() {
+        return ImmutableList.copyOf(deputies);
+    }
+
+    public void addDeputy(UUID deputy) {
+        if (!deputies.contains(deputy)) {
+            deputies.add(deputy);
+        }
+    }
+
+    public void removeDeputy(UUID deputy) {
+        deputies.remove(deputy);
+    }
+
+    public boolean isLeader(UUID uuid) {
+        return leader.equals(uuid);
+    }
+
+    public boolean isDeputy(UUID uuid) {
+        return deputies.contains(uuid);
+    }
+
+    public boolean isLeaderOrDeputy(UUID uuid) {
+        return isLeader(uuid) || isDeputy(uuid);
     }
 
     public long getCreationTime() {
