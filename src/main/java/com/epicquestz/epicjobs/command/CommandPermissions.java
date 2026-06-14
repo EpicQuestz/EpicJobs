@@ -52,6 +52,7 @@ public class CommandPermissions {
 	public static final String CLAIM_JOB = JOB_COMMAND + SEPARATOR + "claim";
 	public static final String ABANDON_JOB = JOB_COMMAND + SEPARATOR + "abandon";
 	public static final String DONE_JOB = JOB_COMMAND + SEPARATOR + "done";
+	public static final String DONE_JOB_BYPASS = DONE_JOB + SEPARATOR + "bypass";
 	public static final String COMPLETE_JOB = JOB_COMMAND + SEPARATOR + "complete";
 	public static final String COMPLETE_JOB_BYPASS = COMPLETE_JOB + SEPARATOR + "bypass";
 	public static final String REOPEN_JOB = JOB_COMMAND + SEPARATOR + "reopen";

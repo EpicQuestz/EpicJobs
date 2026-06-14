@@ -41,6 +41,8 @@ public enum Messages {
 
     // Jobs Done
     ANNOUNCE_JOB_DONE(Role.SUCCESS, "<em><arg1></em> has marked job <em>#<arg2></em> as done."),
+    ANNOUNCE_JOB_DONE_OVERRIDE(Role.SUCCESS, "<em><arg1></em> has marked <em><arg2></em>'s job <em>#<arg3></em> as done."),
+    CONFIRM_DONE_OVERRIDE(Role.WARNING, "Job <em>#<arg1></em> is claimed by <em><arg2></em>.\n<u>Click to mark it done anyway</u>."),
     JOB_HAS_TO_BE_ACTIVE(Role.WARNING, "The job has to be active to be marked done."),
     PLAYER_HAS_NO_ACTIVE_JOBS(Role.WARNING, "You have no active jobs."),
 

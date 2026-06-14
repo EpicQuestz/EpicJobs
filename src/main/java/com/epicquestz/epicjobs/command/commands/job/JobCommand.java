@@ -37,6 +37,7 @@ import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Default;
+import org.incendo.cloud.annotations.Flag;
 import org.incendo.cloud.annotations.Permission;
 
 import java.util.ArrayList;
@@ -47,9 +48,11 @@ import java.util.stream.Collectors;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMENT;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
+import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE_OVERRIDE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_TAKEN;
 import static com.epicquestz.epicjobs.constants.Messages.COMPLETED_JOBS_COUNT;
+import static com.epicquestz.epicjobs.constants.Messages.CONFIRM_DONE_OVERRIDE;
 import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_ASSIGNED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.HAS_BEEN_ASSIGNED_JOB;
@@ -405,7 +408,8 @@ public class JobCommand {
 	@Permission(CommandPermissions.DONE_JOB)
 	@Command("done|d [job]")
 	public void onDone(final @NonNull Player player,
-					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job) {
+					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job,
+					   @Flag(value = "confirm", description = "Confirm marking another player's job as done") final boolean confirm) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
@@ -431,18 +435,26 @@ public class JobCommand {
                     } else {
                         PLAYER_HAS_MULITPLE_JOBS.send(player);
                     }
-                } else {
-                    if (jobs.contains(job)) {
-                        if (job.getJobStatus().equals(JobStatus.TAKEN)) {
-                            job.setJobStatus(JobStatus.DONE);
-                            ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
-                            jobEdited = job;
-                        } else {
-                            JOB_HAS_TO_BE_ACTIVE.send(player);
-                        }
+                } else if (player.getUniqueId().equals(job.getClaimant())) {
+                    if (job.getJobStatus().equals(JobStatus.TAKEN)) {
+                        job.setJobStatus(JobStatus.DONE);
+                        ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
+                        jobEdited = job;
                     } else {
-                        PLAYER_HASNT_CLAIMED_JOB.send(player);
+                        JOB_HAS_TO_BE_ACTIVE.send(player);
                     }
+                } else if (!player.hasPermission(CommandPermissions.DONE_JOB_BYPASS)) {
+                    PLAYER_HASNT_CLAIMED_JOB.send(player);
+                } else if (!job.getJobStatus().equals(JobStatus.TAKEN)) {
+                    JOB_HAS_TO_BE_ACTIVE.send(player);
+                } else if (!confirm) {
+                    player.sendMessage(CONFIRM_DONE_OVERRIDE.component(job.getId(), Utils.getPlayerHolderText(job.getClaimant()))
+                        .clickEvent(ClickEvent.runCommand("/job done " + job.getId() + " --confirm"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Confirm"))));
+                } else {
+                    ANNOUNCE_JOB_DONE_OVERRIDE.broadcast(player.getName(), Utils.getPlayerHolderText(job.getClaimant()), job.getId());
+                    job.setJobStatus(JobStatus.DONE);
+                    jobEdited = job;
                 }
                 return jobEdited;
             })
