@@ -87,10 +87,19 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
     private static final String SCHEMA_VERSION_SELECT = "SELECT MAX(version) AS version FROM schema_version;";
     private static final String SCHEMA_VERSION_INSERT = "INSERT INTO schema_version(version) VALUES (?);";
 
-    // Migration v1: expand job categories. Remap the removed categories to OTHER (so existing
-    // rows stay loadable), then widen the enum column to the new set of values.
+    // Migration v1: expand and rename job categories. The new values aren't valid enum members
+    // on an old database yet, so first widen the column to a superset holding both the old and new
+    // values, then remap the renamed categories in place (NATURE -> VEGETATION, DECORATION ->
+    // ATMOSPHERE, STRUCTURE -> EXTERIOR_STRUCTURE; TERRAIN/INTERIOR/REMOVAL/OTHER are unchanged),
+    // then narrow the column to the final set of values.
     private static final String[] MIGRATION_V1 = {
-        "UPDATE job SET jobcategory = 'OTHER' WHERE jobcategory IN ('STRUCTURE', 'NATURE', 'DECORATION');",
+        "ALTER TABLE job MODIFY COLUMN jobcategory " +
+            "enum('TERRAIN', 'NATURE', 'DECORATION', 'STRUCTURE', 'INTERIOR', 'REMOVAL', 'OTHER', " +
+            "'VEGETATION', 'PATHWAY', 'ATMOSPHERE', 'EXTERIOR_STRUCTURE', 'INTERIOR_STRUCTURE') " +
+            "COLLATE utf8_bin NOT NULL;",
+        "UPDATE job SET jobcategory = 'VEGETATION' WHERE jobcategory = 'NATURE';",
+        "UPDATE job SET jobcategory = 'ATMOSPHERE' WHERE jobcategory = 'DECORATION';",
+        "UPDATE job SET jobcategory = 'EXTERIOR_STRUCTURE' WHERE jobcategory = 'STRUCTURE';",
         "ALTER TABLE job MODIFY COLUMN jobcategory " +
             "enum('TERRAIN', 'VEGETATION', 'PATHWAY', 'ATMOSPHERE', 'EXTERIOR_STRUCTURE', 'INTERIOR_STRUCTURE', 'INTERIOR', 'REMOVAL', 'OTHER') " +
             "COLLATE utf8_bin NOT NULL;"
