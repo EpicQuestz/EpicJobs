@@ -411,7 +411,8 @@ public class JobCommand {
 	@Command("done|d [job]")
 	public void onDone(final @NonNull Player player,
 					   @Argument(value = "job", description = "Job", suggestions = "player-job") final @Nullable Job job,
-					   @Flag(value = "confirm", description = "Confirm marking another player's job as done") final boolean confirm) {
+					   @Flag(value = "confirm", permission = CommandPermissions.DONE_JOB_BYPASS,
+						     description = "Confirm marking another player's job as done") final boolean confirm) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 final Optional<User> optional = plugin.getEpicJobsPlayer(player.getUniqueId());
@@ -470,7 +471,8 @@ public class JobCommand {
 	@Command("complete <job>")
 	public void onComplete(final @NonNull Player player,
 						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job,
-						   @Flag(value = "confirm", description = "Confirm completing a job for a project you don't lead") final boolean confirm) {
+						   @Flag(value = "confirm", permission = CommandPermissions.COMPLETE_JOB_BYPASS,
+							   description = "Confirm completing a job for a project you don't lead") final boolean confirm) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getProject().isLeaderOrDeputy(player.getUniqueId())) {
