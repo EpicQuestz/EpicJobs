@@ -19,6 +19,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Flag;
 import org.incendo.cloud.annotations.Permission;
 
 import java.util.ArrayList;
@@ -36,11 +37,14 @@ public class JobListDoneCommand {
 	@CommandDescription("List done jobs")
 	@Permission(CommandPermissions.LIST_DONE_JOBS)
 	@Command("job|jobs list|ls done")
-	public void onListDone(final Player player) {
+	public void onListDone(final Player player,
+						   @Flag(value = "all", permission = CommandPermissions.BYPASS,
+								 description = "Show done jobs from every project") final boolean all) {
 		final List<Job> jobs = plugin.getJobManager().getJobs().stream()
             .filter(job -> job.getJobStatus().equals(JobStatus.DONE))
+            .filter(job -> all || job.getProject().isLeaderOrDeputy(player.getUniqueId()))
             .collect(Collectors.toList());
-        sendJobMenu(player, "Available Jobs", jobs);
+        sendJobMenu(player, all ? "All Done Jobs" : "Done Jobs", jobs);
 	}
 
 
