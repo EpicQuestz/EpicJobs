@@ -38,6 +38,7 @@ import static com.epicquestz.epicjobs.constants.Messages.CANT_CREATE_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.NO_STATS_AVAILABLE;
+import static com.epicquestz.epicjobs.constants.Messages.NOT_PROJECT_MANAGER;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_COMPLETE;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_HAS_NO_COMPLETED_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_ALREADY_PAUSED;
@@ -174,7 +175,11 @@ public class ProjectCommand {
 	@Permission(CommandPermissions.PAUSE_PROJECT)
 	@Command("pause <project>")
 	public void onPause(final @NonNull CommandSender sender,
-						@Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project) {
+						@Argument(value = "project", description = "Project", suggestions = "own-active-project") final @NonNull Project project) {
+		if (!Utils.canManage(sender, project)) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		EpicJobs.newSharedChain("EpicJobs")
 			.syncFirst(() -> {
 				if (!project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
@@ -195,7 +200,11 @@ public class ProjectCommand {
 	@Permission(CommandPermissions.RESUME_PROJECT)
 	@Command("resume|unpause <project>")
 	public void onResume(final @NonNull CommandSender sender,
-						 @Argument(value = "project", description = "Project", suggestions = "paused-project") final @NonNull Project project) {
+						 @Argument(value = "project", description = "Project", suggestions = "own-paused-project") final @NonNull Project project) {
+		if (!Utils.canManage(sender, project)) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
         EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (project.getProjectStatus().equals(ProjectStatus.PAUSED)) {
@@ -216,7 +225,11 @@ public class ProjectCommand {
 	@Permission(CommandPermissions.COMPLETE_PROJECT)
 	@Command("complete <project>")
 	public void onComplete(final @NonNull Player player,
-						   @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project) {
+						   @Argument(value = "project", description = "Project", suggestions = "own-active-project") final @NonNull Project project) {
+		if (!Utils.canManage(player, project)) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		EpicJobs.newSharedChain("EpicJobs")
 			.syncFirst(() -> {
 				if (!project.getProjectStatus().equals(ProjectStatus.COMPLETE)) {

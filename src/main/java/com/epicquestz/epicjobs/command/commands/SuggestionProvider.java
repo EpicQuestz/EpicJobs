@@ -5,6 +5,8 @@ import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.user.User;
+import com.epicquestz.epicjobs.utils.Utils;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.annotations.suggestion.Suggestions;
@@ -42,6 +44,28 @@ public class SuggestionProvider {
 	public Stream<String> activeProjectSuggestions() {
 		return plugin.getProjectManager().getProjects().stream()
 				.filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
+				.map(Project::getName);
+	}
+
+	@Suggestions("own-project")
+	public Stream<String> ownProjectSuggestions(final @NonNull CommandSender sender) {
+		return manageableProjects(sender, null);
+	}
+
+	@Suggestions("own-active-project")
+	public Stream<String> ownActiveProjectSuggestions(final @NonNull CommandSender sender) {
+		return manageableProjects(sender, ProjectStatus.ACTIVE);
+	}
+
+	@Suggestions("own-paused-project")
+	public Stream<String> ownPausedProjectSuggestions(final @NonNull CommandSender sender) {
+		return manageableProjects(sender, ProjectStatus.PAUSED);
+	}
+
+	private Stream<String> manageableProjects(final CommandSender sender, final ProjectStatus status) {
+		return plugin.getProjectManager().getProjects().stream()
+				.filter(project -> status == null || project.getProjectStatus().equals(status))
+				.filter(project -> Utils.canManage(sender, project))
 				.map(Project::getName);
 	}
 

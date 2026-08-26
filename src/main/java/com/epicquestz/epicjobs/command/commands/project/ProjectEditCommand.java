@@ -14,6 +14,8 @@ import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
 import org.incendo.cloud.annotations.Permission;
 
+import static com.epicquestz.epicjobs.constants.Messages.NOT_PROJECT_LEADER;
+import static com.epicquestz.epicjobs.constants.Messages.NOT_PROJECT_MANAGER;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_LEADER_SET;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_LOCATION_SET;
 import static com.epicquestz.epicjobs.constants.Messages.PROJECT_NAME_SET;
@@ -32,9 +34,13 @@ public class ProjectEditCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_NAME)
 	@Command("edit|e name <project> <name>")
 	public void onEditName(@NonNull CommandSender sender,
-						   @Argument(value = "project", description = "Project") final @NonNull Project project,
+						   @Argument(value = "project", description = "Project", suggestions = "own-project") final @NonNull Project project,
 						   @Argument(value = "name", description = "Name") final @NonNull String name
 	) {
+		if (!Utils.canManage(sender, project)) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		project.setName(name);
 		PROJECT_NAME_SET.send(sender, name);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
@@ -44,9 +50,13 @@ public class ProjectEditCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_LEADER)
 	@Command("edit|e leader <project> <leader>")
 	public void onEditLeader(@NonNull CommandSender sender,
-							 @Argument(value = "project", description = "Project") final @NonNull Project project,
+							 @Argument(value = "project", description = "Project", suggestions = "own-project") final @NonNull Project project,
 							 @Argument(value = "leader", description = "Leader", suggestions = "all-offline-players") final @NonNull OfflinePlayer leader
 	) {
+		if (!Utils.canLead(sender, project)) {
+			NOT_PROJECT_LEADER.send(sender);
+			return;
+		}
 		project.setLeader(leader.getUniqueId());
 		PROJECT_LEADER_SET.send(sender, Utils.getPlayerHolderText(leader.getUniqueId()));
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
@@ -56,8 +66,12 @@ public class ProjectEditCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_LOCATION)
 	@Command("edit|e location <project>")
 	public void onEditLocation(@NonNull Player player,
-							   @Argument(value = "project", description = "Project") final @NonNull Project project
+							   @Argument(value = "project", description = "Project", suggestions = "own-project") final @NonNull Project project
 	) {
+		if (!Utils.canManage(player, project)) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		project.setLocation(player.getLocation());
 		PROJECT_LOCATION_SET.send(player);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();
@@ -67,9 +81,13 @@ public class ProjectEditCommand {
 	@Permission(CommandPermissions.MODIFY_PROJECT_STATUS)
 	@Command("edit|e status <project> <status>")
 	public void onEditStatus(@NonNull CommandSender sender,
-							 @Argument(value = "project", description = "Project") final @NonNull Project project,
+							 @Argument(value = "project", description = "Project", suggestions = "own-project") final @NonNull Project project,
 							 @Argument(value = "status", description = "Status") final @NonNull ProjectStatus status
 	) {
+		if (!Utils.canManage(sender, project)) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		project.setProjectStatus(status);
 		PROJECT_STATUS_SET.send(sender, status.name());
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateProject(project)).execute();

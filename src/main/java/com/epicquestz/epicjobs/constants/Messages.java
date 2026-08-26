@@ -130,6 +130,10 @@ public enum Messages {
     NO_DEPUTIES(Role.INFO, "This project has no deputies."),
     CANT_MANAGE_DEPUTIES(Role.ERROR, "Only the project leader can manage deputies."),
 
+    // Project ownership
+    NOT_PROJECT_MANAGER(Role.ERROR, "You can only manage jobs and projects you lead or are a deputy of."),
+    NOT_PROJECT_LEADER(Role.ERROR, "Only the project leader can do this."),
+
     // Profile
     MISSING_PROFILE(Role.ERROR, "Your EpicJobs profile could not be found. Please contact an administrator.");
 

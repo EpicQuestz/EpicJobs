@@ -15,6 +15,9 @@ public class CommandPermissions {
 	private static final String PROJECT_COMMAND = COMMAND + SEPARATOR + "project";
 	private static final String JOB_COMMAND = COMMAND + SEPARATOR + "job";
 
+	// Lets a player manage projects they neither lead nor are a deputy of
+	public static final String BYPASS = COMMAND + SEPARATOR + "bypass";
+
 	// Project commands
 	public static final String CREATE_PROJECT = PROJECT_COMMAND + SEPARATOR + "create";
 

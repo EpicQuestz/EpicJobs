@@ -3,8 +3,10 @@ package com.epicquestz.epicjobs.utils;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.epicquestz.epicjobs.EpicJobs;
+import com.epicquestz.epicjobs.command.CommandPermissions;
 import com.epicquestz.epicjobs.constants.Palette;
 import com.epicquestz.epicjobs.job.Job;
+import com.epicquestz.epicjobs.project.Project;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -13,6 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,6 +25,24 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.UUID;
 
 public class Utils {
+
+    /**
+     * Whether the sender may manage the project - its leader, one of its deputies, or a holder of
+     * {@link CommandPermissions#BYPASS}. Non-players (console) are always allowed.
+     */
+    public static boolean canManage(@NonNull final CommandSender sender, @NonNull final Project project) {
+        return canLead(sender, project) || (sender instanceof Player player && project.isDeputy(player.getUniqueId()));
+    }
+
+    /**
+     * Like {@link #canManage}, but deputies do not qualify.
+     */
+    public static boolean canLead(@NonNull final CommandSender sender, @NonNull final Project project) {
+        if (!(sender instanceof Player player)) {
+            return true;
+        }
+        return project.isLeader(player.getUniqueId()) || player.hasPermission(CommandPermissions.BYPASS);
+    }
 
     public static String serializeLocation(@NonNull final Location location) {
         return location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ() + " " + location.getYaw() + " " + location.getPitch();

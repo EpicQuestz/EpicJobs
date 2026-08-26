@@ -71,6 +71,7 @@ import static com.epicquestz.epicjobs.constants.Messages.JOB_NOT_OPEN;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_REOPEN;
 import static com.epicquestz.epicjobs.constants.Messages.MISSING_PROFILE;
 import static com.epicquestz.epicjobs.constants.Messages.MUST_BE_PLAYER;
+import static com.epicquestz.epicjobs.constants.Messages.NOT_PROJECT_MANAGER;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HASNT_CLAIMED_JOB;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_MULITPLE_JOBS;
 import static com.epicquestz.epicjobs.constants.Messages.PLAYER_HAS_NO_ACTIVE_JOBS;
@@ -508,6 +509,10 @@ public class JobCommand {
 	@Command("reopen <job>")
 	public void onReopen(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		if (!Utils.canManage(player, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 switch (job.getJobStatus()) {
@@ -545,6 +550,10 @@ public class JobCommand {
 	@Command("unassign <job>")
 	public void onUnassign(final @NonNull Player player,
 						   @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		if (!Utils.canManage(player, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.TAKEN)) {
@@ -573,6 +582,10 @@ public class JobCommand {
 						 @Argument(value = "job", description = "Job", suggestions = "open-job") final @NonNull Job job,
 						 @Argument(value = "player", description = "Player") final @NonNull OfflinePlayer target
 	) {
+		if (!Utils.canManage(player, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
                 if (job.getJobStatus().equals(JobStatus.OPEN)) {
@@ -600,12 +613,16 @@ public class JobCommand {
 	@Permission(CommandPermissions.CREATE_JOB)
 	@Command("create <project> <category> <description>")
 	public void onCreate(final @NonNull Player player,
-						 @Argument(value = "project", description = "Project", suggestions = "active-project") final @NonNull Project project,
+						 @Argument(value = "project", description = "Project", suggestions = "own-active-project") final @NonNull Project project,
 						 @Argument(value = "category", description = "Category") final @NonNull JobCategory jobCategory,
 						 @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
 	) {
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
+                if (!Utils.canManage(player, project)) {
+                    NOT_PROJECT_MANAGER.send(player);
+                    return false;
+                }
                 if (project.getProjectStatus().equals(ProjectStatus.ACTIVE)) {
                     return true;
                 } else {
@@ -632,6 +649,10 @@ public class JobCommand {
 	@Command("remove|delete <job>")
 	public void onRemove(final @NonNull Player player,
 						 @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		if (!Utils.canManage(player, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		EpicJobs.newSharedChain("EpicJobs")
             .sync(() -> {
                 plugin.getJobManager().removeJob(job);

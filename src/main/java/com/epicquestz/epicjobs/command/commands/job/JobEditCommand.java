@@ -23,6 +23,7 @@ import static com.epicquestz.epicjobs.constants.Messages.JOB_DESCRIPTION_SET;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_LOCATION_SET;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_PROJECT_SET;
 import static com.epicquestz.epicjobs.constants.Messages.JOB_STATUS_SET;
+import static com.epicquestz.epicjobs.constants.Messages.NOT_PROJECT_MANAGER;
 
 @Command("job|jobs edit")
 public class JobEditCommand {
@@ -40,6 +41,10 @@ public class JobEditCommand {
 							   @Argument(value = "job", description = "Job") final @NonNull Job job,
 							   @Argument(value = "claimant", description = "Claimant", suggestions = "all-offline-players") final @NonNull OfflinePlayer claimant
 	) {
+		if (!Utils.canManage(sender, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		job.setClaimant(claimant.getUniqueId());
 		JOB_CLAIMANT_SET.send(sender, Utils.getPlayerHolderText(claimant.getUniqueId()));
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
@@ -53,6 +58,10 @@ public class JobEditCommand {
 					   @Argument(value = "job", description = "Job") final @NonNull Job job,
 					   @Argument(value = "description", description = "Description") final @NonNull @Greedy String description
 	) {
+		if (!Utils.canManage(sender, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		job.setDescription(description);
 		JOB_DESCRIPTION_SET.send(sender, description);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
@@ -63,8 +72,12 @@ public class JobEditCommand {
 	@Command("project <job> <project>")
 	public void onEditProject(final @NonNull CommandSender sender,
 							  @Argument(value = "job", description = "Job") final @NonNull Job job,
-							  @Argument(value = "project", description = "Project") final @NonNull Project project
+							  @Argument(value = "project", description = "Project", suggestions = "own-project") final @NonNull Project project
 	) {
+		if (!Utils.canManage(sender, job.getProject()) || !Utils.canManage(sender, project)) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		job.setProject(project);
 		JOB_PROJECT_SET.send(sender, project.getName());
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
@@ -75,6 +88,10 @@ public class JobEditCommand {
 	@Command("location <job>")
 	public void onEditLocation(final @NonNull Player player,
 							   @Argument(value = "job", description = "Job") final @NonNull Job job) {
+		if (!Utils.canManage(player, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(player);
+			return;
+		}
 		job.setLocation(player.getLocation());
 		JOB_LOCATION_SET.send(player);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
@@ -87,6 +104,10 @@ public class JobEditCommand {
 							 @Argument(value = "job", description = "Job") final @NonNull Job job,
 							 @Argument(value = "status", description = "Status") final @NonNull JobStatus status
 	) {
+		if (!Utils.canManage(sender, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		job.setJobStatus(status);
 		JOB_STATUS_SET.send(sender, status.name());
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
@@ -99,6 +120,10 @@ public class JobEditCommand {
 							   @Argument(value = "job", description = "Job") final @NonNull Job job,
 							   @Argument(value = "category", description = "Category") final @NonNull JobCategory category
 	) {
+		if (!Utils.canManage(sender, job.getProject())) {
+			NOT_PROJECT_MANAGER.send(sender);
+			return;
+		}
 		job.setJobCategory(category);
 		JOB_CATEGORY_SET.send(sender, category);
 		EpicJobs.newSharedChain("EpicJobs").async(() -> plugin.getStorage().updateJob(job)).execute();
