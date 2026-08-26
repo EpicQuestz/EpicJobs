@@ -172,8 +172,9 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         users.add(user);
         if (player.hasPermission(CommandPermissions.LIST_DONE_JOBS)) {
             final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.DONE)).toList();
-            if (!jobs.isEmpty()) {
-                sendReviewerJoinMessage(player, jobs.size());
+            final int own = (int) jobs.stream().filter(job -> job.getProject().isLeaderOrDeputy(player.getUniqueId())).count();
+            if (own > 0 || (!jobs.isEmpty() && player.hasPermission(CommandPermissions.BYPASS))) {
+                sendReviewerJoinMessage(player, own, jobs.size());
             }
         } else if (player.hasPermission(CommandPermissions.CLAIM_JOB)) {
             final List<Job> jobs = getJobManager().getJobs().stream().filter(job -> job.getJobStatus().equals(JobStatus.OPEN)).toList();
@@ -188,15 +189,21 @@ public final class EpicJobs extends JavaPlugin implements Listener {
         getEpicJobsPlayer(event.getPlayer().getUniqueId()).ifPresent(epicJobsPlayer -> users.remove(epicJobsPlayer));
     }
 
-    private void sendReviewerJoinMessage(final Player player, final int jobCount) {
-        final Component textComponent = Component.text()
+    private void sendReviewerJoinMessage(final Player player, final int ownCount, final int totalCount) {
+        final var builder = Component.text()
             .content("There are ").color(Palette.Role.INFO.body())
-            .append(Component.text(jobCount, Palette.Role.INFO.accent(), TextDecoration.BOLD))
-            .append(Component.text(" job(s) marked as done. Use "))
+            .append(Component.text(ownCount, Palette.Role.INFO.accent(), TextDecoration.BOLD))
+            .append(Component.text(" job(s) marked as done in your projects. Use "))
             .append(Component.text("/jobs list done", Palette.Role.INFO.accent()).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review jobs!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/jobs list done")))
-            .append(Component.text(" to review them."))
-            .build();
-        player.sendMessage(textComponent);
+            .append(Component.text(" to review them."));
+        if (totalCount > ownCount && player.hasPermission(CommandPermissions.BYPASS)) {
+            builder.append(Component.newline()).append(Component.newline())
+                .append(Component.text(totalCount, Palette.Role.INFO.accent(), TextDecoration.BOLD))
+                .append(Component.text(" job(s) are done server-wide. Use "))
+                .append(Component.text("/jobs list done --all", Palette.Role.INFO.accent()).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Review every job!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/jobs list done --all")))
+                .append(Component.text(" to see them all."));
+        }
+        player.sendMessage(builder.build());
     }
 
     private void sendPlayerJoinMessage(final Player player, final int jobCount) {
