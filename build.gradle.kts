@@ -14,7 +14,7 @@ val paperVersion = "1.21.11-R0.1-SNAPSHOT"
 val hikariVersion = "6.3.3"
 val mariadbClientVersion = "3.5.8"
 val cloudVersion = "2.0.0" // cloud-core / annotations
-val cloudMinecraftVersion = "2.0.0-beta.9" // cloud-paper / minecraft-extras
+val cloudMinecraftVersion = "2.0.1" // cloud-paper / minecraft-extras
 val taskchainVersion = "3.7.2"
 val inventoryFrameworkVersion = "0.10.13"
 
