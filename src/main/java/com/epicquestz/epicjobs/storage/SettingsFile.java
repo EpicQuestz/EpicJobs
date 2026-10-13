@@ -27,6 +27,10 @@ public class SettingsFile {
             yamlConfiguration.set(MYSQL_INFO + "password", "123SuperSecret321");
             save();
         }
+        if (!yamlConfiguration.isSet("discord.webhook-url")) {
+            yamlConfiguration.set("discord.webhook-url", "");
+            save();
+        }
     }
 
     public YamlConfiguration getConfiguration() {

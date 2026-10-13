@@ -11,6 +11,7 @@ import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.user.User;
+import com.epicquestz.epicjobs.utils.DiscordWebhook;
 import com.epicquestz.epicjobs.utils.ItemStackBuilder;
 import com.epicquestz.epicjobs.utils.JobItemHelper;
 import com.epicquestz.epicjobs.utils.MenuHelper;
@@ -47,6 +48,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMENT;
+import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_CREATED;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE_OVERRIDE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
@@ -502,7 +504,10 @@ public class JobCommand {
                 }
             })
             .abortIf(false)
-            .async(() -> plugin.getStorage().updateJob(job))
+            .async(() -> {
+                plugin.getStorage().updateJob(job);
+                DiscordWebhook.send(JOB_COMPLETED.component(job.getId()));
+            })
             .execute();
 	}
 
@@ -642,6 +647,7 @@ public class JobCommand {
                 plugin.getJobManager().addJob(job); // register on the main thread
                 job.getProject().addJob(job);
                 SUCCESSFULLY_CREATED_JOB.send(player, job.getId());
+                DiscordWebhook.send(ANNOUNCE_JOB_CREATED.component(player.getName(), job.getId(), project.getName(), description));
             })
             .execute();
 	}
