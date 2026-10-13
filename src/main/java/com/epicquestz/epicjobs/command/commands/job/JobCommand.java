@@ -468,7 +468,7 @@ public class JobCommand {
 
 	@CommandDescription("Mark a job as complete")
 	@Permission(CommandPermissions.COMPLETE_JOB)
-	@Command("complete <job>")
+	@Command("complete|approve <job>")
 	public void onComplete(final @NonNull Player player,
 						   @Argument(value = "job", description = "Job", suggestions = "player-job") final @NonNull Job job,
 						   @Flag(value = "confirm", permission = CommandPermissions.COMPLETE_JOB_BYPASS,
