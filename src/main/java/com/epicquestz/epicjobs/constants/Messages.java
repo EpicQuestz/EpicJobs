@@ -1,7 +1,6 @@
 package com.epicquestz.epicjobs.constants;
 
 import com.epicquestz.epicjobs.constants.Palette.Role;
-import com.epicquestz.epicjobs.utils.DiscordWebhook;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -69,7 +68,6 @@ public enum Messages {
 
     // Jobs Create
     SUCCESSFULLY_CREATED_JOB(Role.SUCCESS, "Successfully created job with id <em>#<arg1></em>."),
-    ANNOUNCE_JOB_CREATED(Role.INFO, "<em><arg1></em> created job <em>#<arg2></em> in project <em><arg3></em>: <arg4>"),
     ERROR_CREATING_JOB(Role.ERROR, "Error while creating job. Please contact an administrator."),
 
     // Jobs Remove
@@ -170,9 +168,7 @@ public enum Messages {
     }
 
     public void broadcast(final Object... args) {
-        final Component component = component(args);
-        Bukkit.getServer().broadcast(component);
-        DiscordWebhook.send(component);
+        Bukkit.getServer().broadcast(component(args));
     }
 
 }

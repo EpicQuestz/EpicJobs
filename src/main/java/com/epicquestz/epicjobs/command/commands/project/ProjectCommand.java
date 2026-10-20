@@ -7,6 +7,7 @@ import com.epicquestz.epicjobs.job.Job;
 import com.epicquestz.epicjobs.job.JobStatus;
 import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
+import com.epicquestz.epicjobs.utils.DiscordWebhook;
 import com.epicquestz.epicjobs.utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -235,6 +236,7 @@ public class ProjectCommand {
 				if (!project.getProjectStatus().equals(ProjectStatus.COMPLETE)) {
 					project.setProjectStatus(ProjectStatus.COMPLETE);
 					ANNOUNCE_PROJECT_COMPLETION.broadcast(project.getName());
+					DiscordWebhook.projectCompleted(player, project);
 					return true;
 				} else {
 					PROJECT_ALREADY_COMPLETE.send(player);

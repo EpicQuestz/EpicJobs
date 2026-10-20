@@ -12,6 +12,7 @@ import com.epicquestz.epicjobs.project.Project;
 import com.epicquestz.epicjobs.project.ProjectStatus;
 import com.epicquestz.epicjobs.user.User;
 import com.epicquestz.epicjobs.utils.DiscordWebhook;
+import com.epicquestz.epicjobs.utils.DiscordWebhook.JobEvent;
 import com.epicquestz.epicjobs.utils.ItemStackBuilder;
 import com.epicquestz.epicjobs.utils.JobItemHelper;
 import com.epicquestz.epicjobs.utils.MenuHelper;
@@ -48,7 +49,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_ABANDONMENT;
-import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_CREATED;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_DONE_OVERRIDE;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_JOB_REOPEN;
@@ -349,6 +349,7 @@ public class JobCommand {
                         if (epicJobsPlayer.isPresent()) {
                             job.claim(epicJobsPlayer.get());
                             ANNOUNCE_JOB_TAKEN.broadcast(player.getName(), job.getId());
+                            DiscordWebhook.job(JobEvent.CLAIMED, player, job);
                             return true;
                         } else {
                             return false;
@@ -400,6 +401,7 @@ public class JobCommand {
 				if (jobEdited != null) {
 					jobEdited.abandon(epicJobsPlayer);
 					ANNOUNCE_JOB_ABANDONMENT.broadcast(player.getName(), jobEdited.getId());
+					DiscordWebhook.job(JobEvent.ABANDONED, player, jobEdited);
 				}
                 return jobEdited;
             })
@@ -432,6 +434,7 @@ public class JobCommand {
                         if (jobEdited.getJobStatus().equals(JobStatus.TAKEN)) {
                             jobEdited.setJobStatus(JobStatus.DONE);
                             ANNOUNCE_JOB_DONE.broadcast(player.getName(), jobs.getFirst().getId());
+                            DiscordWebhook.job(JobEvent.DONE, player, jobEdited);
                         } else {
                             JOB_HAS_TO_BE_ACTIVE.send(player);
                         }
@@ -444,6 +447,7 @@ public class JobCommand {
                     if (job.getJobStatus().equals(JobStatus.TAKEN)) {
                         job.setJobStatus(JobStatus.DONE);
                         ANNOUNCE_JOB_DONE.broadcast(player.getName(), job.getId());
+                        DiscordWebhook.job(JobEvent.DONE, player, job);
                         jobEdited = job;
                     } else {
                         JOB_HAS_TO_BE_ACTIVE.send(player);
@@ -458,6 +462,7 @@ public class JobCommand {
                         .hoverEvent(HoverEvent.showText(Component.text("Confirm"))));
                 } else {
                     ANNOUNCE_JOB_DONE_OVERRIDE.broadcast(player.getName(), Utils.getPlayerHolderText(job.getClaimant()), job.getId());
+                    DiscordWebhook.job(JobEvent.DONE, player, job);
                     job.setJobStatus(JobStatus.DONE);
                     jobEdited = job;
                 }
@@ -481,6 +486,7 @@ public class JobCommand {
                     if (job.getJobStatus().equals(JobStatus.DONE)) {
                         job.setJobStatus(JobStatus.COMPLETE);
                         JOB_COMPLETED.send(player, job.getId());
+                        DiscordWebhook.job(JobEvent.COMPLETED, player, job);
                         return true;
                     } else {
                         JOB_CANT_BE_COMPLETE.send(player);
@@ -500,14 +506,12 @@ public class JobCommand {
                 } else {
                     job.setJobStatus(JobStatus.COMPLETE);
                     JOB_COMPLETED.send(player, job.getId());
+                    DiscordWebhook.job(JobEvent.COMPLETED, player, job);
                     return true;
                 }
             })
             .abortIf(false)
-            .async(() -> {
-                plugin.getStorage().updateJob(job);
-                DiscordWebhook.send(JOB_COMPLETED.component(job.getId()));
-            })
+            .async(() -> plugin.getStorage().updateJob(job))
             .execute();
 	}
 
@@ -647,7 +651,7 @@ public class JobCommand {
                 plugin.getJobManager().addJob(job); // register on the main thread
                 job.getProject().addJob(job);
                 SUCCESSFULLY_CREATED_JOB.send(player, job.getId());
-                DiscordWebhook.send(ANNOUNCE_JOB_CREATED.component(player.getName(), job.getId(), project.getName(), description));
+                DiscordWebhook.job(JobEvent.CREATED, player, job);
             })
             .execute();
 	}
