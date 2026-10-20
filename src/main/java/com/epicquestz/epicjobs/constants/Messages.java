@@ -87,13 +87,14 @@ public enum Messages {
     JOB_CATEGORY_SET(Role.SUCCESS, "Set job category to: <em><arg1></em>"),
 
     // Project List & General
-    PROJECT_DOESNT_EXIST(Role.ERROR, "This project does not exist. Did you enter the correct project name?"),
+    PROJECT_DOESNT_EXIST(Role.ERROR, "This project does not exist. Did you enter the correct project tag?"),
     NO_PROJECTS_AVAILABLE(Role.WARNING, "There are no active projects to participate in."),
     PROJECT_ALREADY_COMPLETE(Role.WARNING, "This project is already marked as complete."),
 
     // Create Project
-    SUCCESSFULLY_CREATED_PROJECT(Role.SUCCESS, "Successfully created project with id <em>#<arg1></em>."),
-    CANT_CREATE_PROJECT(Role.ERROR, "Cannot create a project with duplicate name."),
+    SUCCESSFULLY_CREATED_PROJECT(Role.SUCCESS, "Successfully created project <em><arg1></em> with id <em>#<arg2></em>."),
+    CANT_CREATE_PROJECT(Role.ERROR, "Cannot create a project with duplicate tag."),
+    INVALID_PROJECT_TAG(Role.ERROR, "Project tags may only use a-z, 0-9, '-' and '_' (no spaces) and be at most <arg1> characters, e.g. <em>minas-tirith</em>."),
     ERROR_CREATING_PROJECT(Role.ERROR, "Error while creating project. Please contact an administrator."),
 
     // Project Edit

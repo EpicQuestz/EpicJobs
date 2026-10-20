@@ -39,9 +39,9 @@ public class ProjectManager {
         return null;
     }
 
-    public @Nullable Project getProjectByName(String name) {
+    public @Nullable Project getProjectByTag(String tag) {
         for (Project project : projects) {
-            if (project.getName().equalsIgnoreCase(name)) {
+            if (project.getTag().equalsIgnoreCase(tag)) {
                 return project;
             }
         }

@@ -44,7 +44,7 @@ public class SuggestionProvider {
 	public Stream<String> activeProjectSuggestions() {
 		return plugin.getProjectManager().getProjects().stream()
 				.filter(project -> project.getProjectStatus().equals(ProjectStatus.ACTIVE))
-				.map(Project::getName);
+				.map(Project::getTag);
 	}
 
 	@Suggestions("own-project")
@@ -66,14 +66,14 @@ public class SuggestionProvider {
 		return plugin.getProjectManager().getProjects().stream()
 				.filter(project -> status == null || project.getProjectStatus().equals(status))
 				.filter(project -> Utils.canManage(sender, project))
-				.map(Project::getName);
+				.map(Project::getTag);
 	}
 
 	@Suggestions("paused-project")
 	public Stream<String> pausedProjectSuggestions() {
 		return plugin.getProjectManager().getProjects().stream()
 				.filter(project -> project.getProjectStatus().equals(ProjectStatus.PAUSED))
-				.map(Project::getName);
+				.map(Project::getTag);
 	}
 
 	@Suggestions("all-offline-players")

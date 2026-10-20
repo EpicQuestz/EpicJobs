@@ -17,8 +17,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,7 +40,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
     private static final String PROJECT_UPDATE = "UPDATE project SET name = ?, leader = ?, deputies = ?, location = ?, projectstatus = ? WHERE id = ?;";
     private static final String JOB_UPDATE = "UPDATE job SET claimant = ?, description = ?, project = ?, location = ?, jobstatus = ?, jobcategory = ? WHERE id = ?;";
 
-    private static final String PROJECT_INSERT = "INSERT INTO project(name, leader, location, projectstatus) VALUES (?, ?, ?, ?);";
+    private static final String PROJECT_INSERT = "INSERT INTO project(tag, name, leader, location, projectstatus) VALUES (?, ?, ?, ?, ?);";
     private static final String JOB_INSERT = "INSERT INTO job(creator, description, project, location, jobstatus, jobcategory) VALUES (?, ?, ?, ?, ?, ?);";
 
     private static final String PROJECT_DELETE = "DELETE FROM project WHERE id = ?;";
@@ -77,9 +83,9 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
 
     /**
      * Current database schema version. Bump this and add a corresponding case to
-     * {@link #migrationStatements(int)} whenever the schema changes.
+     * {@link #migrate(Connection, int)} whenever the schema changes.
      */
-    private static final int CURRENT_SCHEMA_VERSION = 2;
+    private static final int CURRENT_SCHEMA_VERSION = 3;
 
     private static final String SCHEMA_VERSION_TABLE_CREATE =
         "CREATE TABLE IF NOT EXISTS schema_version (" +
@@ -115,6 +121,14 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
         "ALTER TABLE project ADD COLUMN deputies VARCHAR(1024) COLLATE utf8_bin NOT NULL DEFAULT '';"
     };
 
+    // Migration v3: projects are identified by a tag so their name can become a free-form display
+    // name. The column starts nullable, existing projects get a tag derived from their name (in Java,
+    // see migrateProjectTags), then it is locked to NOT NULL + UNIQUE. Each step is safe to re-run if
+    // a previous attempt died midway.
+    private static final String MIGRATION_V3_ADD_TAG = "ALTER TABLE project ADD COLUMN tag VARCHAR(" + Project.MAX_TAG_LENGTH + ") COLLATE utf8_bin NULL;";
+    private static final String MIGRATION_V3_LOCK_TAG = "ALTER TABLE project MODIFY COLUMN tag VARCHAR(" + Project.MAX_TAG_LENGTH + ") COLLATE utf8_bin NOT NULL, " +
+        "ADD CONSTRAINT project_tag UNIQUE (tag);";
+
     @Override
     public void init() {
         try (final Connection connection = plugin.getHikariDataSource().getConnection()) {
@@ -134,19 +148,78 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
     private void runMigrations(final Connection connection) throws SQLException {
         final int current = getSchemaVersion(connection);
         for (int target = current + 1; target <= CURRENT_SCHEMA_VERSION; target++) {
-            for (final String statement : migrationStatements(target)) {
-                execute(connection, statement);
-            }
+            migrate(connection, target);
             recordSchemaVersion(connection, target);
         }
     }
 
-    private String[] migrationStatements(final int version) {
-        return switch (version) {
-            case 1 -> MIGRATION_V1;
-            case 2 -> MIGRATION_V2;
-            default -> new String[0];
-        };
+    private void migrate(final Connection connection, final int version) throws SQLException {
+        switch (version) {
+            case 1 -> execute(connection, MIGRATION_V1);
+            case 2 -> execute(connection, MIGRATION_V2);
+            case 3 -> migrateProjectTags(connection);
+            default -> { }
+        }
+    }
+
+    private void migrateProjectTags(final Connection connection) throws SQLException {
+        try (final ResultSet columns = connection.getMetaData().getColumns(connection.getCatalog(), null, "project", "tag")) {
+            if (!columns.next()) {
+                execute(connection, MIGRATION_V3_ADD_TAG);
+            }
+        }
+
+        final Map<Integer, String> untagged = new LinkedHashMap<>();
+        final Set<String> taken = new HashSet<>();
+        try (final PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, tag FROM project ORDER BY id;");
+             final ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                final String tag = resultSet.getString("tag");
+                if (tag == null) {
+                    untagged.put(resultSet.getInt("id"), resultSet.getString("name"));
+                } else {
+                    taken.add(tag);
+                }
+            }
+        }
+
+        try (final PreparedStatement preparedStatement = connection.prepareStatement("UPDATE project SET tag = ? WHERE id = ?;")) {
+            for (final Map.Entry<Integer, String> entry : untagged.entrySet()) {
+                final String tag = deriveTag(entry.getValue(), entry.getKey(), taken);
+                taken.add(tag);
+                preparedStatement.setString(1, tag);
+                preparedStatement.setInt(2, entry.getKey());
+                preparedStatement.executeUpdate();
+                plugin.getLogger().info("Tagged project #" + entry.getKey() + " '" + entry.getValue() + "' as '" + tag + "'");
+            }
+        }
+
+        execute(connection, MIGRATION_V3_LOCK_TAG);
+    }
+
+    /**
+     * Turns a legacy project name into a free tag: accents and apostrophes stripped, lowercased, every run of other
+     * characters collapsed to '-', cut to {@link Project#MAX_TAG_LENGTH}, and suffixed -2, -3, ... on clashes.
+     */
+    static String deriveTag(final String name, final int id, final Set<String> taken) {
+        String base = Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("\\p{M}", "")
+            .toLowerCase(Locale.ROOT)
+            .replaceAll("['’]", "") // helm's -> helms, not helm-s
+            .replaceAll("[^a-z0-9]+", "-")
+            .replaceAll("^-|-$", "");
+        if (base.isEmpty()) {
+            base = "project-" + id;
+        }
+        String tag = truncateTag(base, Project.MAX_TAG_LENGTH);
+        for (int n = 2; taken.contains(tag); n++) {
+            final String suffix = "-" + n;
+            tag = truncateTag(base, Project.MAX_TAG_LENGTH - suffix.length()) + suffix;
+        }
+        return tag;
+    }
+
+    private static String truncateTag(final String tag, final int maxLength) {
+        return tag.length() <= maxLength ? tag : tag.substring(0, maxLength).replaceAll("-+$", "");
     }
 
     private int getSchemaVersion(final Connection connection) throws SQLException {
@@ -167,9 +240,11 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
         }
     }
 
-    private void execute(final Connection connection, final String sql) throws SQLException {
-        try (final PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.execute();
+    private void execute(final Connection connection, final String... statements) throws SQLException {
+        for (final String sql : statements) {
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.execute();
+            }
         }
     }
 
@@ -227,18 +302,19 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
     }
 
     @Override
-    public Project createAndLoadProject(final String name, final UUID leader, final Location location, final ProjectStatus projectStatus) {
+    public Project createAndLoadProject(final String tag, final String name, final UUID leader, final Location location, final ProjectStatus projectStatus) {
         try (final Connection connection = plugin.getHikariDataSource().getConnection();
              final PreparedStatement preparedStatement = connection.prepareStatement(PROJECT_INSERT, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, leader.toString());
-            preparedStatement.setString(3, Utils.serializeLocation(location));
-            preparedStatement.setString(4, projectStatus.toString());
+            preparedStatement.setString(1, tag);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, leader.toString());
+            preparedStatement.setString(4, Utils.serializeLocation(location));
+            preparedStatement.setString(5, projectStatus.toString());
             preparedStatement.executeUpdate();
 
             try (final ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
-                    return new Project(resultSet.getInt(1), name, leader, System.currentTimeMillis(), location, projectStatus, new ArrayList<>());
+                    return new Project(resultSet.getInt(1), tag, name, leader, System.currentTimeMillis(), location, projectStatus, new ArrayList<>());
                 }
             }
         } catch (final SQLException e) {
@@ -260,6 +336,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
              final ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 final int id = resultSet.getInt("id");
+                final String tag = resultSet.getString("tag");
                 final String name = resultSet.getString("name");
                 final UUID uniqueId = UUID.fromString(resultSet.getString("leader"));
                 final Timestamp creationTime = Timestamp.valueOf(resultSet.getString("creationtime"));
@@ -268,7 +345,7 @@ public record SqlStorage(EpicJobs plugin) implements StorageImplementation {
                 final List<UUID> deputies = deserializeDeputies(resultSet.getString("deputies"));
 
                 if (location != null) {
-                    final Project project = new Project(id, name, uniqueId, creationTime.getTime(), location, projectStatus, deputies);
+                    final Project project = new Project(id, tag, name, uniqueId, creationTime.getTime(), location, projectStatus, deputies);
                     plugin().getProjectManager().addProject(project);
                 }
             }

@@ -20,7 +20,7 @@ public final class ProjectParser<C> implements ArgumentParser<C, Project>, Block
 			final @NonNull CommandInput commandInput
 	) {
 		final String input = commandInput.peekString();
-		final Project project = EpicJobs.get().getProjectManager().getProjectByName(input);
+		final Project project = EpicJobs.get().getProjectManager().getProjectByTag(input);
 
 		if (project == null) {
 			return ArgumentParseResult.failure(new ProjectParserException(input, commandContext));
@@ -32,7 +32,7 @@ public final class ProjectParser<C> implements ArgumentParser<C, Project>, Block
 
 	@Override
 	public @NonNull Iterable<@NonNull String> stringSuggestions(@NonNull CommandContext<C> commandContext, @NonNull CommandInput input) {
-		return EpicJobs.get().getProjectManager().getProjects().stream().map(Project::getName)::iterator;
+		return EpicJobs.get().getProjectManager().getProjects().stream().map(Project::getTag)::iterator;
 	}
 
 	private static final class ProjectParserException extends ParserException {

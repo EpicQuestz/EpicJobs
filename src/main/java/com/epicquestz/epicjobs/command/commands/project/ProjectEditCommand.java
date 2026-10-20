@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.incendo.cloud.annotation.specifier.Greedy;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -35,7 +36,7 @@ public class ProjectEditCommand {
 	@Command("edit|e name <project> <name>")
 	public void onEditName(@NonNull CommandSender sender,
 						   @Argument(value = "project", description = "Project", suggestions = "own-project") final @NonNull Project project,
-						   @Argument(value = "name", description = "Name") final @NonNull String name
+						   @Argument(value = "name", description = "Display name") final @NonNull @Greedy String name
 	) {
 		if (!Utils.canManage(sender, project)) {
 			NOT_PROJECT_MANAGER.send(sender);

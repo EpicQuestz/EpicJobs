@@ -32,7 +32,7 @@ public interface StorageImplementation {
      */
     void savePlayer(UUID uniqueId, String name);
 
-    Project createAndLoadProject(String name, UUID leader, Location location, ProjectStatus projectStatus);
+    Project createAndLoadProject(String tag, String name, UUID leader, Location location, ProjectStatus projectStatus);
 
     Project loadProject(int id);
 

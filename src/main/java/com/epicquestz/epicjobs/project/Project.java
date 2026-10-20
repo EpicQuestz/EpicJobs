@@ -9,10 +9,16 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class Project {
 
+    /** A tag identifies a project in commands; the name is only for display and may contain spaces. */
+    public static final int MAX_TAG_LENGTH = 32;
+    public static final Pattern TAG_PATTERN = Pattern.compile("[a-z0-9]+([_-][a-z0-9]+)*");
+
     private final int id;
+    private final String tag;
     private String name;
     private UUID leader;
     private final long creationTime;
@@ -21,12 +27,9 @@ public class Project {
     private final List<UUID> deputies;
     private final List<Job> jobs;
 
-    public Project(int id, String name, Player leader) {
-        this(id, name, leader.getUniqueId(), System.currentTimeMillis(), leader.getLocation(), ProjectStatus.ACTIVE, List.of());
-    }
-
-    public Project(int id, String name, UUID leader, long creationTime, Location location, ProjectStatus projectStatus, List<UUID> deputies) {
+    public Project(int id, String tag, String name, UUID leader, long creationTime, Location location, ProjectStatus projectStatus, List<UUID> deputies) {
         this.id = id;
+        this.tag = tag;
         this.name = name;
         this.leader = leader;
         this.creationTime = creationTime;
@@ -38,6 +41,14 @@ public class Project {
 
     public int getId() {
         return id;
+    }
+
+    public static boolean isValidTag(String tag) {
+        return tag.length() <= MAX_TAG_LENGTH && TAG_PATTERN.matcher(tag).matches();
+    }
+
+    public String getTag() {
+        return tag;
     }
 
     public String getName() {

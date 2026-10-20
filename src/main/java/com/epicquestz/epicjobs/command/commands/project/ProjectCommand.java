@@ -15,10 +15,12 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.incendo.cloud.annotation.specifier.Quoted;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -30,6 +32,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,6 +40,7 @@ import java.util.stream.Collectors;
 import static com.epicquestz.epicjobs.constants.Messages.ANNOUNCE_PROJECT_COMPLETION;
 import static com.epicquestz.epicjobs.constants.Messages.CANT_CREATE_PROJECT;
 import static com.epicquestz.epicjobs.constants.Messages.ERROR_CREATING_PROJECT;
+import static com.epicquestz.epicjobs.constants.Messages.INVALID_PROJECT_TAG;
 import static com.epicquestz.epicjobs.constants.Messages.NO_PROJECTS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.NO_STATS_AVAILABLE;
 import static com.epicquestz.epicjobs.constants.Messages.NOT_PROJECT_MANAGER;
@@ -96,10 +100,11 @@ public class ProjectCommand {
 					project.getLocation().getBlockX(),
 					project.getLocation().getBlockY(),
 					project.getLocation().getBlockZ()
-				), Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/project teleport " + project.getName())))
+				), Palette.Role.INFO.accent()).decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED, true).hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED))).clickEvent(ClickEvent.runCommand("/project teleport " + project.getTag())))
 			.append(Component.text()
 				.decoration(TextDecoration.BOLD, false)
-				.append(Component.text("Leader: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(project.getLeader()), Palette.Role.INFO.body()))
+				.append(Component.text("Tag: ", Palette.MUTED)).append(Component.text(project.getTag(), Palette.Role.INFO.body()))
+				.append(Component.text(" Leader: ", Palette.MUTED)).append(Component.text(Utils.getPlayerHolderText(project.getLeader()), Palette.Role.INFO.body()))
 				.append(Component.text(" Status: ", Palette.MUTED)).append(Component.text(project.getProjectStatus().toString(), Palette.Role.INFO.body()))
 				.append(Component.text(" Created: ", Palette.MUTED)).append(Component.text(created + "\n", Palette.Role.INFO.body()))
 				.append(Component.text("Deputies: ", Palette.MUTED)).append(Component.text(deputyNames, Palette.Role.INFO.body())))
@@ -119,7 +124,7 @@ public class ProjectCommand {
 		projects.forEach(project -> {
 			final TextComponent textComponent = Component.text(project.getName(), Palette.Role.INFO.accent())
 					.hoverEvent(HoverEvent.showText(Component.text("Click to teleport!", Palette.MUTED)))
-					.clickEvent(ClickEvent.runCommand("/project teleport " + project.getName()));
+					.clickEvent(ClickEvent.runCommand("/project teleport " + project.getTag()));
 			textComponents.add(textComponent);
 		});
 		final JoinConfiguration joinConfiguration = JoinConfiguration.builder()
@@ -134,14 +139,22 @@ public class ProjectCommand {
 
 	@CommandDescription("Create a project")
 	@Permission(CommandPermissions.CREATE_PROJECT)
-	@Command("create <name> [leader]")
+	@Command("create <tag> <name> [leader]")
 	public void onCreate(final @NonNull Player player,
-						 @Argument(value = "name", description = "Name") final @NonNull String name,
+						 @Argument(value = "tag", description = "Tag (identifier)") final @NonNull String rawTag,
+						 @Argument(value = "name", description = "Display name, quote it for spaces") final @NonNull @Quoted String name,
 						 @Argument(value = "leader", description = "Leader") final @Nullable Player leader
 	) {
+		final String tag = rawTag.toLowerCase(Locale.ROOT);
+		if (!Project.isValidTag(tag)) {
+			INVALID_PROJECT_TAG.send(player, Project.MAX_TAG_LENGTH);
+			return;
+		}
+		final Player owner = leader == null ? player : leader;
+		final Location location = owner.getLocation();
 		EpicJobs.newSharedChain("EpicJobs")
             .syncFirst(() -> {
-                if (plugin.getProjectManager().getProjectByName(name) == null) {
+                if (plugin.getProjectManager().getProjectByTag(tag) == null) {
                     return true;
                 } else {
                     CANT_CREATE_PROJECT.send(player);
@@ -149,16 +162,13 @@ public class ProjectCommand {
                 }
             })
             .abortIf(false)
-            .asyncFirst(() -> {
-                final Project project = (leader == null) ? plugin.getStorage().createAndLoadProject(name, player.getUniqueId(), player.getLocation(), ProjectStatus.ACTIVE) : plugin.getStorage().createAndLoadProject(name, leader.getUniqueId(), leader.getLocation(), ProjectStatus.ACTIVE);
-                plugin.getProjectManager().addProject(project);
-                return project;
-            })
+            .asyncFirst(() -> plugin.getStorage().createAndLoadProject(tag, name, owner.getUniqueId(), location, ProjectStatus.ACTIVE))
             .syncLast((project) -> {
                 if (project == null) {
                     ERROR_CREATING_PROJECT.send(player);
                 } else {
-                    SUCCESSFULLY_CREATED_PROJECT.send(player, project.getId());
+                    plugin.getProjectManager().addProject(project); // register on the main thread
+                    SUCCESSFULLY_CREATED_PROJECT.send(player, project.getTag(), project.getId());
                 }
             })
             .execute();
